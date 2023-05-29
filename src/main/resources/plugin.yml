@@ -1,0 +1,10 @@
+name: Privates-AddonLG
+version: "${project.version}"
+author: Neyuux_
+main: fr.neyuux.privatesaddonlg.Plugin
+description: "${project.description}"
+load: STARTUP
+depend : [WereWolfPlugin]
+commands:
+  khqbib:
+    description: :)

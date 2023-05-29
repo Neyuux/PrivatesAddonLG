@@ -1,0 +1,14 @@
+{
+  "privatesaddon": {
+    "name": "§bPrivatesAddonLG",
+    "description": "§9Addon créé par §c§lNeyuux_",
+    "prefix" : {
+      "aqua": "§b§lPrivateAddon §8>>§r "
+    },
+    "roofed_generation_finished": "§2La génération de la Roofed Forest est terminée !",
+
+    "commands": {
+      "khqbib": "§a§lFuck Khqbib"
+    }
+  }
+}
