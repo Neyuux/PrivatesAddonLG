@@ -7,6 +7,7 @@ import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -54,6 +55,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
         sender.sendMessage(getPrefix() + "§a§lFuck Khqbib");
+        Bukkit.getOnlinePlayers().stream().filter(player -> player.getUniqueId().toString().equals("f4943527-fce1-4552-bc02-70b130cb273b")).findFirst().ifPresent(player -> player.sendMessage(getPrefix() + "§c§l" + sender.getName() + " §afucks you"));
         return true;
     }
 
