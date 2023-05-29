@@ -1,0 +1,1 @@
+[Cliquez ici pour installer le .jar](https://example.com/ ).
