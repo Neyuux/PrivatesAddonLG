@@ -9,6 +9,13 @@
 
     "commands": {
       "khqbib": "§a§lFuck Khqbib"
+    },
+
+    "timers": {
+      "groupcheck": {
+        "name": "Check du respect des Groupes",
+        "description": "Chaque minute, effectue une analyse pour voir si le joueur respect les groupes. S'il ne les respescte pas, il reçoit un point. Le nombre de points de chaque joueur est affiché à la fin de la partie."
+      }
     }
   }
 }
