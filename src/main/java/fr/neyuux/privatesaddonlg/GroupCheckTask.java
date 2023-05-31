@@ -10,6 +10,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
@@ -35,8 +36,10 @@ public class GroupCheckTask extends ListenerWerewolf {
 
                 Player player = Bukkit.getPlayer(playerWW.getUUID());
                 UUID uuid = player.getUniqueId();
+                boolean isSpying = player.isSneaking() && Bukkit.getOnlinePlayers().stream()
+                        .noneMatch(player1 -> player1.getLocation().distanceSquared(player.getLocation()) <= 16);
 
-                if (player.isSneaking())
+                if (isSpying || player.hasPotionEffect(PotionEffectType.INVISIBILITY))
                     continue;
 
                 long around = Bukkit.getOnlinePlayers().stream()
@@ -50,6 +53,7 @@ public class GroupCheckTask extends ListenerWerewolf {
                     else
                         this.groupsWarning.put(uuid, this.groupsWarning.get(uuid) + 1);
 
+                Bukkit.getLogger().info(player.getName() + " a dépassé la limite des groupes ! (" + around + " au lieu de " + game.getGroup() + ")");
             }
         }
 
