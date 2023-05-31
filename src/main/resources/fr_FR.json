@@ -14,7 +14,23 @@
     "timers": {
       "groupcheck": {
         "name": "Check du respect des Groupes",
-        "description": "Chaque minute, effectue une analyse pour voir si le joueur respect les groupes. S'il ne les respescte pas, il reçoit un point. Le nombre de points de chaque joueur est affiché à la fin de la partie."
+        "description": "Temps entre analyse des groupes"
+      }
+    },
+
+    "configs": {
+      "pearldroprate": {
+        "name": "Modification du drop des perles de l'Ender",
+        "configurations": {
+          "percentage": "Pourcentage : §b&number&%"
+        }
+      },
+
+      "flintdroprate": {
+        "name": "Modification du drop du silex",
+        "configurations": {
+          "percentage": "Pourcentage : §b&number&%"
+        }
       }
     }
   }
