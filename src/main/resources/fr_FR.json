@@ -16,22 +16,6 @@
         "name": "Check du respect des Groupes",
         "description": "Temps entre analyse des groupes"
       }
-    },
-
-    "configs": {
-      "pearldroprate": {
-        "name": "Modification du drop des perles de l'Ender",
-        "configurations": {
-          "percentage": "Pourcentage : §b&number&%"
-        }
-      },
-
-      "flintdroprate": {
-        "name": "Modification du drop du silex",
-        "configurations": {
-          "percentage": "Pourcentage : §b&number&%"
-        }
-      }
     }
   }
 }
