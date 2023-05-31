@@ -48,7 +48,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     @EventHandler
     public void onGameStart(StartEvent ev) {
-        this.currentGame.setGameName("@Neyuux_");
+        Bukkit.getScheduler().runTaskLater(this, () -> this.currentGame.setGameName("@Neyuux_"), 20L);
     }
 
 
