@@ -31,30 +31,33 @@ public class GroupCheckTask extends ListenerWerewolf {
     @EventHandler
     public void onCheckEvent(GroupCheckEvent ev) {
 
-        for (IPlayerWW playerWW : game.getPlayersWW()) {
-            if (playerWW.isState(StatePlayer.ALIVE) && Bukkit.getOnlinePlayers().stream().anyMatch(player -> player.getUniqueId().equals(playerWW.getUUID()))) {
+        HashSet<Player> checkable = new HashSet<>();
+        game.getPlayersWW().stream()
+                .filter(playerWW -> playerWW.isState(StatePlayer.ALIVE) && Bukkit.getOnlinePlayers().stream().anyMatch(player -> player.getUniqueId().equals(playerWW.getUUID())))
+                .filter(playerWW -> {
+                    Player player = Bukkit.getPlayer(playerWW.getUUID());
+                    boolean isSpying = player.isSneaking() && Bukkit.getOnlinePlayers().stream()
+                            .noneMatch(player1 -> player1.getLocation().distanceSquared(player.getLocation()) <= 14);
 
-                Player player = Bukkit.getPlayer(playerWW.getUUID());
-                UUID uuid = player.getUniqueId();
-                boolean isSpying = player.isSneaking() && Bukkit.getOnlinePlayers().stream()
-                        .noneMatch(player1 -> player1.getLocation().distanceSquared(player.getLocation()) <= 16);
+                    return !isSpying && !player.hasPotionEffect(PotionEffectType.INVISIBILITY);
+                })
+                .forEach(iPlayerWW -> checkable.add(Bukkit.getPlayer(iPlayerWW.getUUID())));
 
-                if (isSpying || player.hasPotionEffect(PotionEffectType.INVISIBILITY))
-                    continue;
+        for (Player player : checkable) {
+            UUID uuid = player.getUniqueId();
 
-                long around = Bukkit.getOnlinePlayers().stream()
-                        .filter(player1 -> player1.getLocation().distanceSquared(player.getLocation()) <= 60 * 60)
-                        .filter(player1 -> game.getPlayerWW(player1.getUniqueId()).isPresent() && game.getPlayerWW(player1.getUniqueId()).get().isState(StatePlayer.ALIVE))
-                        .count();
+            long around = checkable.stream()
+                    .filter(player1 -> player1.getLocation().distanceSquared(player.getLocation()) <= 50 * 50)
+                    .filter(player1 -> game.getPlayerWW(player1.getUniqueId()).isPresent() && game.getPlayerWW(player1.getUniqueId()).get().isState(StatePlayer.ALIVE))
+                    .count();
 
-                if (around > game.getGroup())
-                    if (!this.groupsWarning.containsKey(uuid))
-                        this.groupsWarning.put(uuid, 1);
-                    else
-                        this.groupsWarning.put(uuid, this.groupsWarning.get(uuid) + 1);
+            if (around > game.getGroup())
+                if (!this.groupsWarning.containsKey(uuid))
+                    this.groupsWarning.put(uuid, 1);
+                else
+                    this.groupsWarning.put(uuid, this.groupsWarning.get(uuid) + 1);
 
-                Bukkit.getLogger().info(player.getName() + " a dépassé la limite des groupes ! (" + around + " au lieu de " + game.getGroup() + ")");
-            }
+            Bukkit.getLogger().info(player.getName() + " a dépassé la limite des groupes ! (" + around + " au lieu de " + game.getGroup() + ")");
         }
 
 
@@ -67,6 +70,7 @@ public class GroupCheckTask extends ListenerWerewolf {
 
         List<Map.Entry<UUID, Integer>> list = new ArrayList<>(this.groupsWarning.entrySet());
         list.sort(Map.Entry.comparingByValue());
+        Collections.reverse(list);
 
 
         for (Map.Entry<UUID, Integer> entry : list)
