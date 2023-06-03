@@ -12,14 +12,14 @@
       "admin": {
         "groupchecks":{
           "command": "groupchecks",
-          "description": "Permet de vériifer le nombre de fois où un joueur n'a pas respecté les groupes."
+          "description": "Permet de vérifer le nombre de fois où un joueur n'a pas respecté les groupes."
         }
       }
     },
 
     "timers": {
       "groupcheck": {
-        "name": "Check du respect des Groupes",
+        "name": "Check du respect des Groupes (§b&timer&§f)",
         "description": "Temps entre analyse des groupes"
       }
     }
