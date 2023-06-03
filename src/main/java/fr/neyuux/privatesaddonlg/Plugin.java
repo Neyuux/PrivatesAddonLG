@@ -13,10 +13,12 @@ import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -55,6 +57,12 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         Bukkit.getScheduler().runTaskLater(this, () -> this.currentGame.setGameName("@Neyuux_"), 20L);
     }
 
+    @EventHandler
+    public void onCreeperExplode(EntityExplodeEvent ev) {
+        if (ev.getEntity().getCustomName().equals("Khqbib"))
+            ev.blockList().clear();
+    }
+
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
@@ -62,8 +70,10 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
             Bukkit.getScheduler().runTaskLater(this, () -> {
                 HumanEntity he = (HumanEntity) sender;
 
-                if (he.getGameMode().equals(GameMode.SURVIVAL))
-                    he.getWorld().spawnEntity(he.getEyeLocation(), EntityType.CREEPER);
+                if (he.getGameMode().equals(GameMode.SURVIVAL)) {
+                    Creeper creeper = (Creeper) he.getWorld().spawnEntity(he.getEyeLocation(), EntityType.CREEPER);
+                    creeper.setCustomName("Khqbib");
+                }
             }, 60L);
         return true;
     }
