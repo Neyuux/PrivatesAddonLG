@@ -23,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -92,10 +93,10 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     }
 
 
-    public float getGroupsWarningRatio(UUID uuid) {
+    public String getGroupsWarningRatio(UUID uuid) {
         IPlayerWW playerWW = this.currentGame.getPlayerWW(uuid).get();
         float time = (playerWW.isState(StatePlayer.ALIVE) ? this.currentGame.getTimer() : playerWW.getDeathTime()) / 60f;
 
-        return time / this.groupsWarning.get(uuid);
+        return String.format("%.2f", this.groupsWarning.get(uuid) / time);
     }
 }
