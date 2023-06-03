@@ -1,11 +1,11 @@
-package fr.neyuux.privatesaddonlg;
+package fr.neyuux.privatesaddonlg.groupscheck;
 
+import fr.neyuux.privatesaddonlg.Plugin;
 import fr.ph1lou.werewolfapi.annotations.Timer;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.listeners.impl.ListenerWerewolf;
-import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -25,13 +25,12 @@ public class GroupCheckTask extends ListenerWerewolf {
         this.game = game;
     }
 
-    @Getter
-    private final HashMap<UUID, Integer> groupsWarning = new HashMap<>();
-
     @EventHandler
     public void onCheckEvent(GroupCheckEvent ev) {
 
         HashSet<Player> checkable = new HashSet<>();
+        HashMap<UUID, Integer> groupsWarning = Plugin.getINSTANCE().getGroupsWarning();
+
         game.getPlayersWW().stream()
                 .filter(playerWW -> playerWW.isState(StatePlayer.ALIVE) && Bukkit.getOnlinePlayers().stream().anyMatch(player -> player.getUniqueId().equals(playerWW.getUUID())))
                 .filter(playerWW -> {
@@ -52,10 +51,10 @@ public class GroupCheckTask extends ListenerWerewolf {
                     .count();
 
             if (around > game.getGroup())
-                if (!this.groupsWarning.containsKey(uuid))
-                    this.groupsWarning.put(uuid, 1);
+                if (!groupsWarning.containsKey(uuid))
+                    groupsWarning.put(uuid, 1);
                 else
-                    this.groupsWarning.put(uuid, this.groupsWarning.get(uuid) + 1);
+                    groupsWarning.put(uuid, groupsWarning.get(uuid) + 1);
 
             Bukkit.getLogger().info(player.getName() + " a dépassé la limite des groupes ! (" + around + " au lieu de " + game.getGroup() + ")");
         }
@@ -68,7 +67,7 @@ public class GroupCheckTask extends ListenerWerewolf {
     public void onFinish(WinEvent ev) {
         Bukkit.broadcastMessage(Plugin.getPrefix() + "§cRésumé des analyses de groupes : ");
 
-        List<Map.Entry<UUID, Integer>> list = new ArrayList<>(this.groupsWarning.entrySet());
+        List<Map.Entry<UUID, Integer>> list = new ArrayList<>(Plugin.getINSTANCE().getGroupsWarning().entrySet());
         list.sort(Map.Entry.comparingByValue());
         Collections.reverse(list);
 
@@ -76,7 +75,7 @@ public class GroupCheckTask extends ListenerWerewolf {
         for (Map.Entry<UUID, Integer> entry : list)
             game.getPlayerWW(entry.getKey())
                     .ifPresent(iPlayerWW ->
-                            Bukkit.broadcastMessage(" §c" + iPlayerWW.getName() + " : §b§l" + entry.getValue()));
+                            Bukkit.broadcastMessage(" §c" + iPlayerWW.getName() + " : §b§l" + entry.getValue() + "§b§o(§l" + Plugin.getINSTANCE().getGroupsWarningRatio(entry.getKey()) + "§b§o / minute)"));
     }
 
 

@@ -1,4 +1,4 @@
-package fr.neyuux.privatesaddonlg;
+package fr.neyuux.privatesaddonlg.groupscheck;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

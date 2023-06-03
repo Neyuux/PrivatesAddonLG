@@ -4,9 +4,11 @@ import fr.ph1lou.werewolfapi.GetWereWolfAPI;
 import fr.ph1lou.werewolfapi.annotations.Author;
 import fr.ph1lou.werewolfapi.annotations.ModuleWerewolf;
 import fr.ph1lou.werewolfapi.enums.StateGame;
+import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
+import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -20,6 +22,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 
 @ModuleWerewolf(key = "privatesaddon.name",
@@ -35,9 +40,17 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     @Getter
     private WereWolfAPI currentGame;
 
+    @Getter
+    private static Plugin INSTANCE;
+
+    @Getter
+    private final HashMap<UUID, Integer> groupsWarning = new HashMap<>();
+
 
     @Override
     public void onEnable() {
+
+        INSTANCE = this;
 
         this.getServer().getPluginManager().registerEvents(this, this);
         this.getServer().getPluginManager().registerEvents(new WorldChangesListener(), this);
@@ -78,4 +91,11 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         return true;
     }
 
+
+    public float getGroupsWarningRatio(UUID uuid) {
+        IPlayerWW playerWW = this.currentGame.getPlayerWW(uuid).get();
+        float time = (playerWW.isState(StatePlayer.ALIVE) ? this.currentGame.getTimer() : playerWW.getDeathTime()) / 60f;
+
+        return time / this.groupsWarning.get(uuid);
+    }
 }
