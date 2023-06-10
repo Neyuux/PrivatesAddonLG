@@ -16,12 +16,10 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -61,7 +59,9 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         this.getServer().getPluginManager().registerEvents(this, this);
         this.getServer().getPluginManager().registerEvents(new WorldChangesListener(), this);
 
-        this.getCommand("khqbib").setExecutor(this);
+        this.getCommand("coco").setExecutor(this);
+        this.getCommand("say").setExecutor(new CommandSay());
+        this.getCommand("pioche").setExecutor(new CommandPioche());
 
         super.onEnable();
     }
@@ -72,43 +72,43 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         Bukkit.getScheduler().runTaskLater(this, () -> this.getGame().setGameName("@Neyuux_"), 20L);
     }
 
-    @EventHandler
-    public void onCreeperExplode(EntityExplodeEvent ev) {
-        if (ev.getEntity().getCustomName().equals("Khqbib"))
-            ev.blockList().clear();
-    }
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        if (event.getEntity() instanceof Creeper && event.getEntity().getCustomName().equals("Khqbib")) {
+        if (isCoco(event.getEntity())) {
             event.getDrops().clear();
+            event.setDroppedExp(0);
         }
     }
 
+    @EventHandler
+    public void onCocoDamage(EntityDamageByEntityEvent ev) {
+        if (isCoco(ev.getDamager()))
+            ev.setDamage(0);
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (sender instanceof Player && this.getGame() != null) {
             Player player = (Player) sender;
 
-            if (this.getGame().getTimer() > 3000)
-                return true;
+            if ((this.getGame().getState() == StateGame.START ||this.getGame().getState() == StateGame.GAME) && player.getGameMode().equals(GameMode.SURVIVAL)) {
 
-            if ((this.getGame().getState() == StateGame.START ||this.getGame().getState() == StateGame.GAME) && player.getGameMode().equals(GameMode.SURVIVAL))
-                Bukkit.getScheduler().runTaskLater(this, () -> {
-                    World w = player.getWorld();
+                Enderman enderMan = (Enderman) player.getWorld().spawnEntity(player.getLocation(), EntityType.ENDERMAN);
 
-                    if (!w.getName().equals("werewolf_map"))
-                        return;
+                enderMan.setHealth(1);
+                enderMan.setCustomName("thatnwordcoco");
+                enderMan.setCustomNameVisible(true);
+                enderMan.setTarget(player);
 
-                    Creeper creeper = (Creeper) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.CREEPER);
-                    creeper.setCustomName("Khqbib");
-                    creeper.setTarget(player);
-
-                    Bukkit.getScheduler().runTaskLater(this, creeper::remove, 200L);
-                }, 60L);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/entitydata @e[type=Enderman,name=thatnwordcoco] {Attributes:[{Name:\"generic.movementSpeed\",Base:0.8f}]}");
+            }
         }
         return true;
+    }
+    
+    private boolean isCoco(Entity entity) {
+        return entity instanceof Enderman && entity.getCustomName().equals("thatnwordcoco");
     }
 
 

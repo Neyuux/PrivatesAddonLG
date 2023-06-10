@@ -22,6 +22,14 @@
         "name": "Check du respect des Groupes (§b&timer&§f)",
         "description": "Temps entre analyse des groupes"
       }
+    },
+
+    "configurations": {
+      "lone_wolf": {
+        "name": "Loup Solitaire (Neyuux_)",
+        "message": "Vous devenez Solitaire. A partir de maintenant,vous devez gagner seul. Pour cela, vous bénéficiez de quatres coeurs permanents supplémentaires (dans la limite de 15 coeurs max)",
+        "timer": "Timer du Déclenchement du Loup Solitaire (§b&timer&§f)"
+      }
     }
   }
 }
