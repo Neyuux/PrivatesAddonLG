@@ -11,7 +11,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
+
 public class CommandPioche implements CommandExecutor {
+
+    private static final HashMap<UUID, Location> map = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
@@ -20,26 +26,34 @@ public class CommandPioche implements CommandExecutor {
             Player player = (Player) sender;
             WereWolfAPI game = Plugin.getINSTANCE().getGame();
 
-            int rx = game.getRandom().nextInt(20) - 9;
-            int rz = game.getRandom().nextInt(20) - 9;
-            Block block = player.getLocation().clone().add(rx, 0, rz).getBlock();
+            if (game.getTimer() > 3000)
+                return true;
 
-            block.setType(Material.BEDROCK);
-            block.getLocation().add(0, 1, 0).getBlock().setType(Material.SIGN_POST);
+            if (!map.containsKey(player.getUniqueId())) {
 
-            org.bukkit.block.Sign sign =(Sign) block.getLocation().add(0, 1, 0).getBlock().getState();
+                int rx = game.getRandom().nextInt(40) - 19;
+                int rz = game.getRandom().nextInt(40) - 19;
+                Block block = player.getLocation().clone().add(rx, 0, rz).getBlock();
 
-            block.getState().update();
-            sign.update(true, true);
+                block.setType(Material.BEDROCK);
+                block.getLocation().add(0, 1, 0).getBlock().setType(Material.SIGN_POST);
 
-            sign.setLine(0, "Gros bouffon");
-            sign.setLine(1, "Fuck");
-            sign.setLine(2, "Khqbib");
+                org.bukkit.block.Sign sign = (Sign) block.getLocation().add(0, 1, 0).getBlock().getState();
 
-            block.getState().update();
-            sign.update(true, true);
+                block.getState().update();
+                sign.update(true, true);
 
-            player.sendMessage(Plugin.getPrefix() + "§bDiamant le plus proche : " + Utils.updateArrow(player, block.getLocation()));
+                sign.setLine(0, "Gros bouffon");
+                sign.setLine(3, "(Fuck Khqbib)");
+
+                block.getState().update();
+                sign.update(true, true);
+
+                player.sendMessage(Plugin.getPrefix() + "§bDiamant le plus proche : " + Utils.updateArrow(player, block.getLocation()));
+                map.put(player.getUniqueId(), block.getLocation());
+            } else {
+                player.sendMessage(Plugin.getPrefix() + "§bDiamant le plus proche : " + Utils.updateArrow(player, map.get(player.getUniqueId())));
+            }
         }
 
         return true;

@@ -18,6 +18,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -73,7 +74,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     }
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
         if (isCoco(event.getEntity())) {
             event.getDrops().clear();
@@ -96,10 +97,10 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
                 Enderman enderMan = (Enderman) player.getWorld().spawnEntity(player.getLocation(), EntityType.ENDERMAN);
 
-                enderMan.setHealth(1);
+                enderMan.setHealth(4);
                 enderMan.setCustomName("thatnwordcoco");
                 enderMan.setCustomNameVisible(true);
-                enderMan.setTarget(player);
+                Bukkit.getScheduler().runTaskLater(this, () -> enderMan.setTarget(player), 10L);
 
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/entitydata @e[type=Enderman,name=thatnwordcoco] {Attributes:[{Name:\"generic.movementSpeed\",Base:0.8f}]}");
             }
