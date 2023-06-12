@@ -3,7 +3,8 @@
     "name": "§bPrivatesAddonLG",
     "description": "§9Addon créé par §c§lNeyuux_",
     "prefix" : {
-      "aqua": "§b§lPrivateAddon §8>>§r "
+      "aqua": "§b§lPrivateAddon §8»§r ",
+      "red": "§c§lPrivateAddon §8»§r "
     },
     "roofed_generation_finished": "§2La génération de la Roofed Forest est terminée !",
 
@@ -27,8 +28,11 @@
     "configurations": {
       "lone_wolf": {
         "name": "Loup Solitaire (Neyuux_)",
-        "message": "Vous devenez Solitaire. A partir de maintenant,vous devez gagner seul. Pour cela, vous bénéficiez de quatres coeurs permanents supplémentaires (dans la limite de 15 coeurs max)",
-        "timer": "Timer du Déclenchement du Loup Solitaire (§b&timer&§f)"
+        "message": "§cVous êtes le §4§lLoup Solitaire§c. A partir de maintenant, votre objectif est de gagner seul. Pour ce faire vous disposez de §44♥ §cbonus (15 max).",
+        "timer": {
+          "name" : "Timer du Déclenchement du Loup Solitaire (§b&timer&§f)",
+          "description": "§c§lSE DECLENCHE APRES LES ROLES"
+        }
       },
 
       "red_name_tag": {

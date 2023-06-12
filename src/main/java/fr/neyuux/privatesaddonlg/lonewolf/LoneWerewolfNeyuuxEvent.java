@@ -8,17 +8,10 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-@StatisticsEvent(key = "werewolf.lone_wolf")
 public class LoneWerewolfNeyuuxEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
 
-    private final IPlayerWW playerWW;
-
     private boolean cancel = false;
-
-    public LoneWerewolfNeyuuxEvent(IPlayerWW playerWW) {
-        this.playerWW = playerWW;
-    }
 
     public static HandlerList getHandlerList() {
         return HANDLERS_LIST;
@@ -35,10 +28,5 @@ public class LoneWerewolfNeyuuxEvent extends Event implements Cancellable {
 
     public void setCancelled(boolean cancelled) {
         this.cancel = cancelled;
-    }
-
-    @StatisticsPlayer
-    public IPlayerWW getPlayerWW() {
-        return this.playerWW;
     }
 }

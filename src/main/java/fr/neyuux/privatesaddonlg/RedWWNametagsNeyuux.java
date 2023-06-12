@@ -39,7 +39,7 @@ public class RedWWNametagsNeyuux extends ListenerWerewolf {
     }
 
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onWWNameTagUpdate(UpdatePlayerNameTagEvent ev) {
         Optional<IPlayerWW> optionalPlayer = this.game.getPlayerWW(ev.getPlayerUUID());
         Optional<IPlayerWW> optionalTarget = this.game.getPlayerWW(ev.getTargetUUID());
@@ -67,28 +67,32 @@ public class RedWWNametagsNeyuux extends ListenerWerewolf {
         }
 
         if (team != null) {
-            UUID uuid1 = target.getUniqueId();
-            RequestSeeWereWolfListEvent requestSeeWereWolfListEvent = new RequestSeeWereWolfListEvent(uuid1);
-            Bukkit.getPluginManager().callEvent(requestSeeWereWolfListEvent);
+            Bukkit.getScheduler().runTaskLater(Plugin.getINSTANCE(), () -> {
+                UUID uuid1 = target.getUniqueId();
+                RequestSeeWereWolfListEvent requestSeeWereWolfListEvent = new RequestSeeWereWolfListEvent(uuid1);
+                Bukkit.getPluginManager().callEvent(requestSeeWereWolfListEvent);
 
-            if (requestSeeWereWolfListEvent.isAccept()) {
-                AppearInWereWolfListEvent appearInWereWolfListEvent = new AppearInWereWolfListEvent(player.getUniqueId(), uuid1);
-                Bukkit.getPluginManager().callEvent(appearInWereWolfListEvent);
+                if (requestSeeWereWolfListEvent.isAccept()) {
+                    AppearInWereWolfListEvent appearInWereWolfListEvent = new AppearInWereWolfListEvent(player.getUniqueId(), uuid1);
+                    Bukkit.getPluginManager().callEvent(appearInWereWolfListEvent);
 
-                if (appearInWereWolfListEvent.isAppear() && this.game.getConfig().isConfigActive("privatesaddon.configurations.red_name_tag.name")) {
-                    sb.append(ChatColor.DARK_RED);
+                    if ((appearInWereWolfListEvent.isAppear() || uuid1.equals(player.getUniqueId())) && this.game.getConfig().isConfigActive("privatesaddon.configurations.red_name_tag.name")) {
+                        sb.append("§4");
+                    }
                 }
-            }
 
-            if (playerWW.isState(StatePlayer.ALIVE)) {
-                sb.append(targetWW.getColor(playerWW));
-            }
+                if (playerWW.isState(StatePlayer.ALIVE) && !uuid1.equals(player.getUniqueId())) {
+                    sb.append(targetWW.getColor(playerWW));
+                }
 
-            String string1 = ev.getSuffix();
-            team.setSuffix(string1.substring(0, Math.min(16, string1.length())));
-            String string2 = sb.toString();
-            team.setPrefix(string2.substring(Math.max(string2.length() - 16, 0)));
-            VersionUtils.getVersionUtils().setTeamNameTagVisibility(team, ev.isVisibility());
+                VersionUtils.getVersionUtils().setTeamNameTagVisibility(team, ev.isVisibility());
+
+                String string1 = ev.getSuffix();
+                team.setSuffix(string1.substring(0, Math.min(16, string1.length())));
+                String string2 = sb.toString();
+                team.setPrefix(string2.substring(Math.max(string2.length() - 16, 0)));
+                target.setScoreboard(scoreboard);
+            }, 1L);
         }
     }
 

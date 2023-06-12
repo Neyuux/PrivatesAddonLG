@@ -7,11 +7,15 @@ import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
+import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
+import fr.ph1lou.werewolfapi.events.game.utils.WinConditionsCheckEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
+import fr.ph1lou.werewolfapi.utils.ItemBuilder;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,6 +27,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -79,6 +85,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         if (isCoco(event.getEntity())) {
             event.getDrops().clear();
             event.setDroppedExp(0);
+            event.getDrops().add(new ItemBuilder(Material.COBBLESTONE).setDisplayName("Repas de Coco").build());
         }
     }
 
@@ -100,6 +107,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
                 enderMan.setHealth(4);
                 enderMan.setCustomName("thatnwordcoco");
                 enderMan.setCustomNameVisible(true);
+                enderMan.setCarriedMaterial(new MaterialData(Material.COBBLESTONE));
                 Bukkit.getScheduler().runTaskLater(this, () -> enderMan.setTarget(player), 10L);
 
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/entitydata @e[type=Enderman,name=thatnwordcoco] {Attributes:[{Name:\"generic.movementSpeed\",Base:0.8f}]}");
