@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Timer(decrement = true, key = "privatesaddon.timers.groupcheck.name", loreKey = "privatesaddon.timers.groupcheck.description"
 , defaultValue = 60, meetUpValue = 60, decrementAfterRole = true, onZero = GroupCheckEvent.class)
@@ -28,10 +29,9 @@ public class GroupCheckTask extends ListenerWerewolf {
     @EventHandler
     public void onCheckEvent(GroupCheckEvent ev) {
 
-        HashSet<Player> checkable = new HashSet<>();
-        HashMap<UUID, Integer> groupsWarning = Plugin.getINSTANCE().getGroupsWarning();
 
-        game.getPlayersWW().stream()
+        HashMap<UUID, Integer> groupsWarning = Plugin.getINSTANCE().getGroupsWarning();
+        HashSet<Player> checkable = game.getPlayersWW().stream()
                 .filter(playerWW -> playerWW.isState(StatePlayer.ALIVE) && Bukkit.getOnlinePlayers().stream().anyMatch(player -> player.getUniqueId().equals(playerWW.getUUID())))
                 .filter(playerWW -> {
                     Player player = Bukkit.getPlayer(playerWW.getUUID());
@@ -39,8 +39,7 @@ public class GroupCheckTask extends ListenerWerewolf {
                             .noneMatch(player1 -> player1.getLocation().distanceSquared(player.getLocation()) <= 14);
 
                     return !isSpying && !player.hasPotionEffect(PotionEffectType.INVISIBILITY);
-                })
-                .forEach(iPlayerWW -> checkable.add(Bukkit.getPlayer(iPlayerWW.getUUID())));
+                }).map(iPlayerWW -> Bukkit.getPlayer(iPlayerWW.getUUID())).collect(Collectors.toCollection(HashSet::new));
 
         for (Player player : checkable) {
             UUID uuid = player.getUniqueId();

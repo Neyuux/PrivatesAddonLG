@@ -8,6 +8,7 @@ import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
+import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
 import fr.ph1lou.werewolfapi.events.game.utils.WinConditionsCheckEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
@@ -24,10 +25,8 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -63,12 +62,15 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
         INSTANCE = this;
 
+        CommandPioche commandPioche = new CommandPioche();
+
         this.getServer().getPluginManager().registerEvents(this, this);
         this.getServer().getPluginManager().registerEvents(new WorldChangesListener(), this);
+        this.getServer().getPluginManager().registerEvents(commandPioche, this);
 
         this.getCommand("coco").setExecutor(this);
         this.getCommand("say").setExecutor(new CommandSay());
-        this.getCommand("pioche").setExecutor(new CommandPioche());
+        this.getCommand("pioche").setExecutor(commandPioche);
 
         super.onEnable();
     }
@@ -77,6 +79,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     @EventHandler
     public void onGameStart(StartEvent ev) {
         Bukkit.getScheduler().runTaskLater(this, () -> this.getGame().setGameName("@Neyuux_"), 20L);
+        this.groupsWarning.clear();
     }
 
 
@@ -93,6 +96,17 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     public void onCocoDamage(EntityDamageByEntityEvent ev) {
         if (isCoco(ev.getDamager()))
             ev.setDamage(0);
+    }
+
+    @EventHandler
+    public void onPlayerDeathBugPotions(PlayerDeathEvent ev) {
+        Bukkit.getScheduler().runTaskLater(Plugin.getINSTANCE(), () -> ev.getEntity().damage(20), 9L);
+    }
+
+    @EventHandler
+    public void onResurrection(ResurrectionEvent ev){
+        if (!ev.isCancelled())
+            ev.getPlayerWW().addPlayerHealth(32);
     }
 
     @Override
@@ -117,7 +131,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     }
     
     private boolean isCoco(Entity entity) {
-        return entity instanceof Enderman && entity.getCustomName().equals("thatnwordcoco");
+        return entity != null && entity.getType() == EntityType.ENDERMAN && entity.getCustomName() != null && entity.getCustomName().equals("thatnwordcoco");
     }
 
 
