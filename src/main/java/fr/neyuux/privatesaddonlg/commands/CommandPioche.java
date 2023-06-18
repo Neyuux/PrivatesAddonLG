@@ -1,5 +1,6 @@
-package fr.neyuux.privatesaddonlg;
+package fr.neyuux.privatesaddonlg.commands;
 
+import fr.neyuux.privatesaddonlg.Plugin;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.utils.Utils;

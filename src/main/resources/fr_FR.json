@@ -38,6 +38,12 @@
       "red_name_tag": {
         "name": "Pseudo LGs en Rouge (Neyuux_)"
       }
+    },
+
+    "roles": {
+      "charmer": {
+        "charmstopcommand": "charmstop"
+      }
     }
   }
 }
