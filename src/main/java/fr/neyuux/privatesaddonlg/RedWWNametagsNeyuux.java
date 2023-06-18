@@ -14,7 +14,6 @@ import fr.ph1lou.werewolfapi.versions.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.scoreboard.Scoreboard;
@@ -81,8 +80,11 @@ public class RedWWNametagsNeyuux extends ListenerWerewolf {
                     }
                 }
 
-                if (playerWW.isState(StatePlayer.ALIVE) && !uuid1.equals(player.getUniqueId())) {
-                    sb.append(targetWW.getColor(playerWW));
+                if (!uuid1.equals(player.getUniqueId())) {
+                    ChatColor color = targetWW.getColor(playerWW);
+                    if (playerWW.isState(StatePlayer.ALIVE) && color != ChatColor.RESET) {
+                        sb.append(color);
+                    }
                 }
 
                 VersionUtils.getVersionUtils().setTeamNameTagVisibility(team, ev.isVisibility());
