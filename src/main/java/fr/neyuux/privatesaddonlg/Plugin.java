@@ -28,6 +28,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.material.MaterialData;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -62,12 +63,15 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
         INSTANCE = this;
 
+        PluginManager pm = this.getServer().getPluginManager();
         CommandPioche commandPioche = new CommandPioche();
 
-        this.getServer().getPluginManager().registerEvents(this, this);
-        this.getServer().getPluginManager().registerEvents(new WorldChangesListener(), this);
-        this.getServer().getPluginManager().registerEvents(commandPioche, this);
-
+        pm.registerEvents(this, this);
+        pm.registerEvents(new WorldChangesListener(), this);
+        pm.registerEvents(commandPioche, this);
+        pm.registerEvents(new RoleBuffListener(), this);
+        
+        
         this.getCommand("coco").setExecutor(this);
         this.getCommand("say").setExecutor(new CommandSay());
         this.getCommand("pioche").setExecutor(commandPioche);
