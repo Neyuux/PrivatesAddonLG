@@ -20,11 +20,16 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Enderman;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -66,7 +71,6 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         pm.registerEvents(new WorldChangesListener(), this);
         pm.registerEvents(commandPioche, this);
         pm.registerEvents(new RoleBuffListener(), this);
-        
         
         this.getCommand("coco").setExecutor(this);
         this.getCommand("say").setExecutor(new CommandSay());
