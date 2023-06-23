@@ -123,7 +123,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
                 manon.setCustomName("§dMa__non");
 
                 Wolf khqbib = this.createChien(loc.getWorld(), loc.add(2, 0, 0), "Khqbib", true);
-                Wolf neyzz = this.createChien(loc.getWorld(), loc.add(-2, 0, 0), "NeyZz", false);
+                Wolf neyzz = this.createChien(loc.getWorld(), loc.add(-4, 0, 0), "NeyZz", false);
                 Wolf sotark = this.createChien(loc.getWorld(), loc.add(0, 0, 2), "Sotark_", false);
 
                 this.removeCustomEntities(5, manon, khqbib, neyzz, sotark);
