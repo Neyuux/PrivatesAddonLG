@@ -8,9 +8,11 @@ import fr.ph1lou.werewolfapi.events.ActionBarEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
 import fr.ph1lou.werewolfapi.events.game.utils.EnchantmentEvent;
 import fr.ph1lou.werewolfapi.events.lovers.RevealLoversEvent;
+import fr.ph1lou.werewolfapi.events.roles.SelectionEndEvent;
 import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -77,6 +79,13 @@ public class RoleBuffListener implements Listener {
                 barbarianHealed =  barbarianHealed.add(BigDecimal.valueOf(ev.getFinalDamage() - finalDamage));
             }
         });
+    }
+
+    @EventHandler
+    public void onSelectionEnd(SelectionEndEvent ev) {
+        Plugin.getINSTANCE().getGame().getPlayersWW().stream()
+                .filter(playerWW -> playerWW.getRole() != null && playerWW.getRole().getKey().equals("werewolf.roles.barbarian.display"))
+                .forEach(playerWW -> playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fEffets bonus : Vous régénérez §d§l225% §fdes dégâts que vous infligez. Vous possèdez un effet de force en fonction de votre barre de vie (5% -> 35%).")));
     }
 
     @EventHandler
