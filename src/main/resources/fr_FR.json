@@ -45,7 +45,7 @@
         "charmstopcommand": "charmstop"
       },
 
-      "innkeeper": {
+      "innkeeperbuffed": {
         "display": "Aubergiste",
         "effect": "Speed quand toutes les chambres sont fermées",
         "available": "Votre pouvoir est de nouveau disponible",

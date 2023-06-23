@@ -1,5 +1,7 @@
 package fr.neyuux.privatesaddonlg;
 
+import fr.neyuux.privatesaddonlg.roles.InnkeeperBuffed;
+import fr.ph1lou.werewolfapi.enums.Day;
 import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.events.ActionBarEvent;
@@ -78,7 +80,7 @@ public class RoleBuffListener implements Listener {
     }
 
     @EventHandler
-    public void onActionBarStrengthBarbarianEvent(ActionBarEvent event) {
+    public void onActionBarEvent(ActionBarEvent event) {
         WereWolfAPI game = Plugin.getINSTANCE().getGame();
 
         if (!game.isState(StateGame.GAME))
@@ -90,13 +92,20 @@ public class RoleBuffListener implements Listener {
 
         if (player == null)
             return;
-        if (playerWW == null || playerWW.getRole() == null || !playerWW.getRole().getKey().equals("werewolf.roles.barbarian.display"))
+        if (playerWW == null || playerWW.getRole() == null)
             return;
         if (!playerWW.isState(StatePlayer.ALIVE))
             return;
 
-        sb.append(" §7| §cForce : §l").append(new DecimalFormat("#").format(calculateStrengthByHealth(playerWW) * 100.0 - 100.0)).append("%");
-        event.setActionBar(sb.toString());
+        if (playerWW.getRole().getKey().equals("werewolf.roles.barbarian.display")) {
+            sb.append(" §7| §cForce : §l").append(new DecimalFormat("#").format(calculateStrengthByHealth(playerWW) * 100.0 - 100.0)).append("%");
+            event.setActionBar(sb.toString());
+
+        } else if (playerWW.getRole().getKey().equals("privatesaddon.roles.innkeeperbuffed.display") && game.isDay(Day.DAY)) {
+            InnkeeperBuffed innkeeper = (InnkeeperBuffed) playerWW.getRole();
+            sb.append(" §7| §fChambres disponibles : §l").append(innkeeper.getAvailableRooms() - innkeeper.getClientDatas().size());
+            event.setActionBar(sb.toString());
+        }
     }
     @EventHandler
     public void onLoverDurationEnd(RevealLoversEvent event) {

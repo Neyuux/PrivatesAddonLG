@@ -10,10 +10,10 @@ import fr.ph1lou.werewolfapi.events.game.life_cycle.FinalDeathEvent;
 import fr.ph1lou.werewolfapi.events.roles.innkeeper.*;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
-import fr.ph1lou.werewolfapi.player.utils.Formatter;
 import fr.ph1lou.werewolfapi.role.impl.RoleVillage;
 import fr.ph1lou.werewolfapi.role.interfaces.IPower;
 import fr.ph1lou.werewolfapi.role.utils.DescriptionBuilder;
+import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -26,13 +26,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-@Role(key="privatesaddon.roles.innkeeper.display", category=Category.VILLAGER, attributes={RoleAttribute.VILLAGER, RoleAttribute.MINOR_INFORMATION}, configValues={@IntValue(key="privatesaddon.roles.innkeeper.configurations.detection_radius", defaultValue=10, meetUpValue=10, step=1, item=UniversalMaterial.IRON_DOOR)})
+@Role(key="privatesaddon.roles.innkeeperbuffed.display", category=Category.VILLAGER, attributes={RoleAttribute.VILLAGER, RoleAttribute.MINOR_INFORMATION}, configValues={@IntValue(key="privatesaddon.roles.innkeeperbuffed.configurations.detection_radius", defaultValue=10, meetUpValue=10, step=1, item=UniversalMaterial.IRON_DOOR)})
 public class InnkeeperBuffed
         extends RoleVillage
         implements IPower {
+
+    @Getter
     private final List<ClientData> clientDatas = new ArrayList<>();
     private final List<ClientData> previousClientDatas = new ArrayList<>();
     private boolean power = false;
+
+    @Getter
     private int availableRooms = 3;
 
     public InnkeeperBuffed(WereWolfAPI game, IPlayerWW playerWW) {
@@ -42,7 +46,7 @@ public class InnkeeperBuffed
     @Override
     @NotNull
     public String getDescription() {
-        return new DescriptionBuilder(this.game, this).setDescription(this.game.translate("privatesaddon.roles.innkeeper.description")).setEffects(this.game.translate("privatesaddon.roles.innkeeper.effect")).build();
+        return new DescriptionBuilder(this.game, this).setDescription(this.game.translate("privatesaddon.roles.innkeeperbuffed.description")).setEffects(this.game.translate("privatesaddon.roles.innkeeperbuffed.effect")).build();
     }
 
     @Override
@@ -101,7 +105,7 @@ public class InnkeeperBuffed
             return;
         }
         this.power = true;
-        this.getPlayerWW().sendMessageWithKey("privatesaddon.prefix.yellow", "privatesaddon.roles.innkeeper.available");
+        this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§fVotre pouvoir est à nouveau disponible."));
         this.previousClientDatas.clear();
         this.previousClientDatas.addAll(this.clientDatas);
         this.clientDatas.clear();
@@ -122,7 +126,7 @@ public class InnkeeperBuffed
                     InnkeeperBuffed.this.game.getPlayersWW().stream()
                             .filter(iPlayerWW -> !iPlayerWW.equals(InnkeeperBuffed.this.getPlayerWW()))
                             .filter(iPlayerWW -> !iPlayerWW.equals(clientData.playerWW))
-                            .filter(iPlayerWW -> iPlayerWW.isState(StatePlayer.ALIVE)).filter(iPlayerWW -> iPlayerWW.getLocation().getWorld() == clientData.playerWW.getLocation().getWorld() && ((iPlayerWW.getLocation().distance(clientData.playerWW.getLocation()) <= InnkeeperBuffed.this.game.getConfig().getValue("privatesaddon.roles.innkeeper.configurations.detection_radius"))))
+                            .filter(iPlayerWW -> iPlayerWW.isState(StatePlayer.ALIVE)).filter(iPlayerWW -> iPlayerWW.getLocation().getWorld() == clientData.playerWW.getLocation().getWorld() && ((iPlayerWW.getLocation().distance(clientData.playerWW.getLocation()) <= InnkeeperBuffed.this.game.getConfig().getValue("privatesaddon.roles.innkeeperbuffed.configurations.detection_radius"))))
                             .forEach(clientData.seenPlayers::add);
                 }
             }
@@ -156,24 +160,24 @@ public class InnkeeperBuffed
                 InnkeeperInfoMeetEvent innkeeperInfoMeetEvent = new InnkeeperInfoMeetEvent(this.getPlayerWW(), playerWWS.get(0), playerWWS.size());
                 Bukkit.getPluginManager().callEvent(innkeeperInfoMeetEvent);
                 if (!innkeeperInfoMeetEvent.isCancelled()) {
-                    this.getPlayerWW().sendMessageWithKey("privatesaddon.prefix.yellow", "privatesaddon.roles.innkeeper.seen_players", Formatter.number(playerWWS.size()), Formatter.player(playerWWS.get(0).getName()));
+                    this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§fCe client a vu §b§l" + playerWWS.size() + "§f personne" + (playerWWS.size() == 1 ? "" : "s") + " dont §b§l" + playerWWS.get(0).getName() + "§f."));
                 }
             } else {
-                this.getPlayerWW().sendMessageWithKey("privatesaddon.prefix.red", "privatesaddon.roles.innkeeper.no_seen_players");
+                this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§cCe client n'a vu personne cette nuit."));
             }
             return;
         }
         if (this.clientDatas.stream().anyMatch(clientData -> clientData.playerWW.equals(playerWW))) {
-            this.getPlayerWW().sendMessageWithKey("privatesaddon.prefix.red", "privatesaddon.roles.innkeeper.already");
+            this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§cVous hébergez déjà ce joueur."));
         } else if (this.clientDatas.size() < this.availableRooms) {
             InnkeeperHostEvent hostEvent = new InnkeeperHostEvent(this.getPlayerWW(), playerWW);
             Bukkit.getPluginManager().callEvent(hostEvent);
             if (!hostEvent.isCancelled()) {
                 this.clientDatas.add(new ClientData(playerWW));
-                this.getPlayerWW().sendMessageWithKey("privatesaddon.prefix.yellow", "privatesaddon.roles.innkeeper.add_client", Formatter.player(playerWW.getName()));
+                this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§aVous avez bien donné une chambre à §b§l" + playerWW.getName() + "§a."));
             }
         } else {
-            this.getPlayerWW().sendMessageWithKey("privatesaddon.prefix.red", "privatesaddon.roles.innkeeper.no_more_room");
+            this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§cVous n'avez plus assez de chambres pour héberger ce joueur."));
         }
     }
 
