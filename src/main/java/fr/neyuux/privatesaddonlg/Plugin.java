@@ -14,16 +14,11 @@ import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.utils.ItemBuilder;
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Enderman;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -34,9 +29,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @ModuleWerewolf(key = "privatesaddon.name",
@@ -57,6 +50,8 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     @Getter
     private final HashMap<UUID, Integer> groupsWarning = new HashMap<>();
 
+    private final HashSet<LivingEntity> customEntities = new HashSet<>();
+
 
     @Override
     public void onEnable() {
@@ -72,7 +67,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         pm.registerEvents(commandPioche, this);
         pm.registerEvents(new RoleBuffListener(), this);
         
-        this.getCommand("coco").setExecutor(this);
+        this.getCommand("manon").setExecutor(this);
         this.getCommand("say").setExecutor(new CommandSay());
         this.getCommand("pioche").setExecutor(commandPioche);
 
@@ -89,16 +84,17 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
-        if (isCoco(event.getEntity())) {
+        if (this.customEntities.stream().anyMatch(livingEntity -> livingEntity.getUniqueId().equals(event.getEntity().getUniqueId()))) {
             event.getDrops().clear();
             event.setDroppedExp(0);
-            event.getDrops().add(new ItemBuilder(Material.COBBLESTONE).setDisplayName("Repas de Coco").build());
+            if (event.getEntityType() == EntityType.WOLF)
+                event.getDrops().add(new ItemBuilder(Material.BONE).setDisplayName("Bon toutou ♥").build());
         }
     }
 
     @EventHandler
-    public void onCocoDamage(EntityDamageByEntityEvent ev) {
-        if (isCoco(ev.getDamager()))
+    public void onCustomDamage(EntityDamageByEntityEvent ev) {
+        if (this.customEntities.stream().anyMatch(livingEntity -> livingEntity.getUniqueId().equals(ev.getDamager().getUniqueId())))
             ev.setDamage(0);
     }
 
@@ -120,23 +116,46 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
             if ((this.getGame().getState() == StateGame.START ||this.getGame().getState() == StateGame.GAME) && player.getGameMode().equals(GameMode.SURVIVAL)) {
 
-                Enderman enderMan = (Enderman) player.getWorld().spawnEntity(player.getLocation(), EntityType.ENDERMAN);
+                Location loc = player.getLocation().add(3, 0, 0);
+                Villager manon = (Villager) player.getWorld().spawnEntity(this.getHighestLoc(loc), EntityType.VILLAGER);
 
-                enderMan.setHealth(4);
-                enderMan.setCustomName("thatnwordcoco");
-                enderMan.setCustomNameVisible(true);
-                enderMan.setCarriedMaterial(new MaterialData(Material.COBBLESTONE));
-                Bukkit.getScheduler().runTaskLater(this, () -> enderMan.setTarget(player), 10L);
+                manon.setProfession(Villager.Profession.BLACKSMITH);
+                manon.setCustomName("§dMa__non");
 
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/entitydata @e[type=Enderman,name=thatnwordcoco] {Attributes:[{Name:\"generic.movementSpeed\",Base:0.8f}]}");
+                Wolf khqbib = this.createChien(loc.getWorld(), loc.add(2, 0, 0), "Khqbib", true);
+                Wolf neyzz = this.createChien(loc.getWorld(), loc.add(-2, 0, 0), "NeyZz", false);
+                Wolf sotark = this.createChien(loc.getWorld(), loc.add(0, 0, 2), "Sotark_", false);
+
+                this.removeCustomEntities(5, manon, khqbib, neyzz, sotark);
             }
         }
         return true;
     }
-    
-    private boolean isCoco(Entity entity) {
-        return entity != null && entity.getType() == EntityType.ENDERMAN && entity.getCustomName() != null && entity.getCustomName().equals("thatnwordcoco");
+
+
+    private void removeCustomEntities(int seconds, LivingEntity... entities) {
+        this.customEntities.addAll(Arrays.asList(entities));
+
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            this.customEntities.forEach(livingEntity -> {
+                if (livingEntity != null && !livingEntity.isDead())
+                    livingEntity.damage(10000);
+            });
+        }, 20L * seconds);
     }
+
+    private Wolf createChien(World world, Location loc, String name, boolean enraged) {
+        Wolf wolf = (Wolf) world.spawnEntity(loc, EntityType.WOLF);
+
+        wolf.setCustomName(name);
+        wolf.setAngry(enraged);
+        return wolf;
+    }
+
+    private Location getHighestLoc(Location loc) {
+        return new Location(loc.getWorld(), loc.getX(), loc.getWorld().getHighestBlockYAt(loc), loc.getZ());
+    }
+
 
 
     public String getGroupsWarningRatio(UUID uuid) {
