@@ -123,14 +123,15 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
                 Location loc = player.getLocation().add(3, 0, 0);
                 Villager manon = (Villager) player.getWorld().spawnEntity(this.getHighestLoc(loc), EntityType.VILLAGER);
 
-                manon.setProfession(Villager.Profession.BLACKSMITH);
+                manon.setProfession(Villager.Profession.LIBRARIAN);
                 manon.setCustomName("§dMa__non");
 
-                Wolf khqbib = this.createChien(loc.getWorld(), loc.add(2, 0, 0), "Khqbib", true);
-                Wolf neyzz = this.createChien(loc.getWorld(), loc.add(-4, 0, 0), "NeyZz", false);
-                Wolf sotark = this.createChien(loc.getWorld(), loc.add(0, 0, 2), "Sotark_", false);
+                Wolf khqbib = this.createChien(loc.getWorld(), loc.clone().add(2, 0, 0), "Khqbib", true);
+                Wolf neyzz = this.createChien(loc.getWorld(), loc.clone().add(-2, 0, 0), "NeyZz", false);
+                Wolf sotark = this.createChien(loc.getWorld(), loc.clone().add(0, 0, 2), "Sotark_", false);
+                Wolf nyuchikin = this.createChien(loc.getWorld(), loc.clone().add(0, 0, -2), "Nyuchikin", true);
 
-                this.removeCustomEntities(8, manon, khqbib, neyzz, sotark);
+                this.removeCustomEntities(8, manon, khqbib, neyzz, sotark, nyuchikin);
             }
         }
         return true;
