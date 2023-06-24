@@ -27,13 +27,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 public class RoleBuffListener implements Listener {
 
-    private BigDecimal barbarianHealed = BigDecimal.valueOf(0.0D);
+    private final HashMap<IPlayerWW, BigDecimal> barbarianHealed = new HashMap<>();
 
     @EventHandler
     public void onBuffSharpnessCharmeuse(EnchantmentEvent ev) {
@@ -72,20 +73,23 @@ public class RoleBuffListener implements Listener {
 
                 ev.setDamage(ev.getDamage() * damageBonusPercentage);
 
-                double finalDamage = ev.getFinalDamage();
-
                 damagerWW.addPlayerHealth(ev.getFinalDamage() * 0.25D);
 
-                barbarianHealed =  barbarianHealed.add(BigDecimal.valueOf(ev.getFinalDamage() - finalDamage));
+                barbarianHealed.put(damagerWW, barbarianHealed.get(damagerWW).add(BigDecimal.valueOf(ev.getFinalDamage() * 0.25D)));
             }
         });
     }
 
     @EventHandler
     public void onSelectionEnd(SelectionEndEvent ev) {
-        Plugin.getINSTANCE().getGame().getPlayersWW().stream()
-                .filter(playerWW -> playerWW.getRole() != null && playerWW.getRole().getKey().equals("werewolf.roles.barbarian.display"))
-                .forEach(playerWW -> playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fEffets bonus : Vous régénérez §d§l225% §fdes dégâts que vous infligez. Vous possèdez un effet de force en fonction de votre barre de vie (5% -> 35%).")));
+        Plugin main = Plugin.getINSTANCE();
+
+        main.doToAllPlayersWithRole("werewolf.roles.wolf_dog.display", playerWW -> playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fVous possèdez bien §c§lForce §fla nuit si vous choisissez de vous transformer. (Il y une erreur dans la description)")));
+
+        main.doToAllPlayersWithRole("werewolf.roles.barbarian.display", playerWW -> {
+            playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fEffets bonus : Vous régénérez §d§l25% §fdes dégâts que vous infligez. Vous possèdez un effet de force en fonction de votre barre de vie (5% -> 35%)."));
+            barbarianHealed.put(playerWW, BigDecimal.valueOf(0.0D));
+        });
     }
 
     @EventHandler
@@ -123,9 +127,9 @@ public class RoleBuffListener implements Listener {
 
     @EventHandler
     public void onEndSendStats(WinEvent ev) {
-        Plugin.getINSTANCE().getGame().getPlayersWW().stream().filter(playerWW -> playerWW.getRole() != null && playerWW.getRole().isKey("werewolf.roles.barbarian.display")).findFirst().ifPresent(playerWW -> {
-            Bukkit.broadcastMessage(Plugin.getPrefix() + "§d§lSoins du §c§lBarbare §c" + playerWW.getName() + " §d: §l" + barbarianHealed.setScale(1, RoundingMode.HALF_UP).doubleValue() + " HP");
-        });
+        Plugin main = Plugin.getINSTANCE();
+
+        main.doToAllPlayersWithRole("werewolf.roles.barbarian.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix() + "§d§lSoins du §c§lBarbare §c" + playerWW.getName() + " §d: §l" + barbarianHealed.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
     }
 
 

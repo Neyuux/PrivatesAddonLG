@@ -28,8 +28,12 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
+import java.math.RoundingMode;
 import java.util.*;
+import java.util.function.Consumer;
 
 
 @ModuleWerewolf(key = "privatesaddon.name",
@@ -126,7 +130,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
                 Wolf neyzz = this.createChien(loc.getWorld(), loc.add(-4, 0, 0), "NeyZz", false);
                 Wolf sotark = this.createChien(loc.getWorld(), loc.add(0, 0, 2), "Sotark_", false);
 
-                this.removeCustomEntities(5, manon, khqbib, neyzz, sotark);
+                this.removeCustomEntities(8, manon, khqbib, neyzz, sotark);
             }
         }
         return true;
@@ -149,6 +153,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
         wolf.setCustomName(name);
         wolf.setAngry(enraged);
+        wolf.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 2, false, false));
         return wolf;
     }
 
@@ -172,6 +177,10 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         float time = (playerWW.isState(StatePlayer.ALIVE) ? this.getGame().getTimer() : playerWW.getDeathTime()) / 60f;
 
         return String.format("%.2f", this.groupsWarning.get(uuid) / time);
+    }
+
+    public void doToAllPlayersWithRole(String role, Consumer<IPlayerWW> consumer) {
+        Plugin.getINSTANCE().getGame().getPlayersWW().stream().filter(playerWW -> playerWW.getRole() != null && playerWW.getRole().isKey(role)).forEach(consumer);
     }
 
     public WereWolfAPI getGame() {
