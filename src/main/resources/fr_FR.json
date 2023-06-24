@@ -9,7 +9,6 @@
     "roofed_generation_finished": "§2La génération de la Roofed Forest est terminée !",
 
     "commands": {
-      "khqbib": "§a§lFuck Khqbib",
       "admin": {
         "groupchecks":{
           "command": "groupchecks",

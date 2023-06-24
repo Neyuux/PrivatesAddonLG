@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 
 import java.util.*;
 
@@ -71,6 +72,20 @@ public class CommandPioche implements CommandExecutor, Listener {
             ev.setInstaBreak(false);
             ev.setCancelled(true);
             block.setType(Material.BEDROCK);
+        }
+    }
+
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        List<Block> destroyed = event.blockList();
+        Iterator<Block> it = destroyed.iterator();
+        while (it.hasNext()) {
+            Block block = it.next();
+
+            for (Map.Entry<UUID, List<Location>> entry : map.entrySet()) {
+                if (entry.getValue().contains(block.getLocation()))
+                    it.remove();
+            }
         }
     }
 
