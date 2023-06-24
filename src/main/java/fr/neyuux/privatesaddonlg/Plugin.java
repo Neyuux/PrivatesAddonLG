@@ -25,13 +25,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.math.RoundingMode;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -55,6 +53,8 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     private final HashMap<UUID, Integer> groupsWarning = new HashMap<>();
 
     private final HashSet<LivingEntity> customEntities = new HashSet<>();
+
+    private final HashMap<UUID, Integer> manonCount = new HashMap<>();
 
 
     @Override
@@ -83,6 +83,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     public void onGameStart(StartEvent ev) {
         Bukkit.getScheduler().runTaskLater(this, () -> this.getGame().setGameName("@Neyuux_"), 20L);
         this.groupsWarning.clear();
+        ev.getWereWolfAPI().getPlayersWW().forEach(iPlayerWW -> this.manonCount.put(iPlayerWW.getUUID(), 0));
     }
 
 
@@ -118,6 +119,11 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         if (sender instanceof Player && this.getGame() != null) {
             Player player = (Player) sender;
 
+            if (this.manonCount.get(player.getUniqueId()) > 3) {
+                player.sendMessage(Plugin.getPrefix() + "§cPas de spam. Chien.");
+                return true;
+            }
+
             if ((this.getGame().getState() == StateGame.START ||this.getGame().getState() == StateGame.GAME) && player.getGameMode().equals(GameMode.SURVIVAL)) {
 
                 Location loc = player.getLocation().add(3, 0, 0);
@@ -131,14 +137,15 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
                 Wolf sotark = this.createChien(loc.getWorld(), loc.clone().add(0, 0, 2), "Sotark_", false);
                 Wolf nyuchikin = this.createChien(loc.getWorld(), loc.clone().add(0, 0, -2), "Nyuchikin", true);
 
-                this.removeCustomEntities(8, manon, khqbib, neyzz, sotark, nyuchikin);
+                this.manonCount.put(player.getUniqueId(), this.manonCount.get(player.getUniqueId()) + 1);
+                this.removeCustomEntities(8, player.getUniqueId(), manon, khqbib, neyzz, sotark, nyuchikin);
             }
         }
         return true;
     }
 
 
-    private void removeCustomEntities(int seconds, LivingEntity... entities) {
+    private void removeCustomEntities(int seconds, UUID uuid, LivingEntity... entities) {
         this.customEntities.addAll(Arrays.asList(entities));
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
@@ -146,6 +153,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
                 if (livingEntity != null && !livingEntity.isDead())
                     livingEntity.damage(10000);
             });
+            this.manonCount.put(uuid, this.manonCount.get(uuid) - 1);
         }, 20L * seconds);
     }
 

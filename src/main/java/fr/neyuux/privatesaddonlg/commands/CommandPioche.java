@@ -7,6 +7,7 @@ import fr.ph1lou.werewolfapi.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,13 +17,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 public class CommandPioche implements CommandExecutor, Listener {
 
-    private final HashMap<UUID, Location> map = new HashMap<>();
+    private final HashMap<UUID, List<Location>> map = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
@@ -44,25 +43,18 @@ public class CommandPioche implements CommandExecutor, Listener {
                 int rx = game.getRandom().nextInt(40) - 19;
                 int rz = game.getRandom().nextInt(40) - 19;
                 Block block = player.getLocation().clone().add(rx, 0, rz).getBlock();
+                List<Location> blocks = new ArrayList<>();
 
-                block.setType(Material.DIAMOND_ORE);
-                block.getLocation().add(0, 1, 0).getBlock().setType(Material.SIGN_POST);
-
-                org.bukkit.block.Sign sign = (Sign) block.getLocation().add(0, 1, 0).getBlock().getState();
-
-                block.getState().update();
-                sign.update(true, true);
-
-                sign.setLine(0, "Gros bouffon");
-                sign.setLine(3, "(Fuck Khqbib)");
-
-                block.getState().update();
-                sign.update(true, true);
+                for (BlockFace face : new BlockFace[] {BlockFace.SELF, BlockFace.NORTH, BlockFace.EAST, BlockFace.NORTH_EAST, BlockFace.NORTH_NORTH_EAST, BlockFace.EAST_NORTH_EAST, BlockFace.UP, BlockFace.DOWN}) {
+                    Block relative = block.getRelative(face);
+                    relative.setType(Material.DIAMOND_ORE);
+                    blocks.add(relative.getLocation());
+                }
 
                 player.sendMessage(Plugin.getPrefix() + "§bDiamant le plus proche : " + Utils.updateArrow(player, block.getLocation()));
-                map.put(player.getUniqueId(), block.getLocation());
+                map.put(player.getUniqueId(), blocks);
             } else {
-                player.sendMessage(Plugin.getPrefix() + "§bDiamant le plus proche : " + Utils.updateArrow(player, map.get(player.getUniqueId())));
+                player.sendMessage(Plugin.getPrefix() + "§bDiamant le plus proche : " + Utils.updateArrow(player, map.get(player.getUniqueId()).get(0)));
             }
         }
 
@@ -75,7 +67,7 @@ public class CommandPioche implements CommandExecutor, Listener {
         Player player = ev.getPlayer();
         UUID id = player.getUniqueId();
         Block block = ev.getBlock();
-        if (map.containsKey(id) && map.get(id).equals(block.getLocation()) && block.getType().equals(Material.DIAMOND_ORE)) {
+        if (map.containsKey(id) && map.get(id).contains(block.getLocation()) && block.getType().equals(Material.DIAMOND_ORE)) {
             ev.setInstaBreak(false);
             ev.setCancelled(true);
             block.setType(Material.BEDROCK);
