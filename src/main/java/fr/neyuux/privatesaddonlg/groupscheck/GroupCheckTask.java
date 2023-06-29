@@ -2,15 +2,21 @@ package fr.neyuux.privatesaddonlg.groupscheck;
 
 import fr.neyuux.privatesaddonlg.Plugin;
 import fr.ph1lou.werewolfapi.annotations.Timer;
+import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.listeners.impl.ListenerWerewolf;
+import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +24,8 @@ import java.util.stream.Collectors;
 @Timer(decrement = true, key = "privatesaddon.timers.groupcheck.name", loreKey = "privatesaddon.timers.groupcheck.description"
 , defaultValue = 60, meetUpValue = 60, decrementAfterRole = true, onZero = GroupCheckEvent.class)
 public class GroupCheckTask extends ListenerWerewolf {
+
+    private final HashMap<IPlayerWW, Long> lastDamages = new HashMap<>();
 
     private final WereWolfAPI game;
 
@@ -39,7 +47,9 @@ public class GroupCheckTask extends ListenerWerewolf {
                             .noneMatch(player1 -> player1.getLocation().distanceSquared(player.getLocation()) <= 14);
 
                     return !isSpying && !player.hasPotionEffect(PotionEffectType.INVISIBILITY);
-                }).map(iPlayerWW -> Bukkit.getPlayer(iPlayerWW.getUUID())).collect(Collectors.toCollection(HashSet::new));
+                })
+                .filter(playerWW -> !this.lastDamages.containsKey(playerWW) || System.currentTimeMillis() - this.lastDamages.get(playerWW) <= 30000)
+                .map(iPlayerWW -> Bukkit.getPlayer(iPlayerWW.getUUID())).collect(Collectors.toCollection(HashSet::new));
 
         for (Player player : checkable) {
             UUID uuid = player.getUniqueId();
@@ -78,6 +88,37 @@ public class GroupCheckTask extends ListenerWerewolf {
                     .ifPresent(iPlayerWW ->
                             Bukkit.broadcastMessage(" §c" + iPlayerWW.getName() + " : §b§l" + entry.getValue() + " §b§o(§l" + Plugin.getINSTANCE().getGroupsWarningRatio(entry.getKey()) + "§b§o / minute)"));
         }
+    }
+
+    @EventHandler
+    private void onPlayerDamageByPlayer(EntityDamageByEntityEvent event) {
+        Player striker;
+        if (!this.game.isState(StateGame.GAME)) {
+            return;
+        }
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player)event.getEntity();
+        if (!(event.getDamager() instanceof Player)) {
+            if (!(event.getDamager() instanceof Arrow)) {
+                return;
+            }
+            ProjectileSource shooter = ((Arrow)event.getDamager()).getShooter();
+            if (!(shooter instanceof Player)) {
+                return;
+            }
+            striker = (Player)shooter;
+        } else {
+            striker = (Player)event.getDamager();
+
+            if (!striker.getItemInHand().getType().name().endsWith("SWORD"))
+                return;
+        }
+
+
+        this.game.getPlayerWW(player.getUniqueId()).ifPresent(playerWW -> this.game.getPlayerWW(striker.getUniqueId()).ifPresent(strikerWW ->
+                lastDamages.put(playerWW, System.currentTimeMillis())));
     }
 
 

@@ -36,6 +36,14 @@
 
       "red_name_tag": {
         "name": "Pseudo LGs en Rouge (Neyuux_)"
+      },
+
+      "old_votes": {
+        "name": "Anciens Votes",
+        "description": "Ancien système de votes (coeurs permanents perdus qui reviennent toutes les x secondes à place du poison)",
+        "configurations": {
+          "healtimer": "Temps de récupération des coeurs : §b&number&s"
+        }
       }
     },
 

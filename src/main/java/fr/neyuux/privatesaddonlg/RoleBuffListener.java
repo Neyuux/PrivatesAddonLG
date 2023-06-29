@@ -1,6 +1,7 @@
 package fr.neyuux.privatesaddonlg;
 
 import fr.neyuux.privatesaddonlg.roles.InnkeeperBuffed;
+import fr.ph1lou.werewolfapi.enums.Camp;
 import fr.ph1lou.werewolfapi.enums.Day;
 import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
@@ -9,6 +10,7 @@ import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
 import fr.ph1lou.werewolfapi.events.game.utils.EnchantmentEvent;
 import fr.ph1lou.werewolfapi.events.lovers.RevealLoversEvent;
 import fr.ph1lou.werewolfapi.events.roles.SelectionEndEvent;
+import fr.ph1lou.werewolfapi.events.roles.StealEvent;
 import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
@@ -27,14 +29,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class RoleBuffListener implements Listener {
 
-    private final HashMap<IPlayerWW, BigDecimal> barbarianHealed = new HashMap<>();
+    private final HashMap<IPlayerWW, BigDecimal> statsSaved = new HashMap<>();
+    private final HashMap<IPlayerWW, Camp> imitatorBuff = new HashMap<>();
+    private final HashSet<IPlayerWW> imitators = new HashSet<>();
 
     @EventHandler
     public void onBuffSharpnessCharmeuse(EnchantmentEvent ev) {
@@ -57,7 +58,7 @@ public class RoleBuffListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBarbarianHit(EntityDamageByEntityEvent ev) {
+    public void onModifyDamages(EntityDamageByEntityEvent ev) {
         Entity edamager = ev.getDamager();
 
         if (edamager.getType() != EntityType.PLAYER || ev.getEntityType() != EntityType.PLAYER || ev.isCancelled())
@@ -66,16 +67,47 @@ public class RoleBuffListener implements Listener {
         Player damager = (Player)edamager;
         WereWolfAPI game = Plugin.getINSTANCE().getGame();
         Optional<IPlayerWW> optional = game.getPlayerWW(damager.getUniqueId());
+        Optional<IPlayerWW> playerWW = game.getPlayerWW(ev.getEntity().getUniqueId());
 
         optional.ifPresent(damagerWW -> {
-            if (damagerWW.getRole() != null && damagerWW.getRole().getKey().equals("werewolf.roles.barbarian.display")) {
-                double damageBonusPercentage = calculateStrengthByHealth(damagerWW);
 
-                ev.setDamage(ev.getDamage() * damageBonusPercentage);
+            if (damagerWW.getRole() == null)
+                return;
 
-                damagerWW.addPlayerHealth(ev.getFinalDamage() * 0.25D);
+            switch (damagerWW.getRole().getKey()) {
+                case "werewolf.roles.barbarian.display":
+                    double damageBonusPercentage = calculateStrengthByHealth(damagerWW);
 
-                barbarianHealed.put(damagerWW, barbarianHealed.get(damagerWW).add(BigDecimal.valueOf(ev.getFinalDamage() * 0.25D)));
+                    ev.setDamage(ev.getDamage() * damageBonusPercentage);
+
+                    damagerWW.addPlayerHealth(ev.getFinalDamage() * 0.25D);
+
+                    statsSaved.put(damagerWW, statsSaved.get(damagerWW).add(BigDecimal.valueOf(ev.getFinalDamage() * 0.25D)));
+
+                    break;
+                case "werewolf.roles.imitator.display":
+                    if (this.imitatorBuff.containsKey(damagerWW) && playerWW.isPresent() && playerWW.get().getRole().getCamp().equals(this.imitatorBuff.get(damagerWW))) {
+
+                        double finalDamages = ev.getFinalDamage();
+
+                        ev.setDamage(ev.getDamage() * 1.10D);
+
+                        statsSaved.put(damagerWW, statsSaved.get(damagerWW).add(BigDecimal.valueOf(ev.getFinalDamage() - finalDamages)));
+                    }
+
+                case "werewolf.roles.rival.display":
+
+                    if (playerWW.isPresent() && !playerWW.get().getLovers().isEmpty()) {
+                        double finalDamages = ev.getFinalDamage();
+
+                        ev.setDamage(ev.getDamage() * 1.20D);
+
+                        statsSaved.put(damagerWW, statsSaved.get(damagerWW).add(BigDecimal.valueOf(ev.getFinalDamage() - finalDamages)));
+                    }
+
+                    break;
+                default:
+                    break;
             }
         });
     }
@@ -88,8 +120,10 @@ public class RoleBuffListener implements Listener {
 
         main.doToAllPlayersWithRole("werewolf.roles.barbarian.display", playerWW -> {
             playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fEffets bonus : Vous régénérez §d§l25% §fdes dégâts que vous infligez. Vous possèdez un effet de force en fonction de votre barre de vie (5% -> 35%)."));
-            barbarianHealed.put(playerWW, BigDecimal.valueOf(0.0D));
+            statsSaved.put(playerWW, BigDecimal.valueOf(0.0D));
         });
+
+        main.doToAllPlayersWithRole("werewolf.roles.imitator.display", this.imitators::add);
     }
 
     @EventHandler
@@ -129,7 +163,19 @@ public class RoleBuffListener implements Listener {
     public void onEndSendStats(WinEvent ev) {
         Plugin main = Plugin.getINSTANCE();
 
-        main.doToAllPlayersWithRole("werewolf.roles.barbarian.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix() + "§d§lSoins du §c§lBarbare §c" + playerWW.getName() + " §d: §l" + barbarianHealed.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
+        main.doToAllPlayersWithRole("werewolf.roles.barbarian.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix() + "§d§lSoins du §c§lBarbare §c" + playerWW.getName() + " §d: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
+
+        main.doToAllPlayersWithRole("werewolf.roles.imitator.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix()+  "§c§lDégâts de l'§7§lImitateur §7" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
+
+        main.doToAllPlayersWithRole("werewolf.roles.imitator.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix()+  "§c§lDégâts du §d§lRival §d" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
+    }
+
+    @EventHandler
+    public void onStealImitator(StealEvent ev) {
+        IPlayerWW player = ev.getPlayerWW();
+
+        if (this.imitators.contains(player))
+            this.imitatorBuff.put(player, ev.getPlayerWW().getRole().getCamp());
     }
 
 
