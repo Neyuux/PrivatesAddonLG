@@ -120,10 +120,11 @@ public class RoleBuffListener implements Listener {
 
         main.doToAllPlayersWithRole("werewolf.roles.barbarian.display", playerWW -> {
             playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fEffets bonus : Vous régénérez §d§l25% §fdes dégâts que vous infligez. Vous possèdez un effet de force en fonction de votre barre de vie (5% -> 35%)."));
-            statsSaved.put(playerWW, BigDecimal.valueOf(0.0D));
         });
 
         main.doToAllPlayersWithRole("werewolf.roles.imitator.display", this.imitators::add);
+
+        main.getGame().getPlayersWW().forEach(playerWW -> statsSaved.put(playerWW, BigDecimal.valueOf(0.0D)));
     }
 
     @EventHandler
@@ -167,7 +168,7 @@ public class RoleBuffListener implements Listener {
 
         main.doToAllPlayersWithRole("werewolf.roles.imitator.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix()+  "§c§lDégâts de l'§7§lImitateur §7" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
 
-        main.doToAllPlayersWithRole("werewolf.roles.imitator.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix()+  "§c§lDégâts du §d§lRival §d" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
+        main.doToAllPlayersWithRole("werewolf.roles.rival.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix()+  "§c§lDégâts du §d§lRival §d" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
     }
 
     @EventHandler

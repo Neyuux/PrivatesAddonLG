@@ -17,7 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
-@Configuration(config = @ConfigurationBasic(key = "privatesaddon.configurations.old_votes.name", loreKey = "privatesaddon.configurations.old_votes.description", defaultValue = true, meetUpValue = true), configValues = {@IntValue(key = "privatesaddon.configurations.old_votes.configurations.healtimer", defaultValue = 60, meetUpValue = 50, step = 5, item = UniversalMaterial.ARROW)})
+@Configuration(config = @ConfigurationBasic(key = "privatesaddon.configurations.old_votes.name", loreKey = "privatesaddon.configurations.old_votes.description", defaultValue = false, meetUpValue = false), configValues = {@IntValue(key = "privatesaddon.configurations.old_votes.configurations.healtimer", defaultValue = 60, meetUpValue = 50, step = 5, item = UniversalMaterial.ARROW)})
 public class VoteModifier extends ListenerWerewolf {
 
     public VoteModifier(WereWolfAPI game) {
@@ -27,9 +27,9 @@ public class VoteModifier extends ListenerWerewolf {
 
     @EventHandler
     public void onVoteResult(VoteResultEvent ev) {
-        ev.setCancelled(true);
-
         this.showResultVote(ev.getPlayerWW());
+
+        ev.setCancelled(true);
     }
 
     public void showResultVote(@Nullable IPlayerWW playerWW) {
@@ -37,11 +37,11 @@ public class VoteModifier extends ListenerWerewolf {
         IVoteManager voteManager = game.getVoteManager();
         
         if (playerWW == null) {
-            Bukkit.broadcastMessage(game.translate("werewolf.prefix.orange", "werewolf.configurations.vote.no_result", new Formatter[0]));
+            Bukkit.broadcastMessage("§f[§6LG UHC§f] §eLe Vote n'a eu aucun résultat.");
             return;
         }
         if (voteManager.getVotes(playerWW) < 3) {
-            Bukkit.broadcastMessage(game.translate("werewolf.prefix.orange", "werewolf.configurations.vote.no_result_more_one", new Formatter[0]));
+            Bukkit.broadcastMessage("§f[§6LG UHC§f] §eAucun joueur n'a été voté suffisamment de fois.");
             return;
         }
 
@@ -61,11 +61,11 @@ public class VoteModifier extends ListenerWerewolf {
 
         playerWW.removePlayerMaxHealth(baseHealth / 2.0D);
 
-        Bukkit.broadcastMessage(game.translate("werewolf.prefix.yellow", "werewolf.configurations.vote.vote_result", Formatter.player(playerWW.getName()), Formatter.number(voteManager.getVotes(playerWW))));
+        Bukkit.broadcastMessage("§f[§eLG UHC§f] §eLe Vote possède un résultat : §l" + playerWW.getName() + "§e. Il a obtenu §6§l" + voteManager.getVotes(playerWW) + "§e vote(s).");
 
         game.getPlayersWW().stream().filter(playerWW1 -> playerWW1.isState(StatePlayer.ALIVE)).forEach(playerWW1 -> {
             if (playerWW1.getLocation().getWorld() == playerWW.getLocation().getWorld()) {
-                playerWW1.sendMessageWithKey("werewolf.prefix.yellow", "werewolf.configurations.vote.distance_voted", Formatter.number((int)playerWW1.getLocation().distance(playerWW.getLocation()) / 100 * 100 + 100));
+                Bukkit.getPlayer(playerWW1.getUUID()).sendMessage("§f[§6LG UHC§f] §fIl se situe à " + (int)playerWW1.getLocation().distance(playerWW.getLocation()) / 100 * 100 + 100 + "");
             }
         });
     }

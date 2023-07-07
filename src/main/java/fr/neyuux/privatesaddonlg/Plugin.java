@@ -25,10 +25,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -62,6 +65,18 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         this.ww = getServer().getServicesManager().load(GetWereWolfAPI.class);
 
         INSTANCE = this;
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                getServer().getServicesManager().getRegistrations(GetWereWolfAPI.class).stream().filter(provider -> provider.getService().equals(GetWereWolfAPI.class)).findFirst().ifPresent(provider -> {
+                    ww = provider.getProvider();
+                });
+
+                if (ww != null && ww.getWereWolfAPI() != null)
+                    cancel();
+            }
+        }.runTaskTimer(this, 1L, 40L);
 
         PluginManager pm = this.getServer().getPluginManager();
         CommandPioche commandPioche = new CommandPioche();
