@@ -166,9 +166,9 @@ public class RoleBuffListener implements Listener {
 
         main.doToAllPlayersWithRole("werewolf.roles.barbarian.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix() + "§d§lSoins du §c§lBarbare §c" + playerWW.getName() + " §d: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
 
-        main.doToAllPlayersWithRole("werewolf.roles.imitator.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix()+  "§c§lDégâts de l'§7§lImitateur §7" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
+        main.doToAllPlayersWithRole("werewolf.roles.imitator.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix() + "§c§lDégâts de l'§7§lImitateur §7" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
 
-        main.doToAllPlayersWithRole("werewolf.roles.rival.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix()+  "§c§lDégâts du §d§lRival §d" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
+        main.doToAllPlayersWithRole("werewolf.roles.rival.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix() + "§c§lDégâts du §d§lRival §d" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
     }
 
     @EventHandler
