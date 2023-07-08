@@ -27,6 +27,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -99,6 +100,11 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         Bukkit.getScheduler().runTaskLater(this, () -> this.getGame().setGameName("@Neyuux_"), 20L);
         this.groupsWarning.clear();
         ev.getWereWolfAPI().getPlayersWW().forEach(iPlayerWW -> this.manonCount.put(iPlayerWW.getUUID(), 0));
+    }
+
+    @EventHandler
+    public void onServerPingList(ServerListPingEvent ev) {
+        ev.setMotd("\\u00a7e             \\u273f\\u00a7b Private Sotarkiennes\\u00a7e \\u273f\\u00a7r\\n\\u00a7f   \\u226b\\u00a77 Team Sotark >>>>>>>>>>>> Team Manon  \\u00a7f\\u226a");
     }
 
 
