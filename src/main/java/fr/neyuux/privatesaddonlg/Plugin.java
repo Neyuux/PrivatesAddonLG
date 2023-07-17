@@ -104,7 +104,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     @EventHandler
     public void onServerPingList(ServerListPingEvent ev) {
-        ev.setMotd("\\u00a7e             \\u273f\\u00a7b Private Sotarkiennes\\u00a7e \\u273f\\u00a7r\\n\\u00a7f   \\u226b\\u00a77 Team Sotark >>>>>>>>>>>> Team Manon  \\u00a7f\\u226a");
+        ev.setMotd("             §e✿ §bPrivate Sotarkiennes §e✿\n   §f≫ §7Team Sotark >>>>>>>>>>>> Team Manon  §f≪");
     }
 
 

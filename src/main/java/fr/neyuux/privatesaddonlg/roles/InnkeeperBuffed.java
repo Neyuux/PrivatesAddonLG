@@ -165,6 +165,7 @@ public class InnkeeperBuffed
             } else {
                 this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§cCe client n'a vu personne cette nuit."));
             }
+            this.previousClientDatas.remove(clientData2);
             return;
         }
         if (this.clientDatas.stream().anyMatch(clientData -> clientData.playerWW.equals(playerWW))) {
