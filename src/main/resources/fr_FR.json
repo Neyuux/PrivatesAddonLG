@@ -40,7 +40,7 @@
 
       "old_votes": {
         "name": "Anciens Votes",
-        "description": "Ancien système de votes (coeurs permanents perdus qui reviennent toutes les x secondes à place du poison)",
+        "description": "Ancien système de votes (coeurs permanents à la place du poison)",
         "configurations": {
           "healtimer": "Temps de récupération des coeurs : §b&number&s"
         }
@@ -67,6 +67,22 @@
         "already": "Vous hébergez déjà ce client",
         "configurations": {
           "detection_radius": "Rayon de détection pour les joueurs rencontrés §b&number&§r"
+        }
+      },
+
+      "fox":{
+        "display": "Renard",
+        "command": "flair",
+        "effect": "Trois minutes de Vitesse après un kill",
+        "description": "Vous pouvez flairer les joueurs pour savoir si ils sont Loup-Garou. Les joueurs devront se situer à moins de §b&number&§f blocs pendant §b&timer&§f. Vous disposez de §b&number1&§f flair(s).",
+        "progress": "Progression du Flair §b&progress&%§r",
+        "timers": {
+          "fox_smell_duration": "Durée du Flair du Renard (§b&timer&§r)"
+        },
+        "configurations": {
+          "fox_smell_number": "Nombre de Flairs du Renard : §b&number&§r",
+          "distance": "Champ d'action du Renard : §b&number& blocks§r",
+          "timer_reveal": "Délai annonçant à un LG le flair : §b&number&s§r"
         }
       }
     }

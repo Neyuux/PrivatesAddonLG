@@ -25,8 +25,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,6 +45,11 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     @Getter
     private static final String Prefix = "§bPrivatesAddon §8» §r";
+
+    public static String getPrefixWithColor(ChatColor color) {
+        return color + "PrivatesAddon §8» §r";
+    }
+
 
     private GetWereWolfAPI ww;
 

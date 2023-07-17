@@ -13,7 +13,9 @@ import fr.ph1lou.werewolfapi.player.utils.Formatter;
 import fr.ph1lou.werewolfapi.versions.VersionUtils_1_8;
 import fr.ph1lou.werewolfapi.vote.IVoteManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,8 +27,11 @@ public class VoteModifier extends ListenerWerewolf {
     }
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onVoteResult(VoteResultEvent ev) {
+        if (ev.isCancelled())
+            return;
+
         this.showResultVote(ev.getPlayerWW());
 
         ev.setCancelled(true);
@@ -35,7 +40,7 @@ public class VoteModifier extends ListenerWerewolf {
     public void showResultVote(@Nullable IPlayerWW playerWW) {
         WereWolfAPI game = Plugin.getINSTANCE().getGame();
         IVoteManager voteManager = game.getVoteManager();
-        
+
         if (playerWW == null) {
             Bukkit.broadcastMessage("§f[§6LG UHC§f] §eLe Vote n'a eu aucun résultat.");
             return;
@@ -45,7 +50,9 @@ public class VoteModifier extends ListenerWerewolf {
             return;
         }
 
+        Player player = Bukkit.getPlayer(playerWW.getUUID());
         final double baseHealth = playerWW.getMaxHealth();
+        long delay = 20L * game.getConfig().getValue("privatesaddon.configurations.old_votes.configurations.healtimer");
 
         new BukkitRunnable() {
             @Override
@@ -57,15 +64,19 @@ public class VoteModifier extends ListenerWerewolf {
                     cancel();
                 }
             }
-        }.runTaskTimer(Plugin.getINSTANCE(), 1L, 20L * game.getConfig().getValue("privatesaddon.configurations.old_votes.configurations.healtimer"));
+        }.runTaskTimer(Plugin.getINSTANCE(), delay, delay);
 
         playerWW.removePlayerMaxHealth(baseHealth / 2.0D);
+        if (player != null)
+            player.damage(0);
 
         Bukkit.broadcastMessage("§f[§eLG UHC§f] §eLe Vote possède un résultat : §l" + playerWW.getName() + "§e. Il a obtenu §6§l" + voteManager.getVotes(playerWW) + "§e vote(s).");
 
         game.getPlayersWW().stream().filter(playerWW1 -> playerWW1.isState(StatePlayer.ALIVE)).forEach(playerWW1 -> {
             if (playerWW1.getLocation().getWorld() == playerWW.getLocation().getWorld()) {
-                Bukkit.getPlayer(playerWW1.getUUID()).sendMessage("§f[§6LG UHC§f] §fIl se situe à " + (int)playerWW1.getLocation().distance(playerWW.getLocation()) / 100 * 100 + 100 + "");
+                int distance = (int)playerWW1.getLocation().distance(playerWW.getLocation()) / 100 * 100 + 100;
+
+                Bukkit.getPlayer(playerWW1.getUUID()).sendMessage("§f[§6LG UHC§f] §fIl se situe à §e" + distance + "§f blocs de vous. (100 blocs près)");
             }
         });
     }
