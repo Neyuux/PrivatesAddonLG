@@ -70,14 +70,7 @@ public class InnkeeperBuffed
                 --this.availableRooms;
                 clientData.watching = false;
                 this.clientDatas.remove(clientData);
-                if (this.availableRooms == 0 && player != null) {
-                    InnkeeperSpeedEvent innkeeperSpeedEvent = new InnkeeperSpeedEvent(this.getPlayerWW());
-                    Bukkit.getPluginManager().callEvent(innkeeperSpeedEvent);
-                    if (!innkeeperSpeedEvent.isCancelled()) {
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, false));
-                        player.sendMessage(Plugin.getPrefix() + "§fToutes vos chambres sont fermées ! Vous obtenez donc l'effet §b§lVitesse§f.");
-                    }
-                }
+                this.checkAvaibleRooms(player);
             }
         });
         event.getPlayerWW().getLastKiller().ifPresent(killer -> {
@@ -85,13 +78,25 @@ public class InnkeeperBuffed
                 ClientKillEvent clientKillEvent = new ClientKillEvent(this.getPlayerWW(), killer);
                 Bukkit.getPluginManager().callEvent(clientKillEvent);
                 if (!clientKillEvent.isCancelled()) {
-                    this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§fVotre client §c§l" + killer.getName() + " §fvient de faire un kill ! Son rôle est §c§l" + killer.getRole().getDisplayRole() +"§f."));
+                    this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§fVotre client §c§l" + killer.getName() + " §fvient de faire un kill ! Son rôle est §c§l" + Plugin.getRoleTranslated(killer.getRole().getDisplayRole()) +"§f."));
                     this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§fUne de vos chambre vient de fermer."));
                     this.availableRooms--;
                     this.clientDatas.forEach(clientData -> clientData.watching = false);
+                    this.checkAvaibleRooms(Bukkit.getPlayer(this.getPlayerUUID()));
                 }
             }
         });
+    }
+
+    private void checkAvaibleRooms(Player player) {
+        if (this.availableRooms == 0 && player != null) {
+            InnkeeperSpeedEvent innkeeperSpeedEvent = new InnkeeperSpeedEvent(this.getPlayerWW());
+            Bukkit.getPluginManager().callEvent(innkeeperSpeedEvent);
+            if (!innkeeperSpeedEvent.isCancelled()) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, false));
+                player.sendMessage(Plugin.getPrefix() + "§fToutes vos chambres sont fermées ! Vous obtenez donc l'effet §b§lVitesse§f.");
+            }
+        }
     }
 
     @Override

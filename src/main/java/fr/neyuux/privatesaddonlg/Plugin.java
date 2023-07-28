@@ -1,5 +1,9 @@
 package fr.neyuux.privatesaddonlg;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import fr.neyuux.privatesaddonlg.commands.CommandPioche;
 import fr.neyuux.privatesaddonlg.commands.CommandSay;
 import fr.ph1lou.werewolfapi.GetWereWolfAPI;
@@ -14,10 +18,16 @@ import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.utils.ItemBuilder;
 import lombok.Getter;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.*;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,6 +42,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -61,7 +73,9 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     private final HashSet<LivingEntity> customEntities = new HashSet<>();
 
-    private final HashMap<UUID, Integer> manonCount = new HashMap<>();
+    private final List<EntityPlayer> customNPCs = new ArrayList<>();
+
+    private int customCount = 0;
 
 
     @Override
@@ -90,7 +104,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         pm.registerEvents(commandPioche, this);
         pm.registerEvents(new RoleBuffListener(), this);
         
-        this.getCommand("manon").setExecutor(this);
+        this.getCommand("dyson").setExecutor(this);
         this.getCommand("say").setExecutor(new CommandSay());
         this.getCommand("pioche").setExecutor(commandPioche);
 
@@ -102,7 +116,6 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     public void onGameStart(StartEvent ev) {
         Bukkit.getScheduler().runTaskLater(this, () -> this.getGame().setGameName("@Neyuux_"), 20L);
         this.groupsWarning.clear();
-        ev.getWereWolfAPI().getPlayersWW().forEach(iPlayerWW -> this.manonCount.put(iPlayerWW.getUUID(), 0));
     }
 
     @EventHandler
@@ -140,29 +153,89 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-        if (sender instanceof Player && this.getGame() != null) {
+        Player manon = null;
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            Bukkit.broadcastMessage("§e" + p.getUniqueId().toString());
+            if (p.getUniqueId().toString().equalsIgnoreCase("0234db8c-e6e5-45e5-8709-ea079fa575bb"))
+                manon = p;
+        }
+
+        Bukkit.broadcastMessage(String.valueOf(this.getGame()));
+        Bukkit.broadcastMessage(String.valueOf(manon));
+
+        if (sender instanceof Player && this.getGame() != null && manon != null) {
             Player player = (Player) sender;
 
-            if (this.manonCount.get(player.getUniqueId()) > 3) {
-                player.sendMessage(Plugin.getPrefix() + "§cPas de spam. Chien.");
+            if (this.customCount > 3) {
+                player.sendMessage(Plugin.getPrefix() + "§cPas de spam.");
                 return true;
             }
 
             if ((this.getGame().getState() == StateGame.START ||this.getGame().getState() == StateGame.GAME) && player.getGameMode().equals(GameMode.SURVIVAL)) {
 
                 Location loc = player.getLocation().add(3, 0, 0);
-                Villager manon = (Villager) player.getWorld().spawnEntity(this.getHighestLoc(loc), EntityType.VILLAGER);
+                World world = loc.getWorld();
+                WorldServer cworld = ((CraftWorld)world).getHandle();
+                GameProfile gameProfile = new GameProfile(manon.getUniqueId(), manon.getName());
+                String[] properties = getSkinTextures(manon.getName());
 
-                manon.setProfession(Villager.Profession.LIBRARIAN);
-                manon.setCustomName("§dMa__non");
+                //noinspection ConstantConditions
+                gameProfile.getProperties().put("textures", new Property("textures", properties[0], properties[1]));
 
-                Wolf khqbib = this.createChien(loc.getWorld(), loc.clone().add(2, 0, 0), "Khqbib", true);
-                Wolf neyzz = this.createChien(loc.getWorld(), loc.clone().add(-2, 0, 0), "NeyZz", false);
-                Wolf sotark = this.createChien(loc.getWorld(), loc.clone().add(0, 0, 2), "Sotark_", false);
-                Wolf nyuchikin = this.createChien(loc.getWorld(), loc.clone().add(0, 0, -2), "Nyuchikin", true);
+                EntityPlayer fakePlayer = new EntityPlayer(MinecraftServer.getServer(), cworld, gameProfile, new PlayerInteractManager(cworld));
 
-                this.manonCount.put(player.getUniqueId(), this.manonCount.get(player.getUniqueId()) + 1);
-                this.removeCustomEntities(8, player.getUniqueId(), manon, khqbib, neyzz, sotark, nyuchikin);
+                fakePlayer.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+                fakePlayer.getDataWatcher().watch(10,  (byte) 0xFF);
+
+                PacketPlayOutNamedEntitySpawn packetSpawn = new PacketPlayOutNamedEntitySpawn(fakePlayer);
+
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    PlayerConnection co = ((CraftPlayer) p).getHandle().playerConnection;
+
+                    co.sendPacket(packetSpawn);
+                }
+
+                this.customNPCs.add(fakePlayer);
+
+                Endermite aspirateur = (Endermite) world.spawnEntity(loc.clone().add(0.2, 0, 0.2), EntityType.ENDERMITE);
+
+                aspirateur.setCustomName("Aspirateur");
+                aspirateur.setCustomNameVisible(true);
+                aspirateur.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 10, false, false));
+                aspirateur.setMaxHealth(1000D);
+                aspirateur.setHealth(aspirateur.getMaxHealth());
+
+                new BukkitRunnable() {
+
+                    long start = System.currentTimeMillis();
+
+                    @Override
+                    public void run() {
+
+                        if (player.isDead()) {
+                            cancel();
+                            return;
+                        }
+
+                        if (System.currentTimeMillis() - start >= 7500L) {
+                            aspirateur.remove();
+
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                PlayerConnection co = ((CraftPlayer) p).getHandle().playerConnection;
+
+                                co.sendPacket(new PacketPlayOutEntityDestroy(fakePlayer.getId()));
+                            }
+                            cancel();
+                            return;
+                        }
+
+                        Location currentLocation = player.getLocation();
+                        Location newLocation = currentLocation.add(loc.toVector().subtract(currentLocation.toVector()).normalize().multiply(0.2D));
+
+                        player.teleport(newLocation);
+                    }
+                }.runTaskTimerAsynchronously(Plugin.getINSTANCE(), 5L, 10L);
             }
         }
         return true;
@@ -177,7 +250,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
                 if (livingEntity != null && !livingEntity.isDead())
                     livingEntity.damage(10000);
             });
-            this.manonCount.put(uuid, this.manonCount.get(uuid) - 1);
+            this.customCount--;
         }, 20L * seconds);
     }
 
@@ -218,5 +291,30 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     public WereWolfAPI getGame() {
         return this.ww.getWereWolfAPI();
+    }
+
+
+    public static String getRoleTranslated(String key) {
+        return Plugin.getINSTANCE().getGame().translate(key);
+    }
+
+
+    private static String[] getSkinTextures(String name) {
+        try {
+            URL url_0 = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
+            InputStreamReader reader_0 = new InputStreamReader(url_0.openStream());
+
+            String uuid = new JsonParser().parse(reader_0).getAsJsonObject().get("id").getAsString();
+            URL url_1 = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
+            InputStreamReader reader_1 = new InputStreamReader(url_1.openStream());
+
+            JsonObject textureProperty = new JsonParser().parse(reader_1).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
+            String texture = textureProperty.get("value").getAsString();
+            String signature = textureProperty.get("signature").getAsString();
+            return new String[]{texture,signature};
+        }catch(IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

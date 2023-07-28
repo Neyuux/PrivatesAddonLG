@@ -7,6 +7,7 @@ import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.events.ActionBarEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
+import fr.ph1lou.werewolfapi.events.game.timers.RepartitionEvent;
 import fr.ph1lou.werewolfapi.events.game.utils.EnchantmentEvent;
 import fr.ph1lou.werewolfapi.events.lovers.RevealLoversEvent;
 import fr.ph1lou.werewolfapi.events.roles.SelectionEndEvent;
@@ -14,6 +15,7 @@ import fr.ph1lou.werewolfapi.events.roles.StealEvent;
 import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
+import fr.ph1lou.werewolfapi.role.interfaces.IAffectedPlayers;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -113,18 +115,20 @@ public class RoleBuffListener implements Listener {
     }
 
     @EventHandler
-    public void onSelectionEnd(SelectionEndEvent ev) {
+    public void onSelectionEnd(RepartitionEvent ev) {
         Plugin main = Plugin.getINSTANCE();
 
-        main.doToAllPlayersWithRole("werewolf.roles.wolf_dog.display", playerWW -> playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fVous possèdez bien §c§lForce §fla nuit si vous choisissez de vous transformer. (Il y une erreur dans la description)")));
+        Bukkit.getScheduler().runTaskLater(Plugin.getINSTANCE(), () -> {
+            main.doToAllPlayersWithRole("werewolf.roles.wolf_dog.display", playerWW -> playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fVous possèdez bien §c§lForce §fla nuit si vous choisissez de vous transformer. (Il y une erreur dans la description)")));
 
-        main.doToAllPlayersWithRole("werewolf.roles.barbarian.display", playerWW -> {
-            playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fEffets bonus : Vous régénérez §d§l25% §fdes dégâts que vous infligez. Vous possèdez un effet de force en fonction de votre barre de vie (5% -> 35%)."));
-        });
+            main.doToAllPlayersWithRole("werewolf.roles.barbarian.display", playerWW -> {
+                playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fEffets bonus : Vous régénérez §d§l25% §fdes dégâts que vous infligez. Vous possèdez un §ceffet de force§f en fonction de votre barre de vie §c(5% -> 35%)§f."));
+            });
 
-        main.doToAllPlayersWithRole("werewolf.roles.imitator.display", this.imitators::add);
+            main.doToAllPlayersWithRole("werewolf.roles.imitator.display", this.imitators::add);
 
-        main.getGame().getPlayersWW().forEach(playerWW -> statsSaved.put(playerWW, BigDecimal.valueOf(0.0D)));
+            main.getGame().getPlayersWW().forEach(playerWW -> statsSaved.put(playerWW, BigDecimal.valueOf(0.0D)));
+        }, 2L);
     }
 
     @EventHandler

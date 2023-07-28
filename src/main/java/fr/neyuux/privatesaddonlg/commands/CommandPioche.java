@@ -24,6 +24,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Field;
@@ -40,6 +41,16 @@ public class CommandPioche implements CommandExecutor, Listener {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             WereWolfAPI game = Plugin.getINSTANCE().getGame();
+
+            for (ItemStack item : player.getInventory()) {
+
+                if (item != null && item.getType().equals(Material.DIAMOND)) {
+
+                    if (item.hasItemMeta() && item.getItemMeta().hasLore() && item.getItemMeta().getLore().stream().anyMatch(s -> s.contains(":)"))) {
+                        player.getInventory().remove(item);
+                    }
+                }
+            }
 
             if (game.getTimer() > 3000)
                 return true;
@@ -132,13 +143,25 @@ public class CommandPioche implements CommandExecutor, Listener {
             return;
 
         if (item.hasItemMeta() && item.getItemMeta().hasLore() && item.getItemMeta().getLore().stream().anyMatch(s -> s.contains(":)"))) {
-            item.setType(Material.BONE);
-            item.setAmount(64);
 
-            ItemMeta meta = item.getItemMeta();
+            List<Integer> emptySlots = new ArrayList<>();
+            PlayerInventory playerInventory = ev.getWhoClicked().getInventory();
 
-            meta.setDisplayName("§fBon toutou ♥");
-            item.setItemMeta(meta);
+            for (int i = 0; i < 36; i++) {
+                ItemStack invItem = playerInventory.getItem(i);
+
+                if (invItem == null || invItem.getType() == Material.AIR)
+                    emptySlots.add(i);
+            }
+
+            ItemStack cloneItem = item.clone();
+
+            ev.setCurrentItem(null);
+            ev.setCancelled(true);
+
+            if (!emptySlots.isEmpty()) {
+                playerInventory.setItem(emptySlots.get(new Random().nextInt(emptySlots.size())), cloneItem);
+            }
         }
     }
 
