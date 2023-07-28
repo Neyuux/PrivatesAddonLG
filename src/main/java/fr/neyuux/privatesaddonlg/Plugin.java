@@ -156,13 +156,9 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         Player manon = null;
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            Bukkit.broadcastMessage("§e" + p.getUniqueId().toString());
-            if (p.getUniqueId().toString().equalsIgnoreCase("0234db8c-e6e5-45e5-8709-ea079fa575bb"))
+            if (p.getUniqueId().toString().equalsIgnoreCase("00767a3e-34f0-4ee0-8c1b-506b111bba6f"))
                 manon = p;
         }
-
-        Bukkit.broadcastMessage(String.valueOf(this.getGame()));
-        Bukkit.broadcastMessage(String.valueOf(manon));
 
         if (sender instanceof Player && this.getGame() != null && manon != null) {
             Player player = (Player) sender;
