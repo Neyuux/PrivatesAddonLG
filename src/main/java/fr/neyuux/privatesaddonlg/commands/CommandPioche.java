@@ -5,30 +5,27 @@ import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.utils.ItemBuilder;
 import fr.ph1lou.werewolfapi.utils.Utils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.CraftSound;
-import org.bukkit.craftbukkit.v1_8_R3.block.CraftBlock;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class CommandPioche implements CommandExecutor, Listener {
@@ -110,13 +107,24 @@ public class CommandPioche implements CommandExecutor, Listener {
     @EventHandler
     public void onFakeDiamondSpawn(ItemSpawnEvent ev) {
         Item entityItem = ev.getEntity();
+        ItemStack item = ev.getEntity().getItemStack();
 
         if (this.map.values().stream().anyMatch(locations -> locations.stream().anyMatch(location -> location.distanceSquared(entityItem.getLocation()) <= 1))) {
-            ItemStack item = ev.getEntity().getItemStack();
 
             if (item != null && item.getType() == Material.DIAMOND) {
                 if (!item.hasItemMeta() || !item.getItemMeta().hasLore())
                     entityItem.remove();
+            }
+        }
+    }
+
+    @EventHandler
+    public void onCraftWithFakeDiamond(CraftItemEvent ev) {
+        for (ItemStack item : ev.getInventory()) {
+            if (item != null && item.getType() == Material.DIAMOND) {
+                if (item.hasItemMeta() && item.getItemMeta().hasLore() && item.getItemMeta().getLore().stream().anyMatch(s -> s.contains(":)"))) {
+                    ev.setCancelled(true);
+                }
             }
         }
     }
