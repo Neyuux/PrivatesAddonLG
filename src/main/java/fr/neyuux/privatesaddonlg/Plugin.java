@@ -4,18 +4,23 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import fr.minuskube.inv.InventoryManager;
 import fr.neyuux.privatesaddonlg.commands.CommandPioche;
 import fr.neyuux.privatesaddonlg.commands.CommandSay;
+import fr.neyuux.privatesaddonlg.commands.roles.ItemCommand;
 import fr.ph1lou.werewolfapi.GetWereWolfAPI;
 import fr.ph1lou.werewolfapi.annotations.Author;
 import fr.ph1lou.werewolfapi.annotations.ModuleWerewolf;
+import fr.ph1lou.werewolfapi.enums.RoleAttribute;
 import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
+import fr.ph1lou.werewolfapi.events.game.utils.WinConditionsCheckEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
+import fr.ph1lou.werewolfapi.role.interfaces.IRole;
 import fr.ph1lou.werewolfapi.utils.ItemBuilder;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
@@ -91,8 +96,10 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
                     ww = provider.getProvider();
                 });
 
-                if (ww != null && ww.getWereWolfAPI() != null)
+                if (ww != null && ww.getWereWolfAPI() != null) {
+                    Bukkit.getLogger().info("PrivatesAddon -> Service WereWolfAPI found");
                     cancel();
+                }
             }
         }.runTaskTimer(this, 1L, 40L);
 
@@ -103,6 +110,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         pm.registerEvents(new WorldChangesListener(), this);
         pm.registerEvents(commandPioche, this);
         pm.registerEvents(new RoleBuffListener(), this);
+        pm.registerEvents(new ItemCommand(), this);
         
         this.getCommand("dyson").setExecutor(this);
         this.getCommand("say").setExecutor(new CommandSay());
@@ -121,6 +129,11 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     @EventHandler
     public void onServerPingList(ServerListPingEvent ev) {
         ev.setMotd("             §e✿ §bPrivate Sotarkiennes §e✿\n   §f≫ §7Team Sotark >>>>>>>>>>>> Team Manon  §f≪");
+    }
+
+    @EventHandler
+    public void cancelWin(WinConditionsCheckEvent ev) {
+        ev.setCancelled(true);
     }
 
 
@@ -287,6 +300,18 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     public WereWolfAPI getGame() {
         return this.ww.getWereWolfAPI();
+    }
+
+    public boolean hasAttribute(RoleAttribute attribute, IRole role) {
+        return this.ww.getRegisterManager().getRolesRegister()
+                .stream()
+                .filter(roleRegister -> roleRegister.getClazz().equals(role.getClass()))
+                .anyMatch(roleRegister -> Arrays.stream(roleRegister.getMetaDatas().attributes())
+                        .anyMatch(roleAttribute -> attribute == roleAttribute));
+    }
+
+    public InventoryManager getInvManager() {
+        return this.ww.getInvManager();
     }
 
 

@@ -1,11 +1,9 @@
 package fr.neyuux.privatesaddonlg;
 
 import fr.neyuux.privatesaddonlg.roles.InnkeeperBuffed;
-import fr.ph1lou.werewolfapi.enums.Camp;
-import fr.ph1lou.werewolfapi.enums.Day;
-import fr.ph1lou.werewolfapi.enums.StateGame;
-import fr.ph1lou.werewolfapi.enums.StatePlayer;
+import fr.ph1lou.werewolfapi.enums.*;
 import fr.ph1lou.werewolfapi.events.ActionBarEvent;
+import fr.ph1lou.werewolfapi.events.UpdatePlayerNameTagEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
 import fr.ph1lou.werewolfapi.events.game.timers.RepartitionEvent;
 import fr.ph1lou.werewolfapi.events.game.utils.EnchantmentEvent;
@@ -40,7 +38,7 @@ public class RoleBuffListener implements Listener {
     private final HashSet<IPlayerWW> imitators = new HashSet<>();
 
     @EventHandler
-    public void onBuffSharpnessCharmeuse(EnchantmentEvent ev) {
+    public void onBuffSharpnessSolo(EnchantmentEvent ev) {
         final IPlayerWW playerWW = ev.getPlayerWW();
 
         if (!playerWW.isState(StatePlayer.ALIVE))
@@ -49,7 +47,7 @@ public class RoleBuffListener implements Listener {
         final IConfiguration config = Plugin.getINSTANCE().getGame().getConfig();
         final Map<Enchantment, Integer> enchants = ev.getEnchants();
 
-        if (playerWW.getRole().isKey("werewolf.roles.charmer.display"))
+        if (Plugin.getINSTANCE().hasAttribute(RoleAttribute.NEUTRAL, playerWW.getRole()))
             if (enchants.containsKey(Enchantment.DAMAGE_ALL)) {
                 if (ev.getItem().getType() == Material.DIAMOND_SWORD) {
                     ev.getFinalEnchants().put(Enchantment.DAMAGE_ALL, Math.min(enchants.get(Enchantment.DAMAGE_ALL), config.getLimitSharpnessDiamond() + 1));
@@ -82,9 +80,9 @@ public class RoleBuffListener implements Listener {
 
                     ev.setDamage(ev.getDamage() * damageBonusPercentage);
 
-                    damagerWW.addPlayerHealth(ev.getFinalDamage() * 0.25D);
+                    damagerWW.addPlayerHealth(ev.getFinalDamage() * 0.20D);
 
-                    statsSaved.put(damagerWW, statsSaved.get(damagerWW).add(BigDecimal.valueOf(ev.getFinalDamage() * 0.25D)));
+                    statsSaved.put(damagerWW, statsSaved.get(damagerWW).add(BigDecimal.valueOf(ev.getFinalDamage() * 0.20D)));
 
                     break;
                 case "werewolf.roles.imitator.display":
@@ -181,6 +179,21 @@ public class RoleBuffListener implements Listener {
 
         if (this.imitators.contains(player))
             this.imitatorBuff.put(player, ev.getPlayerWW().getRole().getCamp());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBarbarianTargetUpdateSuffix(UpdatePlayerNameTagEvent event) {
+        WereWolfAPI game = Plugin.getINSTANCE().getGame();
+        IPlayerWW playerWW = game.getPlayerWW(event.getPlayerUUID()).orElse(null);
+        if (playerWW == null)
+            return;
+        if (!playerWW.isState(StatePlayer.DEATH))
+            return;
+
+        Plugin.getINSTANCE().doToAllPlayersWithRole("werewolf.roles.barbarian.display", barbarianWW -> {
+            if (((IAffectedPlayers)barbarianWW.getRole()).getAffectedPlayers().contains(playerWW))
+                event.setSuffix("");
+        });
     }
 
 
