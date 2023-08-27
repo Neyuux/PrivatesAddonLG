@@ -97,7 +97,7 @@ public class ItemCommand
     private static final class ItemCommandGUI implements InventoryProvider {
 
         public static final SmartInventory INVENTORY = SmartInventory.builder()
-                .id("global")
+                .id("lg_commands_roles_charmer_item_inv")
                 .manager(Plugin.getINSTANCE().getInvManager())
                 .provider(new ItemCommandGUI())
                 .size(3, 9)
