@@ -131,12 +131,6 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         ev.setMotd("             §e✿ §bPrivate Sotarkiennes §e✿\n   §f≫ §7Team Sotark >>>>>>>>>>>> Team Manon  §f≪");
     }
 
-    @EventHandler
-    public void cancelWin(WinConditionsCheckEvent ev) {
-        ev.setCancelled(true);
-    }
-
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
         if (this.customEntities.stream().anyMatch(livingEntity -> livingEntity.getUniqueId().equals(event.getEntity().getUniqueId()))) {
