@@ -159,7 +159,11 @@ public class RoleBuffListener implements Listener {
     }
     @EventHandler
     public void onLoverDurationEnd(RevealLoversEvent event) {
-        event.getLovers().forEach(iLover -> iLover.getLovers().stream().filter(iPlayerWW -> iPlayerWW.getRole().isKey("werewolf.roles.charmer.display")).forEach(iPlayerWW -> Bukkit.getPlayer(iPlayerWW.getUUID()).sendMessage(Plugin.getPrefix() + "§dVous pouvez utiliser la commande §e/ww charmstop §dpour révéler votre identité à votre charmé. (Vous ne pourrez plus vous faire de dons de vie et vous n'aurez plus la flèche permettant de vous traquer).")));
+        event.getLovers().forEach(iLover -> iLover.getLovers().stream().filter(iPlayerWW -> iPlayerWW.getRole().isKey("werewolf.roles.charmer.display")).forEach(iPlayerWW -> {
+            Player p = Bukkit.getPlayer(iPlayerWW.getUUID());
+            p.sendMessage(Plugin.getPrefix() + "§dVous pouvez utiliser la commande §e/ww charmstop §dpour révéler votre identité à votre charmé. (Vous ne pourrez plus vous faire de dons de vie et vous n'aurez plus la flèche permettant de vous traquer).");
+            p.sendMessage(Plugin.getPrefix() + "§dVous pouvez également utiliser la commande §e/ww item §dpour obtenir les objets d'un autre rôle de la partie que vous pourrez choisir. Ces objets seront cependant inutilisables.");
+        }));
     }
 
     @EventHandler
