@@ -1,5 +1,6 @@
-package fr.neyuux.privatesaddonlg;
+package fr.neyuux.privatesaddonlg.listeners;
 
+import fr.neyuux.privatesaddonlg.Plugin;
 import fr.neyuux.privatesaddonlg.roles.InnkeeperBuffed;
 import fr.ph1lou.werewolfapi.enums.*;
 import fr.ph1lou.werewolfapi.events.ActionBarEvent;

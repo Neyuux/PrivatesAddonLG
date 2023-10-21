@@ -17,3 +17,6 @@ commands:
     permission: say.use
   pioche:
     description: Pour avoir un meilleur minage
+  dlimits:
+    description: Pour changer les limites de diamants
+    permission: dlimits.use

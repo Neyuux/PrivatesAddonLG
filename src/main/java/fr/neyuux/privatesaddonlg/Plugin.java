@@ -5,9 +5,13 @@ import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import fr.minuskube.inv.InventoryManager;
+import fr.neyuux.privatesaddonlg.commands.CommandDLimits;
 import fr.neyuux.privatesaddonlg.commands.CommandPioche;
 import fr.neyuux.privatesaddonlg.commands.CommandSay;
 import fr.neyuux.privatesaddonlg.commands.roles.ItemCommand;
+import fr.neyuux.privatesaddonlg.listeners.ArmorListener;
+import fr.neyuux.privatesaddonlg.listeners.RoleBuffListener;
+import fr.neyuux.privatesaddonlg.listeners.WorldChangesListener;
 import fr.ph1lou.werewolfapi.GetWereWolfAPI;
 import fr.ph1lou.werewolfapi.annotations.Author;
 import fr.ph1lou.werewolfapi.annotations.ModuleWerewolf;
@@ -17,7 +21,6 @@ import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
-import fr.ph1lou.werewolfapi.events.game.utils.WinConditionsCheckEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.role.interfaces.IRole;
@@ -111,10 +114,12 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         pm.registerEvents(commandPioche, this);
         pm.registerEvents(new RoleBuffListener(), this);
         pm.registerEvents(new ItemCommand(), this);
+        pm.registerEvents(new ArmorListener(Collections.emptyList()), this);
         
         this.getCommand("dyson").setExecutor(this);
         this.getCommand("say").setExecutor(new CommandSay());
         this.getCommand("pioche").setExecutor(commandPioche);
+        this.getCommand("dlimits").setExecutor(new CommandDLimits());
 
         super.onEnable();
     }

@@ -34,6 +34,11 @@
         }
       },
 
+      "enhanced_diamond_limit": {
+        "name": "Limite de diamant améliorée (Neyuux_)",
+        "lore": "§7/dlimits pour modifier pour les joueurs"
+      },
+
       "red_name_tag": {
         "name": "Pseudo LGs en Rouge (Neyuux_)"
       },

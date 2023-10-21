@@ -1,5 +1,6 @@
-package fr.neyuux.privatesaddonlg;
+package fr.neyuux.privatesaddonlg.listeners;
 
+import fr.neyuux.privatesaddonlg.Plugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
