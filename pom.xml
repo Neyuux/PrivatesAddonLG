@@ -6,7 +6,7 @@
 
     <groupId>fr.neyuux</groupId>
     <artifactId>PrivatesLGAddon</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <description>Addon pour les Privates</description>
 
     <properties>
