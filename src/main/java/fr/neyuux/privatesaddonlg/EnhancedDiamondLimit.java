@@ -191,6 +191,9 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
             game.getPlayersWW()
                     .forEach(playerWW -> items.add(ClickableItem.of(this.getPlayerItem(playerWW),
                             ev -> {
+                                if (!ev.getWhoClicked().isOp())
+                                    return;
+
                                 LimitLevel limitLevel = EnhancedDiamondLimit.levels.get(playerWW.getUUID());
                                 if (ev.isRightClick() && limitLevel.getLevel() != 1)
                                     EnhancedDiamondLimit.levels.put(playerWW.getUUID(), LimitLevel.getByLevel(limitLevel.getLevel() - 1));
