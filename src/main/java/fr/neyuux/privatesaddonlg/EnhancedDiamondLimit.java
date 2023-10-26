@@ -75,27 +75,34 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
         String playerName = event.getPlayer().getName();
         LimitLevel limitLevel = EnhancedDiamondLimit.levels.get(event.getPlayer().getUniqueId());
         Block block = event.getBlock();
-
-        if (!block.getType().equals(Material.DIAMOND_ORE))
-            return;
-
         Location loc = new Location(block.getWorld(), block.getLocation().getBlockX() + 0.5D, block.getLocation().getBlockY() + 0.5D, block.getLocation().getBlockZ() + 0.5D);
 
         if (!VersionUtils.getVersionUtils().getItemInHand(event.getPlayer()).getType().equals(Material.DIAMOND_PICKAXE) &&
                 !VersionUtils.getVersionUtils().getItemInHand(event.getPlayer()).getType().equals(Material.IRON_PICKAXE))
             return;
 
-        if (this.diamondPerPlayer.getOrDefault(playerName, 0) >= limitLevel.getDiamonds()) {
-            block.getWorld().dropItem(loc, new ItemStack(Material.GOLD_INGOT, this.getOreRandom(limitLevel.getGoldBoostPercentage())));
-            block.getWorld().spawn(loc, ExperienceOrb.class).setExperience(event.getExpToDrop());
-            block.setType(Material.AIR);
+        if (block.getType().equals(Material.DIAMOND_ORE)) {
 
-        } else if (this.diamondPerPlayer.getOrDefault(playerName, 0) + 1 < limitLevel.getDiamonds() && this.getGame().getRandom().nextDouble() <= limitLevel.getDiamondBoostPercentage()) {
-            block.getWorld().dropItem(loc, new ItemStack(Material.DIAMOND, 1));
+            if (this.diamondPerPlayer.getOrDefault(playerName, 0) >= limitLevel.getDiamonds()) {
+                block.getWorld().dropItem(loc, new ItemStack(Material.GOLD_INGOT, this.getOreRandom(limitLevel.getGoldBoostPercentage())));
+                block.getWorld().spawn(loc, ExperienceOrb.class).setExperience(event.getExpToDrop());
+                block.setType(Material.AIR);
+
+            } else if (this.diamondPerPlayer.getOrDefault(playerName, 0) + 1 < limitLevel.getDiamonds() && this.getGame().getRandom().nextDouble() <= limitLevel.getDiamondBoostPercentage()) {
+                block.getWorld().dropItem(loc, new ItemStack(Material.DIAMOND, 1));
+                this.diamondPerPlayer.put(playerName, this.diamondPerPlayer.getOrDefault(playerName, 0) + 1);
+            }
+
             this.diamondPerPlayer.put(playerName, this.diamondPerPlayer.getOrDefault(playerName, 0) + 1);
-        }
 
-        this.diamondPerPlayer.put(playerName, this.diamondPerPlayer.getOrDefault(playerName, 0) + 1);
+        } else if (block.getType() == Material.GOLD_ORE) {
+
+            if (this.getGame().getRandom().nextDouble() <= limitLevel.getGoldBoostPercentage()) {
+                block.getWorld().dropItem(loc, new ItemStack(Material.GOLD_INGOT, 1));
+                block.getWorld().spawn(loc, ExperienceOrb.class).setExperience(event.getExpToDrop());
+                block.setType(Material.AIR);
+            }
+        }
     }
 
     @EventHandler
