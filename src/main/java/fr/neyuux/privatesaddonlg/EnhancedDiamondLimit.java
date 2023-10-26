@@ -10,6 +10,7 @@ import fr.neyuux.privatesaddonlg.events.ArmorEquipEvent;
 import fr.ph1lou.werewolfapi.annotations.Configuration;
 import fr.ph1lou.werewolfapi.annotations.ConfigurationBasic;
 import fr.ph1lou.werewolfapi.enums.StateGame;
+import fr.ph1lou.werewolfapi.events.game.game_cycle.LoadEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.FinalJoinEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.listeners.impl.ListenerWerewolf;
@@ -123,6 +124,11 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
                 ev.getPlayer().sendMessage(Plugin.getPrefix() + "§cVous ne pouvez pas porter plus de pièces en diamant !");
             }
         }
+    }
+
+    @EventHandler
+    public void onLoadGame(LoadEvent ev) {
+        EnhancedDiamondLimit.levels.clear();
     }
 
 
@@ -268,7 +274,7 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
 
         public final static LimitLevel LEVEL_1 = new LimitLevel(1, 13, 1);
         public final static LimitLevel LEVEL_2 = new LimitLevel(2, 17, 2);
-        public final static LimitLevel LEVEL_3 = new LimitLevel(3, 22, 3, 0.05D, 0.05D);
-        public final static LimitLevel LEVEL_4 = new LimitLevel(4, 29, 4, 0.10D, 0.10D);
+        public final static LimitLevel LEVEL_3 = new LimitLevel(3, 22, 3, 0.05D, 0.10D);
+        public final static LimitLevel LEVEL_4 = new LimitLevel(4, 29, 4, 0.10D, 0.13D);
     }
 }
