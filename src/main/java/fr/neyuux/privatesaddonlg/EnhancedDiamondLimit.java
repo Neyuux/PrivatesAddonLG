@@ -47,22 +47,10 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
     public void register(boolean isActive) {
         super.register(isActive);
 
-        File file = new File(Plugin.getINSTANCE().getDataFolder(), "diamondLimitLevel.yml");
-        YamlConfiguration yconfig = YamlConfiguration.loadConfiguration(file);
-        try {
-            yconfig.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        this.getGame().getPlayersWW().forEach(iPlayerWW -> {
-            if (yconfig.contains(iPlayerWW.getUUID().toString())) {
-                levels.put(iPlayerWW.getUUID(), LimitLevel.getByLevel(yconfig.getInt(iPlayerWW.getUUID().toString())));
-            } else {
-                levels.put(iPlayerWW.getUUID(), LimitLevel.LEVEL_2);
-                EnhancedDiamondLimit.updateConfig(iPlayerWW.getUUID());
-            }
-        });
+        if (Plugin.getINSTANCE().isLoaded())
+            RELOAD_ALL_LIMITS();
+        else
+            Plugin.getINSTANCE().addServiceLoadTask(wereWolfAPI -> RELOAD_ALL_LIMITS());
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -238,6 +226,28 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
 
             return item.build();
         }
+    }
+
+
+    public static void RELOAD_ALL_LIMITS() {
+        EnhancedDiamondLimit.levels.clear();
+
+        File file = new File(Plugin.getINSTANCE().getDataFolder(), "diamondLimitLevel.yml");
+        YamlConfiguration yconfig = YamlConfiguration.loadConfiguration(file);
+        try {
+            yconfig.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Plugin.getINSTANCE().getGame().getPlayersWW().forEach(iPlayerWW -> {
+            if (yconfig.contains(iPlayerWW.getUUID().toString())) {
+                levels.put(iPlayerWW.getUUID(), LimitLevel.getByLevel(yconfig.getInt(iPlayerWW.getUUID().toString())));
+            } else {
+                levels.put(iPlayerWW.getUUID(), LimitLevel.LEVEL_2);
+                EnhancedDiamondLimit.updateConfig(iPlayerWW.getUUID());
+            }
+        });
     }
 
 

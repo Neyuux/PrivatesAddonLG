@@ -188,6 +188,9 @@ public class RoleBuffListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBarbarianTargetUpdateSuffix(UpdatePlayerNameTagEvent event) {
+        if (!Plugin.getINSTANCE().isLoaded())
+            return;
+
         WereWolfAPI game = Plugin.getINSTANCE().getGame();
         IPlayerWW playerWW = game.getPlayerWW(event.getPlayerUUID()).orElse(null);
         if (playerWW == null)

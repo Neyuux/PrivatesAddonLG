@@ -85,6 +85,8 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     private int customCount = 0;
 
+    private final HashSet<Consumer<WereWolfAPI>> serviceLoadTasks = new HashSet<>();
+
 
     @Override
     public void onEnable() {
@@ -101,6 +103,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
                 if (ww != null && ww.getWereWolfAPI() != null) {
                     Bukkit.getLogger().info("PrivatesAddon -> Service WereWolfAPI found");
+                    Plugin.this.serviceLoadTasks.forEach(consumer -> consumer.accept(ww.getWereWolfAPI()));
                     cancel();
                 }
             }
@@ -115,8 +118,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         pm.registerEvents(new RoleBuffListener(), this);
         pm.registerEvents(new ItemCommand(), this);
         pm.registerEvents(new ArmorListener(Collections.emptyList()), this);
-        
-        this.getCommand("dyson").setExecutor(this);
+
         this.getCommand("say").setExecutor(new CommandSay());
         this.getCommand("pioche").setExecutor(commandPioche);
         this.getCommand("dlimits").setExecutor(new CommandDLimits());
@@ -129,11 +131,6 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     public void onGameStart(StartEvent ev) {
         Bukkit.getScheduler().runTaskLater(this, () -> this.getGame().setGameName("@Neyuux_"), 20L);
         this.groupsWarning.clear();
-    }
-
-    @EventHandler
-    public void onServerPingList(ServerListPingEvent ev) {
-        ev.setMotd("             §e✿ §bPrivate Sotarkiennes §e✿\n   §f≫ §7Team Sotark >>>>>>>>>>>> Team Manon  §f≪");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -276,6 +273,14 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     }
 
 
+
+    public boolean isLoaded() {
+        return this.ww != null;
+    }
+
+    public void addServiceLoadTask(Consumer<WereWolfAPI> consumer) {
+        this.serviceLoadTasks.add(consumer);
+    }
 
     public String getGroupsWarningRatio(UUID uuid) {
         if (this.getGame() == null)
