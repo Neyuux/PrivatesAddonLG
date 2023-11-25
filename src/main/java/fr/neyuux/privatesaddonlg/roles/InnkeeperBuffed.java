@@ -41,6 +41,8 @@ public class InnkeeperBuffed
 
     public InnkeeperBuffed(WereWolfAPI game, IPlayerWW playerWW) {
         super(game, playerWW);
+
+        this.enableAbilities();
     }
 
     @Override
@@ -55,7 +57,7 @@ public class InnkeeperBuffed
 
     @EventHandler
     public void onKill(FinalDeathEvent event) {
-        if (!this.isAbilityEnabled() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
+        if (!this.hasPower() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
             return;
         }
         this.clientDatas.stream().filter(clientData -> clientData.playerWW.equals(event.getPlayerWW())).findFirst().ifPresent(clientData -> {
@@ -119,7 +121,7 @@ public class InnkeeperBuffed
     @EventHandler
     public void onNight(NightEvent event) {
         this.power = false;
-        if (!this.isAbilityEnabled() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
+        if (!this.hasPower() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
             return;
         }
         this.clientDatas.forEach(clientData -> (new BukkitRunnable() {
@@ -140,13 +142,10 @@ public class InnkeeperBuffed
 
     @EventHandler
     public void onRightClick(PlayerInteractAtEntityEvent event) {
-        if (!this.isAbilityEnabled()) {
+        if (!this.hasPower()) {
             return;
         }
         if (event.getPlayer().getUniqueId() != this.getPlayerUUID() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
-            return;
-        }
-        if (this.availableRooms == 0 || !this.power) {
             return;
         }
         if (this.game.isDay(Day.NIGHT)) {

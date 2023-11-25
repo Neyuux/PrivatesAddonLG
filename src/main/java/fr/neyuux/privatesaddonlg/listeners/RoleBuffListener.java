@@ -9,10 +9,11 @@ import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
 import fr.ph1lou.werewolfapi.events.game.timers.RepartitionEvent;
 import fr.ph1lou.werewolfapi.events.game.utils.EnchantmentEvent;
 import fr.ph1lou.werewolfapi.events.lovers.RevealLoversEvent;
-import fr.ph1lou.werewolfapi.events.roles.SelectionEndEvent;
 import fr.ph1lou.werewolfapi.events.roles.StealEvent;
+import fr.ph1lou.werewolfapi.events.roles.charmer.CharmerGetEffectDeathEvent;
 import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
+import fr.ph1lou.werewolfapi.player.impl.PotionModifier;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.role.interfaces.IAffectedPlayers;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -26,6 +27,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -36,6 +39,7 @@ public class RoleBuffListener implements Listener {
 
     private final HashMap<IPlayerWW, BigDecimal> statsSaved = new HashMap<>();
     private final HashMap<IPlayerWW, Camp> imitatorBuff = new HashMap<>();
+    private final HashSet<IPlayerWW> charmerResistance = new HashSet<>();
     private final HashSet<IPlayerWW> imitators = new HashSet<>();
 
     @EventHandler
@@ -111,6 +115,30 @@ public class RoleBuffListener implements Listener {
                     break;
             }
         });
+
+
+        playerWW.ifPresent(playerWW1 -> {
+
+            if (playerWW1.getRole() == null)
+                return;
+
+            switch (playerWW1.getRole().getKey()) {
+                case "werewolf.roles.charmer.display":
+                    if (!this.charmerResistance.contains(playerWW1))
+                        return;
+
+                    double finalDamages = ev.getFinalDamage();
+
+                    ev.setDamage(ev.getDamage() * 0.90);
+
+                    statsSaved.put(playerWW1, statsSaved.get(playerWW1).add(BigDecimal.valueOf(finalDamages - ev.getFinalDamage())));
+
+                    break;
+
+                default:
+                    break;
+            }
+        });
     }
 
     @EventHandler
@@ -121,12 +149,18 @@ public class RoleBuffListener implements Listener {
             main.doToAllPlayersWithRole("werewolf.roles.wolf_dog.display", playerWW -> playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fVous possèdez bien §c§lForce §fla nuit si vous choisissez de vous transformer. (Il y une erreur dans la description)")));
 
             main.doToAllPlayersWithRole("werewolf.roles.barbarian.display", playerWW -> {
-                playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fEffets bonus : Vous régénérez §d§l25% §fdes dégâts que vous infligez. Vous possèdez un §ceffet de force§f en fonction de votre barre de vie §c(5% -> 35%)§f."));
+                playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fEffets bonus : Vous régénérez §d§l20% §fdes dégâts que vous infligez. Vous possèdez un §ceffet de force§f en fonction de votre barre de vie §c(5% -> 35%)§f."));
             });
 
             main.doToAllPlayersWithRole("werewolf.roles.imitator.display", this.imitators::add);
 
-            main.getGame().getPlayersWW().forEach(playerWW -> statsSaved.put(playerWW, BigDecimal.valueOf(0.0D)));
+            main.getGame().getPlayersWW().forEach(playerWW -> {
+                statsSaved.put(playerWW, BigDecimal.valueOf(0.0D));
+
+                if (Plugin.getINSTANCE().hasAttribute(RoleAttribute.NEUTRAL, playerWW.getRole())) {
+                    playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fVotre rôle vous permet de faire un niveau de §c§lTranchant§f de plus que les autres dans cette partie !"));
+                }
+            });
         }, 2L);
     }
 
@@ -176,6 +210,8 @@ public class RoleBuffListener implements Listener {
         main.doToAllPlayersWithRole("werewolf.roles.imitator.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix() + "§c§lDégâts de l'§7§lImitateur §7" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
 
         main.doToAllPlayersWithRole("werewolf.roles.rival.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix() + "§c§lDégâts du §d§lRival §d" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
+
+        main.doToAllPlayersWithRole("werewolf.roles.charmer.display", playerWW -> Bukkit.broadcastMessage(Plugin.getPrefix() + "§7§lRésistance de la §d§lCharmeuse §d" + playerWW.getName() + "§c: §l" + statsSaved.get(playerWW).setScale(0, RoundingMode.HALF_UP).intValue() + " HP"));
     }
 
     @EventHandler
@@ -202,6 +238,24 @@ public class RoleBuffListener implements Listener {
             if (((IAffectedPlayers)barbarianWW.getRole()).getAffectedPlayers().contains(playerWW))
                 event.setSuffix("");
         });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCharmerEffects(CharmerGetEffectDeathEvent ev) {
+        ev.setCancelled(true);
+
+        IPlayerWW playerWW = ev.getPlayerWW();
+        Player player = Bukkit.getPlayer(playerWW.getUUID());
+
+        playerWW.addPotionModifier(PotionModifier.add(PotionEffectType.SPEED, playerWW.getRole().getKey()));
+        this.charmerResistance.add(playerWW);
+
+        if (player == null)
+            return;
+
+        player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 3600, 1, false, false));
+
+        player.sendMessage(Plugin.getPrefix() + "§fTu as désormais plusieurs effets : §bRapidité 1§f, §eAborption 2 pendant 3 minutes§f et §7Résistance 10% jusqu'à la fin de la partie§f.");
     }
 
 
