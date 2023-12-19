@@ -205,7 +205,7 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
 
         private ItemStack getPlayerItem(IPlayerWW playerWW) {
             LimitLevel limitLevel = EnhancedDiamondLimit.levels.get(playerWW.getUUID());
-            ItemBuilder item = new ItemBuilder(Material.SKULL_ITEM);
+            ItemBuilder item = new ItemBuilder(new ItemStack(Material.SKULL_ITEM, 1, (short) 3));
             item.setHead(playerWW.getName(), null);
             int goldPercentage = (int) (limitLevel.getGoldBoostPercentage() * 100);
             int diamondPercentage = (int) (limitLevel.getDiamondBoostPercentage() * 100);

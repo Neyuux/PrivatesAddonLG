@@ -148,6 +148,8 @@ public class RoleBuffListener implements Listener {
         Bukkit.getScheduler().runTaskLater(Plugin.getINSTANCE(), () -> {
             main.doToAllPlayersWithRole("werewolf.roles.wolf_dog.display", playerWW -> playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fVous possèdez bien §c§lForce §fla nuit si vous choisissez de vous transformer. (Il y une erreur dans la description)")));
 
+            main.doToAllPlayersWithRole("werewolf.roles.mischievous_werewolf.display", playerWW -> playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fVous ne possèdez pas §c§lForce§f la nuit. (Il y une erreur dans la description)")));
+
             main.doToAllPlayersWithRole("werewolf.roles.barbarian.display", playerWW -> {
                 playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fEffets bonus : Vous régénérez §d§l20% §fdes dégâts que vous infligez. Vous possèdez un §ceffet de force§f en fonction de votre barre de vie §c(5% -> 35%)§f."));
             });

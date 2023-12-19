@@ -19,6 +19,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -81,8 +82,8 @@ public class RedWWNametagsNeyuux extends ListenerWerewolf {
                 }
 
                 if (!uuid1.equals(player.getUniqueId())) {
-                    ChatColor color = targetWW.getColor(playerWW);
-                    if (playerWW.isState(StatePlayer.ALIVE) && color != ChatColor.RESET) {
+                    String color = targetWW.getColor(playerWW);
+                    if (playerWW.isState(StatePlayer.ALIVE) && !Objects.equals(color, ChatColor.RESET.toString())) {
                         sb.append(color);
                     }
                 }
