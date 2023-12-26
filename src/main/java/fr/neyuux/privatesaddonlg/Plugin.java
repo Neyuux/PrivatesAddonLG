@@ -8,6 +8,7 @@ import fr.minuskube.inv.InventoryManager;
 import fr.neyuux.privatesaddonlg.commands.CommandDLimits;
 import fr.neyuux.privatesaddonlg.commands.CommandPioche;
 import fr.neyuux.privatesaddonlg.commands.CommandSay;
+import fr.neyuux.privatesaddonlg.commands.DonCommand;
 import fr.neyuux.privatesaddonlg.commands.roles.ItemCommand;
 import fr.neyuux.privatesaddonlg.listeners.ArmorListener;
 import fr.neyuux.privatesaddonlg.listeners.RoleBuffListener;
@@ -21,16 +22,15 @@ import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
-import fr.ph1lou.werewolfapi.events.game.utils.WinConditionsCheckEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.role.interfaces.IRole;
 import fr.ph1lou.werewolfapi.utils.ItemBuilder;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -44,7 +44,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -123,6 +122,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         this.getCommand("say").setExecutor(new CommandSay());
         this.getCommand("pioche").setExecutor(commandPioche);
         this.getCommand("dlimits").setExecutor(new CommandDLimits());
+        this.getCommand("don").setExecutor(new DonCommand());
 
         super.onEnable();
     }
@@ -248,7 +248,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     }
 
 
-    private void removeCustomEntities(int seconds, UUID uuid, LivingEntity... entities) {
+    private void removeCustomEntities(int seconds, LivingEntity... entities) {
         this.customEntities.addAll(Arrays.asList(entities));
 
         Bukkit.getScheduler().runTaskLater(this, () -> {

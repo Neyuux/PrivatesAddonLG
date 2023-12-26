@@ -14,6 +14,10 @@
           "command": "groupchecks",
           "description": "Permet de vérifer le nombre de fois où un joueur n'a pas respecté les groupes."
         }
+      },
+
+      "lovers": {
+        "don": "don"
       }
     },
 
@@ -49,6 +53,10 @@
         "configurations": {
           "healtimer": "Temps de récupération des coeurs : §b&number&s"
         }
+      },
+      "assassin_drop_nerf": {
+        "name": "Nerf du stuff de l'Assassin au drop",
+        "description": "Drop uniquement le plastron de l'Assassin avec du protection +1"
       }
     },
 

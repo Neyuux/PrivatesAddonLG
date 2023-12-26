@@ -1,5 +1,6 @@
-package fr.neyuux.privatesaddonlg;
+package fr.neyuux.privatesaddonlg.configs;
 
+import fr.neyuux.privatesaddonlg.Plugin;
 import fr.ph1lou.werewolfapi.annotations.Configuration;
 import fr.ph1lou.werewolfapi.annotations.ConfigurationBasic;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;

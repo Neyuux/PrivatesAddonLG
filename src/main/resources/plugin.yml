@@ -17,3 +17,8 @@ commands:
     description: Pour avoir un meilleur minage
   dlimits:
     description: Pour changer les limites de diamants
+  don:
+    description: Don pour le couple
+    aliases:
+      - d
+      - wwdon

@@ -43,6 +43,7 @@ public class InnkeeperBuffed
         super(game, playerWW);
 
         this.enableAbilities();
+        this.setPower(true);
     }
 
     @Override
@@ -120,7 +121,6 @@ public class InnkeeperBuffed
 
     @EventHandler
     public void onNight(NightEvent event) {
-        this.power = false;
         if (!this.hasPower() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
             return;
         }

@@ -1,6 +1,6 @@
 package fr.neyuux.privatesaddonlg.commands;
 
-import fr.neyuux.privatesaddonlg.EnhancedDiamondLimit;
+import fr.neyuux.privatesaddonlg.configs.EnhancedDiamondLimit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

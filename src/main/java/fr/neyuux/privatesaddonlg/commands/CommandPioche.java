@@ -1,7 +1,8 @@
 package fr.neyuux.privatesaddonlg.commands;
 
 import fr.neyuux.privatesaddonlg.Plugin;
-import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
+import fr.ph1lou.werewolfapi.enums.StateGame;
+import fr.ph1lou.werewolfapi.events.game.game_cycle.LoadEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.utils.ItemBuilder;
 import fr.ph1lou.werewolfapi.utils.Utils;
@@ -108,6 +109,10 @@ public class CommandPioche implements CommandExecutor, Listener {
     public void onFakeDiamondSpawn(ItemSpawnEvent ev) {
         Item entityItem = ev.getEntity();
         ItemStack item = ev.getEntity().getItemStack();
+        WereWolfAPI game = Plugin.getINSTANCE().getGame();
+
+        if (!game.isState(StateGame.GAME) && !game.isState(StateGame.START))
+            return;
 
         if (this.map.values().stream().anyMatch(locations -> locations.stream().anyMatch(location -> location.distanceSquared(entityItem.getLocation()) <= 1))) {
 
@@ -174,7 +179,7 @@ public class CommandPioche implements CommandExecutor, Listener {
     }
 
     @EventHandler
-    public void onStart(StartEvent ev) {
+    public void onStart(LoadEvent ev) {
         map.clear();
     }
 }

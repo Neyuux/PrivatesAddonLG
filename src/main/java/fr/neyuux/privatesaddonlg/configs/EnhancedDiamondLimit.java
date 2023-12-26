@@ -1,4 +1,4 @@
-package fr.neyuux.privatesaddonlg;
+package fr.neyuux.privatesaddonlg.configs;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
@@ -6,6 +6,7 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
+import fr.neyuux.privatesaddonlg.Plugin;
 import fr.neyuux.privatesaddonlg.events.ArmorEquipEvent;
 import fr.ph1lou.werewolfapi.annotations.Configuration;
 import fr.ph1lou.werewolfapi.annotations.ConfigurationBasic;
@@ -18,7 +19,6 @@ import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.utils.ItemBuilder;
 import fr.ph1lou.werewolfapi.versions.VersionUtils;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -123,7 +123,7 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
 
     @EventHandler
     public void onLoadGame(LoadEvent ev) {
-        EnhancedDiamondLimit.levels.clear();
+        RELOAD_ALL_LIMITS();
     }
 
 
