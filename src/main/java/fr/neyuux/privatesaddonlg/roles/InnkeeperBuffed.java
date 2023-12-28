@@ -58,7 +58,7 @@ public class InnkeeperBuffed
 
     @EventHandler
     public void onKill(FinalDeathEvent event) {
-        if (!this.hasPower() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
+        if (!this.isAbilityEnabled() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
             return;
         }
         this.clientDatas.stream().filter(clientData -> clientData.playerWW.equals(event.getPlayerWW())).findFirst().ifPresent(clientData -> {
@@ -121,7 +121,7 @@ public class InnkeeperBuffed
 
     @EventHandler
     public void onNight(NightEvent event) {
-        if (!this.hasPower() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
+        if (!this.isAbilityEnabled() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
             return;
         }
         this.clientDatas.forEach(clientData -> (new BukkitRunnable() {
@@ -142,10 +142,13 @@ public class InnkeeperBuffed
 
     @EventHandler
     public void onRightClick(PlayerInteractAtEntityEvent event) {
-        if (!this.hasPower()) {
+        if (event.getPlayer().getUniqueId().equals(this.getPlayerUUID())) {
+            System.out.println("DebugTA " + this.getPlayerWW().getName() + " ab: " + this.isAbilityEnabled() + " st: " + this.getPlayerWW().getState() + " d: " + this.game.isDay(Day.DAY) + " n: "+ event.getRightClicked().getName());
+        }
+        if (!this.isAbilityEnabled()) {
             return;
         }
-        if (event.getPlayer().getUniqueId() != this.getPlayerUUID() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
+        if (!event.getPlayer().getUniqueId().equals(this.getPlayerUUID()) || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
             return;
         }
         if (this.game.isDay(Day.NIGHT)) {

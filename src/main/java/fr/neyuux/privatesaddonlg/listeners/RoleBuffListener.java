@@ -95,7 +95,7 @@ public class RoleBuffListener implements Listener {
 
                         double finalDamages = ev.getFinalDamage();
 
-                        ev.setDamage(ev.getDamage() * 1.10D);
+                        ev.setDamage(ev.getDamage() * 1.15D);
 
                         statsSaved.put(damagerWW, statsSaved.get(damagerWW).add(BigDecimal.valueOf(ev.getFinalDamage() - finalDamages)));
                     }

@@ -66,6 +66,10 @@
         "itemcommand": "item"
       },
 
+      "mystical_werewolf": {
+        "display": "Loup-Garou Mystique"
+      },
+
       "innkeeperbuffed": {
         "display": "Aubergiste",
         "effect": "Speed quand toutes les chambres sont fermées",
