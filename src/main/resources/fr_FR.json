@@ -70,6 +70,16 @@
         "display": "Loup-Garou Mystique"
       },
 
+      "wolf_dog": {
+        "display": "Chien-Loup",
+        "command": "transformer",
+        "description": "Forme §aVillageois§f : Les Loups Garous vous voient dans leur liste, cependant, vous ne connaissez pas les Loups Garous. Attention, les rôles à informations vous voient dans le camp des Loups Garous. Vous pouvez lire et envoyer des messages dans le chat des Loups Garous",
+        "transform": "Vous pouvez passer dans votre forme Loup Garou avec la commande §b/ww transformer§f (irreversible), vous avez §b&timer&",
+        "time_over": "Vous ne pouvez plus choisir votre forme, vous restez donc Villageois",
+        "perform": "Vous venez de choisir la forme Loup-Garou",
+        "description_2": "Forme §cLoup-Garou§f : Les Loups Garous ne vous voient pas dans leur liste. Cependant, vous connaissez les Loups Garous. Les rôles à informations vous voient dans le camp des Villageois."
+      },
+
       "innkeeperbuffed": {
         "display": "Aubergiste",
         "effect": "Speed quand toutes les chambres sont fermées",
