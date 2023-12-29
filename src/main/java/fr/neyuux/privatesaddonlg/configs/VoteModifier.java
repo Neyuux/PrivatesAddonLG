@@ -57,10 +57,15 @@ public class VoteModifier extends ListenerWerewolf {
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (playerWW.isState(StatePlayer.DEATH)) {
+                    cancel();
+                    return;
+                }
+
                 playerWW.addPlayerMaxHealth(2);
 
                 if (playerWW.getMaxHealth() >= baseHealth) {
-                    VersionUtils_1_8.getVersionUtils().setPlayerMaxHealth(Bukkit.getPlayer(playerWW.getUUID()), baseHealth);
+                    playerWW.removePlayerMaxHealth(playerWW.getMaxHealth() - baseHealth);
                     cancel();
                 }
             }
