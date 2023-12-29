@@ -157,7 +157,7 @@ public class OldFox
         if (renardLocation.getWorld() != playerLocation.getWorld()) {
             return;
         }
-        if (renardLocation.distance(playerLocation) > (double)this.game.getConfig().getValue("privatesaddon.roles.fox.configurations.distance")) {
+        if (renardLocation.distanceSquared(playerLocation) > Math.pow(this.game.getConfig().getValue("privatesaddon.roles.fox.configurations.distance"), 2)) {
             return;
         }
         float temp = this.getProgress() + 100.0f / (float)(this.game.getConfig().getTimerValue("privatesaddon.roles.fox.timers.fox_smell_duration") + 1);

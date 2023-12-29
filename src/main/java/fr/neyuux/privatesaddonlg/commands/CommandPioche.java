@@ -114,6 +114,9 @@ public class CommandPioche implements CommandExecutor, Listener {
         if (!game.isState(StateGame.GAME) && !game.isState(StateGame.START))
             return;
 
+        if (!entityItem.getLocation().getWorld().equals(game.getMapManager().getWorld()))
+            return;
+
         if (this.map.values().stream().anyMatch(locations -> locations.stream().anyMatch(location -> location.distanceSquared(entityItem.getLocation()) <= 1))) {
 
             if (item != null && item.getType() == Material.DIAMOND) {

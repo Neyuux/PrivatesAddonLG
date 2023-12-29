@@ -80,7 +80,7 @@ public class MysticalWerewolf extends RoleWereWolf {
             selected = list.remove(0);
         }
         Bukkit.getPluginManager().callEvent(new MysticalWerewolfRevelationEvent(getPlayerWW(), selected));
-        getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.roles.mystical_werewolf.werewolf_death", new Formatter[] { Formatter.player(selected.getName()),
-                Formatter.role(this.game.translate(selected.getRole().getKey(), new Formatter[0])) });
+        getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.roles.mystical_werewolf.werewolf_death", Formatter.player(selected.getName()),
+                Formatter.role(this.game.translate(selected.getRole().getKey())));
     }
 }

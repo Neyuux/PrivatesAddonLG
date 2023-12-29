@@ -55,8 +55,9 @@ public class GroupCheckTask extends ListenerWerewolf {
             UUID uuid = player.getUniqueId();
 
             long around = checkable.stream()
-                    .filter(player1 -> player1.getLocation().distanceSquared(player.getLocation()) <= 50 * 50)
-                    .filter(player1 -> game.getPlayerWW(player1.getUniqueId()).isPresent() && game.getPlayerWW(player1.getUniqueId()).get().isState(StatePlayer.ALIVE))
+                    .filter(player1 -> player1.getLocation().distanceSquared(player.getLocation()) <= 50 * 50 &&
+                            game.getPlayerWW(player1.getUniqueId()).isPresent() &&
+                            game.getPlayerWW(player1.getUniqueId()).get().isState(StatePlayer.ALIVE))
                     .count();
 
 

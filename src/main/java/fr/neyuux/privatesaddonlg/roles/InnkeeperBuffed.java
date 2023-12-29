@@ -16,6 +16,7 @@ import fr.ph1lou.werewolfapi.role.utils.DescriptionBuilder;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
@@ -124,25 +125,27 @@ public class InnkeeperBuffed
         if (!this.isAbilityEnabled() || !this.getPlayerWW().isState(StatePlayer.ALIVE)) {
             return;
         }
-        this.clientDatas.forEach(clientData -> (new BukkitRunnable() {
+        this.clientDatas.forEach(clientData -> new BukkitRunnable() {
             public void run() {
                 if (InnkeeperBuffed.this.game.isDay(Day.DAY) || !clientData.watching || InnkeeperBuffed.this.game.isState(StateGame.END)) {
                     cancel();
                 } else {
                     Objects.requireNonNull(clientData.seenPlayers);
                     InnkeeperBuffed.this.game.getPlayersWW().stream()
-                            .filter(iPlayerWW -> !iPlayerWW.equals(InnkeeperBuffed.this.getPlayerWW()))
-                            .filter(iPlayerWW -> !iPlayerWW.equals(clientData.playerWW))
-                            .filter(iPlayerWW -> iPlayerWW.isState(StatePlayer.ALIVE)).filter(iPlayerWW -> iPlayerWW.getLocation().getWorld() == clientData.playerWW.getLocation().getWorld() && ((iPlayerWW.getLocation().distance(clientData.playerWW.getLocation()) <= InnkeeperBuffed.this.game.getConfig().getValue("privatesaddon.roles.innkeeperbuffed.configurations.detection_radius"))))
+                            .filter(iPlayerWW -> !iPlayerWW.equals(InnkeeperBuffed.this.getPlayerWW()) &&
+                                    !iPlayerWW.equals(clientData.playerWW) &&
+                                    iPlayerWW.isState(StatePlayer.ALIVE) &&
+                                    iPlayerWW.getLocation().getWorld() == clientData.playerWW.getLocation().getWorld() &&
+                                    ((iPlayerWW.getLocation().distance(clientData.playerWW.getLocation()) <= InnkeeperBuffed.this.game.getConfig().getValue("privatesaddon.roles.innkeeperbuffed.configurations.detection_radius"))))
                             .forEach(clientData.seenPlayers::add);
                 }
             }
-        }).runTaskTimerAsynchronously(Plugin.getINSTANCE(), 0L, 100L));
+        }.runTaskTimerAsynchronously(Plugin.getINSTANCE(), 0L, 100L));
     }
 
     @EventHandler
     public void onRightClick(PlayerInteractAtEntityEvent event) {
-        if (event.getPlayer().getUniqueId().equals(this.getPlayerUUID())) {
+        if (event.getPlayer().getUniqueId().equals(this.getPlayerUUID()) && event.getRightClicked().getType() == EntityType.PLAYER) {
             System.out.println("DebugTA " + this.getPlayerWW().getName() + " ab: " + this.isAbilityEnabled() + " st: " + this.getPlayerWW().getState() + " d: " + this.game.isDay(Day.DAY) + " n: "+ event.getRightClicked().getName());
         }
         if (!this.isAbilityEnabled()) {

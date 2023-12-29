@@ -58,9 +58,9 @@ public class Illusionist extends RoleVillage implements IPower, IAffectedPlayers
                     this.setWait(false);
                     List<IPlayerWW> playersWW = this.game.getPlayersWW()
                             .stream()
-                            .filter((playerWW1) -> !playerWW1.equals(this.getPlayerWW()))
-                            .filter((playerWW1) -> playerWW1.isState(StatePlayer.ALIVE))
-                            .filter((playerWW) -> !playerWW.getRole().isWereWolf())
+                            .filter((playerWW1) -> !playerWW1.equals(this.getPlayerWW()) &&
+                                    playerWW1.isState(StatePlayer.ALIVE) &&
+                                    !playerWW1.getRole().isWereWolf())
                             .collect(Collectors.toList());
 
                     if (!playersWW.isEmpty()) {
@@ -83,10 +83,9 @@ public class Illusionist extends RoleVillage implements IPower, IAffectedPlayers
 
                                     List<IPlayerWW> players1WW = this.game.getPlayersWW()
                                             .stream()
-                                            .filter((playerWW1) -> !playerWW1.equals(this.getPlayerWW()))
-                                            .filter((playerWW1) -> !playerWW1.equals(playerWW))
-                                            .filter((playerWW1) -> playerWW1.isState(StatePlayer.ALIVE))
-                                            .map(IPlayerWW::getRole).map(IRole::getPlayerWW)
+                                            .filter((playerWW1) -> !playerWW1.equals(this.getPlayerWW()) &&
+                                                    !playerWW1.equals(playerWW) &&
+                                                    playerWW1.isState(StatePlayer.ALIVE))
                                             .collect(Collectors.toList());
 
                                     if (players1WW.size() >= 2) {
