@@ -70,6 +70,10 @@
         "display": "Loup-Garou Mystique"
       },
 
+      "illusionist": {
+        "display": "Illusionniste"
+      },
+
       "wolf_dog": {
         "display": "Chien-Loup",
         "command": "transformer",
