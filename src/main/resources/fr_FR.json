@@ -84,7 +84,7 @@
         "description_2": "Forme §cLoup-Garou§f : Les Loups Garous ne vous voient pas dans leur liste. Cependant, vous connaissez les Loups Garous. Les rôles à informations vous voient dans le camp des Villageois."
       },
 
-      "innkeeperbuffed": {
+      "innkeeper": {
         "display": "Aubergiste",
         "effect": "Speed quand toutes les chambres sont fermées",
         "available": "Votre pouvoir est de nouveau disponible",

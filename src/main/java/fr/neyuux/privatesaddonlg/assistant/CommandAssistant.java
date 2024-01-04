@@ -1,0 +1,81 @@
+package fr.neyuux.privatesaddonlg.assistant;
+
+import fr.neyuux.privatesaddonlg.Plugin;
+import fr.ph1lou.werewolfapi.game.WereWolfAPI;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class CommandAssistant implements CommandExecutor, TabCompleter {
+
+    private final Plugin main;
+
+    private static final List<String> options = Collections.unmodifiableList(Arrays.asList("compo", "map", "config", "scenarios", "save", "storage", "all"));
+
+    public CommandAssistant(Plugin main) {
+        this.main = main;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
+        if (!main.isLoaded())
+            return true;
+
+        if (args.length == 0) {
+            sender.sendMessage(Plugin.getPrefix() + "§cVous devez renseigner un argument. Argument disponibles : " + options
+                    .stream()
+                    .map(s -> {
+                        if (options.get(options.size() - 1).equals(s))
+                            return "§e" + s;
+
+                        return "§e" + s + "§c, ";
+                    })
+                    .collect(Collectors.joining()));
+            return true;
+        }
+
+        WereWolfAPI game = main.getGame();
+
+        switch (args[0]) {
+            case "compo":
+                break;
+
+            case "map":
+                break;
+
+            case "config":
+                break;
+
+            case "scenarios":
+                break;
+
+            case "save":
+                sender.sendMessage(Plugin.getPrefix() + "§c-----------COMING SOON-----------");
+                break;
+
+            case "storage":
+                sender.sendMessage(Plugin.getPrefix() + "§c-----------COMING SOON-----------");
+                break;
+
+            case "all":
+                break;
+        }
+
+        return true;
+    }
+
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+        if (args.length > 0)
+            return options.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
+
+        return options;
+    }
+}

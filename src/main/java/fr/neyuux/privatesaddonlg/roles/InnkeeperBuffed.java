@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-@Role(key="privatesaddon.roles.innkeeperbuffed.display", category=Category.VILLAGER, attributes={RoleAttribute.VILLAGER, RoleAttribute.MINOR_INFORMATION}, configValues={@IntValue(key="privatesaddon.roles.innkeeperbuffed.configurations.detection_radius", defaultValue=10, meetUpValue=10, step=1, item=UniversalMaterial.IRON_DOOR)})
+@Role(key="privatesaddon.roles.innkeeper.display", category=Category.VILLAGER, attributes={RoleAttribute.VILLAGER, RoleAttribute.MINOR_INFORMATION}, configValues={@IntValue(key="privatesaddon.roles.innkeeper.configurations.detection_radius", defaultValue=10, meetUpValue=10, step=1, item=UniversalMaterial.IRON_DOOR)})
 public class InnkeeperBuffed
         extends RoleVillage
         implements IPower {
@@ -136,7 +136,7 @@ public class InnkeeperBuffed
                                     !iPlayerWW.equals(clientData.playerWW) &&
                                     iPlayerWW.isState(StatePlayer.ALIVE) &&
                                     iPlayerWW.getLocation().getWorld() == clientData.playerWW.getLocation().getWorld() &&
-                                    ((iPlayerWW.getLocation().distance(clientData.playerWW.getLocation()) <= InnkeeperBuffed.this.game.getConfig().getValue("privatesaddon.roles.innkeeperbuffed.configurations.detection_radius"))))
+                                    ((iPlayerWW.getLocation().distance(clientData.playerWW.getLocation()) <= InnkeeperBuffed.this.game.getConfig().getValue("privatesaddon.roles.innkeeper.configurations.detection_radius"))))
                             .forEach(clientData.seenPlayers::add);
                 }
             }
