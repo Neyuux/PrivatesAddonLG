@@ -84,6 +84,13 @@
         "description_2": "Forme §cLoup-Garou§f : Les Loups Garous ne vous voient pas dans leur liste. Cependant, vous connaissez les Loups Garous. Les rôles à informations vous voient dans le camp des Villageois."
       },
 
+      "omniscient": {
+        "display": "Omniscient",
+        "command": "transcender",
+        "items": "4 d'obsidienne et 4 bibliothéques",
+        "description": "Vous devez gagner seul, pour vous aider à accomplir cette tâche, vous possèdez une commande qui vous permet de connaître l'identité de tous les joueurs de la partie."
+      },
+
       "innkeeperbuffed": {
         "display": "Aubergiste",
         "effect": "Speed quand toutes les chambres sont fermées",

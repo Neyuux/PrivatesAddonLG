@@ -14,7 +14,6 @@ import fr.ph1lou.werewolfapi.role.interfaces.IProgress;
 import fr.ph1lou.werewolfapi.role.interfaces.IRole;
 import java.util.UUID;
 
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
