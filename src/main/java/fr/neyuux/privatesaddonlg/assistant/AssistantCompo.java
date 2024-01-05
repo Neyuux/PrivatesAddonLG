@@ -199,7 +199,7 @@ public class AssistantCompo {
                     else
                         currentIP += informationsPoints.get(s) * game.getConfig().getRoleCount(roleRegister.getMetaDatas().key());
 
-
+        //TODO Points GUI
         return recommandedIP - currentIP;
     }
 
