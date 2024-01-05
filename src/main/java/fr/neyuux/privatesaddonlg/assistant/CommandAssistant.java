@@ -16,7 +16,9 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
     private final Plugin main;
 
-    private static final List<String> options = Collections.unmodifiableList(Arrays.asList("compo", "map", "config", "scenarios", "save", "storage", "all", "lg", "lgpotential", "infos", "points"));
+    private int playerCount = -1;
+
+    private static final List<String> options = Collections.unmodifiableList(Arrays.asList("compo", "map", "config", "players", "scenarios", "save", "storage", "all", "lg", "lgpotential", "infos", "points"));
 
     public CommandAssistant(Plugin main) {
         this.main = main;
@@ -68,6 +70,11 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
             case "all":
                 break;
 
+            case "setplayers":
+            case "players":
+            case "setcount":
+                break;
+
             case "lg":
             case "baselg":
                 break;
@@ -101,5 +108,12 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
             return options.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
 
         return options;
+    }
+
+
+
+    public int getPlayerCount() {
+        if (!main.isLoaded()) return -1;
+        return (this.playerCount == -1 ? main.getGame().getPlayersCount() : this.playerCount);
     }
 }

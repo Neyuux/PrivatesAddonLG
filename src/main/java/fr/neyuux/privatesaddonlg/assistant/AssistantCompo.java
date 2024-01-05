@@ -17,11 +17,13 @@ import java.util.stream.IntStream;
 public class AssistantCompo {
 
     private final Plugin main;
+    private final CommandAssistant assistant;
 
     private final HashMap<String, Integer> informationsPoints = new HashMap<>();
 
-    public AssistantCompo(Plugin main) {
+    public AssistantCompo(Plugin main, CommandAssistant assistant) {
         this.main = main;
+        this.assistant = assistant;
 
         informationsPoints.put("analyst", 1);
         informationsPoints.put("seer", 9);
@@ -57,7 +59,7 @@ public class AssistantCompo {
 
         WereWolfAPI game = main.getGame();
 
-        int count = game.getPlayersCount();
+        int count = this.assistant.getPlayerCount();
         AtomicInteger whiteWerewolf = new AtomicInteger(0);
         int currentWW = (int) main.getRegisterManager().getRolesRegister()
                 .stream()
@@ -111,7 +113,7 @@ public class AssistantCompo {
 
         WereWolfAPI game = main.getGame();
 
-        int count = game.getPlayersCount();
+        int count = this.assistant.getPlayerCount();
         AtomicInteger whiteWerewolf = new AtomicInteger(0);
         AtomicInteger maxWW = new AtomicInteger(0);
         AtomicBoolean romulusRemus = new AtomicBoolean(false);
@@ -187,7 +189,7 @@ public class AssistantCompo {
 
         WereWolfAPI game = main.getGame();
 
-        int count = game.getPlayersCount();
+        int count = this.assistant.getPlayerCount();
         int recommandedIP = Math.round(count * 1.25f + 0.8f * -this.checkBaseWerewolves());
         int currentIP = 0;
 
@@ -207,8 +209,27 @@ public class AssistantCompo {
         if (!main.isLoaded())
             return 0;
 
-        WereWolfAPI game = main.getGame();
-        //TODO
+        int count = this.assistant.getPlayerCount();
+        int recommandedSolos = 0;
+
+        for (int i = count; i > 9; i -= 9)
+            recommandedSolos++;
+
+        return recommandedSolos - this.getSolosCount();
+    }
+
+    public int checkNeutralRoles() {
+        if (!main.isLoaded())
+            return 0;
+
+        int count = this.assistant.getPlayerCount();
+        int currentSolos = this.getSolosCount();
+        int currentNeutral = (int) main.getRegisterManager().getRolesRegister()
+                .stream()
+                .filter(roleRegister -> AssistantCompo.isNeutral(roleRegister.getMetaDatas().key()))
+                .flatMapToInt(roleRegisterx -> IntStream.range(0, main.getGame().getConfig().getRoleCount(roleRegisterx.getMetaDatas().key())))
+                .count();
+
         return 0;
     }
 
@@ -219,5 +240,21 @@ public class AssistantCompo {
                 key.contains("scammer") ||
                 key.contains("wild_child") ||
                 key.contains("wolf_dog");
+    }
+
+    private static boolean isNeutral(String key) {
+        return key.contains("thief") ||
+                key.contains("thug") ||
+                key.contains("scammer") ||
+                key.contains("romulus_remus") ||
+                key.contains("auramancer");
+    }
+
+    private int getSolosCount() {
+        return (int) main.getRegisterManager().getRolesRegister()
+                .stream()
+                .filter(roleRegister -> Arrays.stream(roleRegister.getMetaDatas().attributes()).anyMatch(attribute -> attribute == RoleAttribute.NEUTRAL) && !roleRegister.getMetaDatas().key().contains("white_werewolf"))
+                .flatMapToInt(roleRegisterx -> IntStream.range(0, main.getGame().getConfig().getRoleCount(roleRegisterx.getMetaDatas().key())))
+                .count();
     }
 }
