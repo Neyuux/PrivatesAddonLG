@@ -1,9 +1,12 @@
 package fr.neyuux.privatesaddonlg.assistant;
 
 import fr.neyuux.privatesaddonlg.Plugin;
+import fr.ph1lou.werewolfapi.annotations.Role;
 import fr.ph1lou.werewolfapi.enums.Category;
 import fr.ph1lou.werewolfapi.enums.RoleAttribute;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
+import fr.ph1lou.werewolfapi.role.interfaces.IRole;
+import fr.ph1lou.werewolfapi.utils.Wrapper;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,6 +45,9 @@ public class AssistantCompo {
         informationsPoints.put("innkeeper", 4);
         informationsPoints.put("croupier", 5);
         informationsPoints.put("librarian", 2);
+        informationsPoints.put("sister", 1);
+        informationsPoints.put("little_girl", 3);
+        informationsPoints.put("witness", 2);
     }
 
 
@@ -182,8 +188,28 @@ public class AssistantCompo {
         WereWolfAPI game = main.getGame();
 
         int count = game.getPlayersCount();
+        int recommandedIP = Math.round(count * 1.25f + 0.8f * -this.checkBaseWerewolves());
+        int currentIP = 0;
+
+        for (Wrapper<IRole, Role> roleRegister : main.getRegisterManager().getRolesRegister())
+            for (String s : this.informationsPoints.keySet())
+                if (roleRegister.getMetaDatas().key().contains(s))
+                    if (roleRegister.getMetaDatas().requireDouble())
+                        currentIP = informationsPoints.get(s);
+                    else
+                        currentIP += informationsPoints.get(s) * game.getConfig().getRoleCount(roleRegister.getMetaDatas().key());
 
 
+        return recommandedIP - currentIP;
+    }
+
+    public int checkSoloRoles() {
+        if (!main.isLoaded())
+            return 0;
+
+        WereWolfAPI game = main.getGame();
+        //TODO
+        return 0;
     }
 
 
