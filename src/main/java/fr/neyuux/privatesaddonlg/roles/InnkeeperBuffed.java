@@ -10,7 +10,8 @@ import fr.ph1lou.werewolfapi.events.game.life_cycle.FinalDeathEvent;
 import fr.ph1lou.werewolfapi.events.roles.innkeeper.*;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
-import fr.ph1lou.werewolfapi.role.impl.RoleVillage;
+import fr.ph1lou.werewolfapi.player.utils.Formatter;
+import fr.ph1lou.werewolfapi.role.impl.RoleImpl;
 import fr.ph1lou.werewolfapi.role.interfaces.IPower;
 import fr.ph1lou.werewolfapi.role.utils.DescriptionBuilder;
 import lombok.Getter;
@@ -26,10 +27,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Role(key="privatesaddon.roles.innkeeper.display", category=Category.VILLAGER, attributes={RoleAttribute.VILLAGER, RoleAttribute.MINOR_INFORMATION}, configValues={@IntValue(key="privatesaddon.roles.innkeeper.configurations.detection_radius", defaultValue=10, meetUpValue=10, step=1, item=UniversalMaterial.IRON_DOOR)})
 public class InnkeeperBuffed
-        extends RoleVillage
+        extends RoleImpl
         implements IPower {
 
     @Getter
@@ -50,7 +52,19 @@ public class InnkeeperBuffed
     @Override
     @NotNull
     public String getDescription() {
-        return new DescriptionBuilder(this.game, this).setDescription(this.game.translate("privatesaddon.roles.innkeeperbuffed.description")).setEffects(this.game.translate("privatesaddon.roles.innkeeperbuffed.effect")).build();
+        return new DescriptionBuilder(this.game, this)
+                .setDescription(this.game.translate("privatesaddon.roles.innkeeperbuffed.description"))
+                .setEffects(this.game.translate("privatesaddon.roles.innkeeperbuffed.effect"))
+                .setPower(game.translate("privatesaddon.roles.innkeeperbuffed.available_room", Formatter.number(this.availableRooms)))
+                .addExtraLines(game.translate("privatesaddon.roles.innkeeperbuffed.list",
+                        Formatter.format("&list&", clientDatas
+                                .stream()
+                                .map(clientData -> clientData.playerWW.getName())
+                                .collect(Collectors.joining(", "))),
+                        Formatter.format("&list2&", previousClientDatas.stream()
+                                .map(clientData -> clientData.playerWW.getName())
+                                .collect(Collectors.joining(", ")))))
+                .build();
     }
 
     @Override
@@ -170,7 +184,7 @@ public class InnkeeperBuffed
                 InnkeeperInfoMeetEvent innkeeperInfoMeetEvent = new InnkeeperInfoMeetEvent(this.getPlayerWW(), playerWWS.get(0), playerWWS.size());
                 Bukkit.getPluginManager().callEvent(innkeeperInfoMeetEvent);
                 if (!innkeeperInfoMeetEvent.isCancelled()) {
-                    this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§fCe client a vu §b§l" + playerWWS.size() + "§f personne" + (playerWWS.size() == 1 ? "" : "s") + " dont §b§l" + playerWWS.get(0).getName() + "§f."));
+                    this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§f" + clientData2.playerWW.getName() + " a vu §b§l" + playerWWS.size() + "§f personne" + (playerWWS.size() == 1 ? "" : "s") + " dont §b§l" + playerWWS.get(0).getName() + "§f."));
                 }
             } else {
                 this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§cCe client n'a vu personne cette nuit."));

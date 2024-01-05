@@ -42,15 +42,6 @@ public class RedWWNametagsNeyuux extends ListenerWerewolf {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onWWNameTagUpdate(UpdatePlayerNameTagEvent ev) {
-        Optional<IPlayerWW> optionalPlayer = this.game.getPlayerWW(ev.getPlayerUUID());
-        Optional<IPlayerWW> optionalTarget = this.game.getPlayerWW(ev.getTargetUUID());
-
-        if (!optionalPlayer.isPresent() || !optionalTarget.isPresent())
-            return;
-
-        IPlayerWW playerWW = optionalPlayer.get();
-        IPlayerWW targetWW = optionalTarget.get();
-
         Player player = Bukkit.getPlayer(ev.getPlayerUUID());
         Player target = Bukkit.getPlayer(ev.getTargetUUID());
 
@@ -69,25 +60,26 @@ public class RedWWNametagsNeyuux extends ListenerWerewolf {
 
         if (team != null) {
             Bukkit.getScheduler().runTaskLater(Plugin.getINSTANCE(), () -> {
-                UUID uuid1 = target.getUniqueId();
-                RequestSeeWereWolfListEvent requestSeeWereWolfListEvent = new RequestSeeWereWolfListEvent(uuid1);
-                Bukkit.getPluginManager().callEvent(requestSeeWereWolfListEvent);
 
-                if (requestSeeWereWolfListEvent.isAccept()) {
-                    AppearInWereWolfListEvent appearInWereWolfListEvent = new AppearInWereWolfListEvent(player.getUniqueId(), uuid1);
-                    Bukkit.getPluginManager().callEvent(appearInWereWolfListEvent);
+                game.getPlayerWW(target.getUniqueId()).ifPresent(targetWW -> {
+                    RequestSeeWereWolfListEvent requestSeeWereWolfListEvent = new RequestSeeWereWolfListEvent(targetWW);
+                    Bukkit.getPluginManager().callEvent(requestSeeWereWolfListEvent);
 
-                    if ((appearInWereWolfListEvent.isAppear() || uuid1.equals(player.getUniqueId())) && this.game.getConfig().isConfigActive("privatesaddon.configurations.red_name_tag.name")) {
-                        sb.append("§4");
-                    }
-                }
+                    game.getPlayerWW(player.getUniqueId())
+                            .ifPresent(playerWW -> {
 
-                if (!uuid1.equals(player.getUniqueId())) {
-                    String color = targetWW.getColor(playerWW);
-                    if (playerWW.isState(StatePlayer.ALIVE) && !Objects.equals(color, ChatColor.RESET.toString())) {
-                        sb.append(color);
-                    }
-                }
+                                if (requestSeeWereWolfListEvent.isAccept()) {
+                                    AppearInWereWolfListEvent appearInWereWolfListEvent = new AppearInWereWolfListEvent(targetWW, playerWW);
+                                    Bukkit.getPluginManager().callEvent(appearInWereWolfListEvent);
+
+                                    if (appearInWereWolfListEvent.isAppear() || (playerWW.equals(targetWW) && targetWW.getRole().isWereWolf()))
+                                        sb.append(ChatColor.DARK_RED);
+                                }
+
+                                if (playerWW.isState(StatePlayer.ALIVE))
+                                    sb.append(targetWW.getColor(playerWW));
+                            });
+                });
 
                 VersionUtils.getVersionUtils().setTeamNameTagVisibility(team, ev.isVisibility());
 

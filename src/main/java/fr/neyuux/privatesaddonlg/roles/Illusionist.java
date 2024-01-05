@@ -3,9 +3,7 @@ package fr.neyuux.privatesaddonlg.roles;
 import fr.ph1lou.werewolfapi.annotations.Role;
 import fr.ph1lou.werewolfapi.enums.Category;
 import fr.ph1lou.werewolfapi.enums.RoleAttribute;
-import fr.ph1lou.werewolfapi.enums.Sound;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
-import fr.ph1lou.werewolfapi.events.UpdateNameTagEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.FinalDeathEvent;
 import fr.ph1lou.werewolfapi.events.roles.illusionist.IllusionistAddPlayerOnWerewolfListEvent;
 import fr.ph1lou.werewolfapi.events.roles.illusionist.IllusionistGetNamesEvent;
@@ -14,28 +12,24 @@ import fr.ph1lou.werewolfapi.events.werewolf.NewWereWolfEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.player.utils.Formatter;
-import fr.ph1lou.werewolfapi.role.impl.RoleVillage;
+import fr.ph1lou.werewolfapi.role.impl.RoleImpl;
 import fr.ph1lou.werewolfapi.role.interfaces.IAffectedPlayers;
 import fr.ph1lou.werewolfapi.role.interfaces.IPower;
-import fr.ph1lou.werewolfapi.role.interfaces.IRole;
 import fr.ph1lou.werewolfapi.role.utils.DescriptionBuilder;
 import fr.ph1lou.werewolfapi.utils.BukkitUtils;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Role(
         key = "privates.roles.illusionist.display",
         category = Category.VILLAGER,
         attributes = {RoleAttribute.VILLAGER}
 )
-public class Illusionist extends RoleVillage implements IPower, IAffectedPlayers {
+public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {
     private boolean power = true;
     private boolean wait = false;
     private IPlayerWW playerWW;
@@ -44,6 +38,7 @@ public class Illusionist extends RoleVillage implements IPower, IAffectedPlayers
         super(game, playerWW);
     }
 
+    @Override
     @NotNull
     public String getDescription() {
         return (new DescriptionBuilder(this.game, this)).setDescription(this.game.translate("werewolf.roles.illusionist.description", new Formatter[0])).setPower(this.game.translate("werewolf.roles.illusionist.power", new Formatter[0])).setCommand(this.game.translate(this.hasPower() ? "werewolf.roles.illusionist.activate" : "werewolf.roles.illusionist.already_activate", new Formatter[0])).build();
@@ -113,26 +108,30 @@ public class Illusionist extends RoleVillage implements IPower, IAffectedPlayers
 
     @EventHandler
     public void onWerewolfListRequest(AppearInWereWolfListEvent event) {
-        if (this.playerWW != null)
-            if (event.getPlayerUUID().equals(this.playerWW.getUUID()))
-                event.setAppear(true);
+        if (event.getPlayerWW().equals(this.playerWW))
+            event.setAppear(true);
     }
 
+    @Override
     public void recoverPower() {
     }
 
+    @Override
     public void setPower(boolean power) {
         this.power = power;
     }
 
+    @Override
     public boolean hasPower() {
         return this.power;
     }
 
+    @Override
     public void addAffectedPlayer(IPlayerWW iPlayerWW) {
         this.playerWW = iPlayerWW;
     }
 
+    @Override
     public void removeAffectedPlayer(IPlayerWW iPlayerWW) {
         if (iPlayerWW.equals(this.playerWW)) {
             this.playerWW = null;
@@ -140,10 +139,12 @@ public class Illusionist extends RoleVillage implements IPower, IAffectedPlayers
 
     }
 
+    @Override
     public void clearAffectedPlayer() {
         this.playerWW = null;
     }
 
+    @Override
     public List<? extends IPlayerWW> getAffectedPlayers() {
         return this.playerWW == null ? Collections.emptyList() : Collections.singletonList(this.playerWW);
     }

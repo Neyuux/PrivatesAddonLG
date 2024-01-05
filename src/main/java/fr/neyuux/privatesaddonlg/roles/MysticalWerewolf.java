@@ -1,11 +1,10 @@
 package fr.neyuux.privatesaddonlg.roles;
 
-
 import fr.ph1lou.werewolfapi.annotations.Role;
 import fr.ph1lou.werewolfapi.enums.*;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.FinalDeathEvent;
 import fr.ph1lou.werewolfapi.events.roles.mystical_werewolf.MysticalWerewolfRevelationEvent;
-import fr.ph1lou.werewolfapi.events.werewolf.WereWolfChatEvent;
+import fr.ph1lou.werewolfapi.events.werewolf.WereWolfCanSpeakInChatEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.player.utils.Formatter;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Role(key = "privatesaddon.roles.mystical_werewolf.display", category = Category.WEREWOLF, attributes = {RoleAttribute.WEREWOLF})
+@Role(key = "privatesaddon.roles.mystical_werewolf.display", category = Category.WEREWOLF, attributes = {RoleAttribute.WEREWOLF}, defaultAura = Aura.LIGHT)
 public class MysticalWerewolf extends RoleWereWolf {
 
     private final List<IPlayerWW> list = new ArrayList<>();
@@ -32,6 +31,7 @@ public class MysticalWerewolf extends RoleWereWolf {
         Collections.shuffle(list);
     }
 
+    @Override
     @NotNull
     public String getDescription() {
         return (new DescriptionBuilder(this.game, this))
@@ -40,21 +40,16 @@ public class MysticalWerewolf extends RoleWereWolf {
                 .build();
     }
 
+    @Override
     public void recoverPower() {}
 
-    public Aura getDefaultAura() {
-        return Aura.LIGHT;
-    }
-
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onMessage(WereWolfChatEvent event) {
+    public void onMessage(WereWolfCanSpeakInChatEvent event) {
         if (!event.getPlayerWW().equals(getPlayerWW()))
             return;
         getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.roles.mystical_werewolf.no_message", new Formatter[0]);
-        event.setCancelled(true);
+        event.setCanSpeak(false);
     }
-
-    protected void openWereWolfChat() {}
 
     @EventHandler
     public void onWereWolfDeath(FinalDeathEvent event) {
