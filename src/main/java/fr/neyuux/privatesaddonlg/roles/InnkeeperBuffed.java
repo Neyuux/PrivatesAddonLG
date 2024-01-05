@@ -53,10 +53,10 @@ public class InnkeeperBuffed
     @NotNull
     public String getDescription() {
         return new DescriptionBuilder(this.game, this)
-                .setDescription(this.game.translate("privatesaddon.roles.innkeeperbuffed.description"))
-                .setEffects(this.game.translate("privatesaddon.roles.innkeeperbuffed.effect"))
-                .setPower(game.translate("privatesaddon.roles.innkeeperbuffed.available_room", Formatter.number(this.availableRooms)))
-                .addExtraLines(game.translate("privatesaddon.roles.innkeeperbuffed.list",
+                .setDescription(this.game.translate("privatesaddon.roles.innkeeper.description"))
+                .setEffects(this.game.translate("privatesaddon.roles.innkeeper.effect"))
+                .setPower(game.translate("privatesaddon.roles.innkeeper.available_room", Formatter.number(this.availableRooms)))
+                .addExtraLines(game.translate("privatesaddon.roles.innkeeper.list",
                         Formatter.format("&list&", clientDatas
                                 .stream()
                                 .map(clientData -> clientData.playerWW.getName())
