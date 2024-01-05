@@ -13,7 +13,7 @@ import fr.ph1lou.werewolfapi.player.impl.AuraModifier;
 import fr.ph1lou.werewolfapi.player.impl.PotionModifier;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.player.utils.Formatter;
-import fr.ph1lou.werewolfapi.role.impl.RoleVillage;
+import fr.ph1lou.werewolfapi.role.impl.RoleImpl;
 import fr.ph1lou.werewolfapi.role.interfaces.IAffectedPlayers;
 import fr.ph1lou.werewolfapi.role.interfaces.ILimitedUse;
 import fr.ph1lou.werewolfapi.role.interfaces.IPower;
@@ -34,9 +34,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Role(key="privatesaddon.roles.fox.display", category=Category.VILLAGER, attributes={RoleAttribute.VILLAGER, RoleAttribute.INFORMATION}, timers={@Timer(key="privatesaddon.roles.fox.timers.fox_smell_duration", defaultValue=90, meetUpValue=30)}, configValues={@IntValue(key="privatesaddon.roles.fox.configurations.fox_smell_number", defaultValue=3, meetUpValue=3, step=1, item=UniversalMaterial.CARROT), @IntValue(key="privatesaddon.roles.fox.configurations.distance", defaultValue=20, meetUpValue=20, step=2, item=UniversalMaterial.ORANGE_WOOL), @IntValue(key = "privatesaddon.roles.fox.configurations.timer_reveal", meetUpValue = 120, defaultValue = 120, step = 5, item = UniversalMaterial.ENDER_PEARL)})
+@Role(key="privatesaddon.roles.fox.display", category=Category.VILLAGER, auraDescriptionSpecialUseCase = "werewolf.roles.fox.aura", attributes={RoleAttribute.VILLAGER, RoleAttribute.INFORMATION}, timers={@Timer(key="privatesaddon.roles.fox.timers.fox_smell_duration", defaultValue=90, meetUpValue=30)}, configValues={@IntValue(key="privatesaddon.roles.fox.configurations.fox_smell_number", defaultValue=3, meetUpValue=3, step=1, item=UniversalMaterial.CARROT), @IntValue(key="privatesaddon.roles.fox.configurations.distance", defaultValue=20, meetUpValue=20, step=2, item=UniversalMaterial.ORANGE_WOOL), @IntValue(key = "privatesaddon.roles.fox.configurations.timer_reveal", meetUpValue = 120, defaultValue = 120, step = 5, item = UniversalMaterial.ENDER_PEARL)})
 public class OldFox
-        extends RoleVillage
+        extends RoleImpl
         implements IProgress,
         ILimitedUse,
         IAffectedPlayers,

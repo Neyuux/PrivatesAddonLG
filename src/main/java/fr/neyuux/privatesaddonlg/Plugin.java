@@ -118,6 +118,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         pm.registerEvents(new RoleBuffListener(), this);
         pm.registerEvents(new ItemCommand(), this);
         pm.registerEvents(new ArmorListener(Collections.emptyList()), this);
+        pm.registerEvents(new DonCommand(), this);
 
         this.getCommand("say").setExecutor(new CommandSay());
         this.getCommand("pioche").setExecutor(commandPioche);

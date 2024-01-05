@@ -1,21 +1,16 @@
 package fr.neyuux.privatesaddonlg.commands;
 
 import fr.neyuux.privatesaddonlg.Plugin;
-import fr.ph1lou.werewolfapi.annotations.PlayerCommand;
-import fr.ph1lou.werewolfapi.commands.ICommand;
 import fr.ph1lou.werewolfapi.enums.Sound;
 import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.events.lovers.DonEvent;
+import fr.ph1lou.werewolfapi.events.lovers.LoversRepartitionEvent;
+import fr.ph1lou.werewolfapi.events.lovers.RevealAmnesiacLoversEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.lovers.ILover;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.player.utils.Formatter;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,8 +18,19 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
-public class DonCommand implements CommandExecutor {
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
+public class DonCommand implements CommandExecutor, Listener {
+
+    private final HashMap<ILover, Boolean> amnesiacs = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
@@ -65,7 +71,7 @@ public class DonCommand implements CommandExecutor {
             return true;
         }
         if (args.length == 1) {
-            List<ILover> lovers = playerWW.getLovers().stream().filter(loverAPI1 -> !loverAPI1.isKey("werewolf.lovers.cursed_lover.display")).filter(loverAPI1 -> !loverAPI1.isKey("werewolf.lovers.amnesiac_lover.display") || game.getConfig().getLoverCount("werewolf.lovers.amnesiac_lover.display") >= 1).collect(Collectors.toList());
+            List<ILover> lovers = playerWW.getLovers().stream().filter(loverAPI1 -> !loverAPI1.isKey("werewolf.lovers.cursed_lover.display")).filter(loverAPI1 -> !loverAPI1.isKey("werewolf.lovers.amnesiac_lover.display") || !this.amnesiacs.get(loverAPI1)).collect(Collectors.toList());
             if (lovers.isEmpty()) {
                 playerWW.sendMessageWithKey("werewolf.prefix.red", "werewolf.lovers.lover.not_in_pairs", new Formatter[0]);
                 return true;
@@ -140,7 +146,7 @@ public class DonCommand implements CommandExecutor {
                     return;
                 }
 
-                if (iLover.isKey("werewolf.lovers.amnesiac_lover.display") && game.getConfig().getLoverCount("werewolf.lovers.amnesiac_lover.display") == 0) {
+                if (iLover.isKey("werewolf.lovers.amnesiac_lover.display") && !this.amnesiacs.get(iLover)) {
                     playerWW.sendMessageWithKey("werewolf.prefix.red", "werewolf.lovers.lover.not_in_pairs", new Formatter[0]);
                     return;
                 }
@@ -166,5 +172,26 @@ public class DonCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onLovers(LoversRepartitionEvent ev) {
+        Plugin.getINSTANCE().getGame().getLoversManager().getLovers().
+                stream()
+                .filter(iLover -> iLover.getKey().contains(".amnesiac_lover"))
+                .forEach(iLover -> this.amnesiacs.put(iLover, false));
+    }
+
+    @EventHandler
+    public void onAmnesiacFind(RevealAmnesiacLoversEvent ev) {
+        AtomicReference<ILover> iLover = new AtomicReference<>();
+
+        this.amnesiacs.forEach((amnesiacLover, aBoolean) -> {
+            if (amnesiacLover.getLovers().stream().map(playerWW -> (IPlayerWW)playerWW).collect(Collectors.toList()).containsAll(ev.getPlayerWWS()))
+                iLover.set(amnesiacLover);
+        });
+
+        if (iLover.get() != null)
+            this.amnesiacs.put(iLover.get(), true);
     }
 }

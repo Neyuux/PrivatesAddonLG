@@ -40,7 +40,12 @@ public class LoneWerewolfNeyuux extends ListenerWerewolf {
     @EventHandler(priority = EventPriority.LOW)
     public void onLoneWW(LoneWerewolfNeyuuxEvent event) {
         WereWolfAPI game = getGame();
-        List<IRole> roleWWs = game.getPlayersWW().stream().filter(playerWW -> playerWW.isState(StatePlayer.ALIVE)).map(IPlayerWW::getRole).filter(ICamp::isWereWolf).collect(Collectors.toList());
+        List<IRole> roleWWs = game.getPlayersWW()
+                .stream()
+                .filter(playerWW -> playerWW.isState(StatePlayer.ALIVE))
+                .map(IPlayerWW::getRole)
+                .filter(role -> role.isWereWolf() && !role.isNeutral())
+                .collect(Collectors.toList());
         if (roleWWs.isEmpty())
             return;
         IRole role = roleWWs.get((int)Math.floor(game.getRandom().nextDouble() * roleWWs.size()));
