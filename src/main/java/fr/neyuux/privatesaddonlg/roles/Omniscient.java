@@ -68,7 +68,7 @@ public class Omniscient extends RoleNeutral {
         Player player = Bukkit.getPlayer(ev.getPlayerUUID());
         Player target = Bukkit.getPlayer(ev.getTargetUUID());
 
-        if (player == null || target == null)
+        if (player == null || target == null || !this.isAbilityEnabled())
             return;
 
         Scoreboard scoreboard = target.getScoreboard();
