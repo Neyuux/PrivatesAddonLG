@@ -20,8 +20,11 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
     private static final List<String> options = Collections.unmodifiableList(Arrays.asList("compo", "map", "config", "players", "scenarios", "save", "storage", "all", "lg", "lgpotential", "infos", "points"));
 
+    private final AssistantCompo compo;
+
     public CommandAssistant(Plugin main) {
         this.main = main;
+        this.compo = new AssistantCompo(main);
     }
 
     @Override
@@ -46,6 +49,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
         switch (args[0]) {
             case "compo":
+            case "roles":
                 break;
 
             case "map":
@@ -114,6 +118,6 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
     public int getPlayerCount() {
         if (!main.isLoaded()) return -1;
-        return (this.playerCount == -1 ? main.getGame().getPlayersCount() : this.playerCount);
+        return (playerCount == -1 ? main.getGame().getPlayersCount() : playerCount);
     }
 }

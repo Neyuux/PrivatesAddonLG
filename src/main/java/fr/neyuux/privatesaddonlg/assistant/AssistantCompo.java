@@ -1,15 +1,19 @@
 package fr.neyuux.privatesaddonlg.assistant;
 
 import fr.neyuux.privatesaddonlg.Plugin;
+import fr.ph1lou.werewolfapi.annotations.Lover;
 import fr.ph1lou.werewolfapi.annotations.Role;
 import fr.ph1lou.werewolfapi.enums.Category;
 import fr.ph1lou.werewolfapi.enums.RoleAttribute;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
+import fr.ph1lou.werewolfapi.lovers.ILover;
 import fr.ph1lou.werewolfapi.role.interfaces.IRole;
 import fr.ph1lou.werewolfapi.utils.Wrapper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -17,13 +21,11 @@ import java.util.stream.IntStream;
 public class AssistantCompo {
 
     private final Plugin main;
-    private final CommandAssistant assistant;
 
     private final HashMap<String, Integer> informationsPoints = new HashMap<>();
 
-    public AssistantCompo(Plugin main, CommandAssistant assistant) {
+    public AssistantCompo(Plugin main) {
         this.main = main;
-        this.assistant = assistant;
 
         informationsPoints.put("analyst", 1);
         informationsPoints.put("seer", 9);
@@ -53,13 +55,12 @@ public class AssistantCompo {
     }
 
 
-    public int checkBaseWerewolves() {
+    public int checkBaseWerewolves(int count) {
         if (!main.isLoaded())
             return 0;
 
         WereWolfAPI game = main.getGame();
 
-        int count = this.assistant.getPlayerCount();
         AtomicInteger whiteWerewolf = new AtomicInteger(0);
         int currentWW = (int) main.getRegisterManager().getRolesRegister()
                 .stream()
@@ -107,13 +108,12 @@ public class AssistantCompo {
         }
     }
 
-    public int checkPotentialWerewolves() {
+    public int checkPotentialWerewolves(int count) {
         if (!main.isLoaded())
             return 0;
 
         WereWolfAPI game = main.getGame();
 
-        int count = this.assistant.getPlayerCount();
         AtomicInteger whiteWerewolf = new AtomicInteger(0);
         AtomicInteger maxWW = new AtomicInteger(0);
         AtomicBoolean romulusRemus = new AtomicBoolean(false);
@@ -183,14 +183,13 @@ public class AssistantCompo {
     }
 
 
-    public int checkInformationRoles() {
+    public int checkInformationRoles(int count) {
         if (!main.isLoaded())
             return 0;
 
         WereWolfAPI game = main.getGame();
 
-        int count = this.assistant.getPlayerCount();
-        int recommandedIP = Math.round(count * 1.25f + 0.8f * -this.checkBaseWerewolves());
+        int recommandedIP = Math.round(count * 1.25f + 0.8f * -this.checkBaseWerewolves(count));
         int currentIP = 0;
 
         for (Wrapper<IRole, Role> roleRegister : main.getRegisterManager().getRolesRegister())
@@ -205,11 +204,10 @@ public class AssistantCompo {
         return recommandedIP - currentIP;
     }
 
-    public int checkSoloRoles() {
+    public int checkSoloRoles(int count) {
         if (!main.isLoaded())
             return 0;
 
-        int count = this.assistant.getPlayerCount();
         int recommandedSolos = 0;
 
         for (int i = count; i > 9; i -= 9)
@@ -218,11 +216,10 @@ public class AssistantCompo {
         return recommandedSolos - this.getSolosCount();
     }
 
-    public int checkNeutralRoles() {
+    public int checkNeutralRoles(int count) {
         if (!main.isLoaded())
             return 0;
 
-        int count = this.assistant.getPlayerCount();
         int currentSolos = this.getSolosCount();
         int currentNeutral = (int) main.getRegisterManager().getRolesRegister()
                 .stream()
@@ -230,7 +227,108 @@ public class AssistantCompo {
                 .flatMapToInt(roleRegisterx -> IntStream.range(0, main.getGame().getConfig().getRoleCount(roleRegisterx.getMetaDatas().key())))
                 .count();
 
-        return 0;
+        int recommandedNeutral = Math.round(count / 16.5f - (currentSolos / (count < 18 ? 2f : 2.30f)));
+
+        return recommandedNeutral - currentNeutral;
+    }
+
+    public boolean checkDoubleCouples() {
+        if (!main.isLoaded())
+            return false;
+
+        WereWolfAPI game = main.getGame();
+
+        if (game.getConfig().getRoleCount("werewolf.roles.cupid.display") > 0) {
+            for (Wrapper<ILover, Lover> loverRegister : main.getRegisterManager().getLoversRegister()) {
+                if (game.getConfig().getLoverCount(loverRegister.getMetaDatas().key()) > 0)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkCouple() {
+        if (!main.isLoaded())
+            return false;
+
+        WereWolfAPI game = main.getGame();
+
+        if (game.getConfig().getRoleCount("werewolf.roles.cupid.display") > 0 || game.getConfig().getRoleCount("werewolf.roles.stud.display") > 0)
+            return false;
+
+        for (Wrapper<ILover, Lover> loverRegister : main.getRegisterManager().getLoversRegister())
+            if (game.getConfig().getLoverCount(loverRegister.getMetaDatas().key()) > 0)
+                return false;
+
+        return true;
+    }
+
+    public int checkResurrectionRoles(int count) {
+        if (!main.isLoaded())
+            return 0;
+
+        int recommandedRez;
+
+        if (count <= 19)
+            recommandedRez = 1;
+        else if (count <= 24)
+            recommandedRez = 2;
+        else
+            recommandedRez = Math.round(count / 10f);
+
+        int currentRez = (int) main.getRegisterManager().getRolesRegister()
+                .stream()
+                .filter(roleRegister -> AssistantCompo.isRessurectionRole(roleRegister.getMetaDatas().key()))
+                .flatMapToInt(roleRegisterx -> IntStream.range(0, main.getGame().getConfig().getRoleCount(roleRegisterx.getMetaDatas().key())))
+                .count();
+
+        if (recommandedRez > currentRez)
+            return 0;
+
+        return recommandedRez - currentRez;
+    }
+
+
+    public List<String> getSummary(int count) {
+        List<String> list = new ArrayList<>();
+
+        int baseLG = this.checkBaseWerewolves(count);
+
+        if (baseLG != 0)
+            list.add(" §0§l■ §f" + getRemoveOrAdd(baseLG) + " §c§l" + baseLG + " §cLG");
+
+        int potentialLG = this.checkPotentialWerewolves(count);
+
+        if (potentialLG != 0)
+            list.add(" §0§l■ §f" + getRemoveOrAdd(potentialLG) + " §c§l" + potentialLG + " §cLG Potentiel");
+
+        int info = this.checkInformationRoles(count);
+
+        if (info != 0)
+            list.add(" §0§l■ §f" + getRemoveOrAdd(info) + " §d§l" + info + " §dRôles à infos");
+
+        int solo = this.checkSoloRoles(count);
+
+        if (solo != 0)
+            list.add(" §0§l■ §f" + getRemoveOrAdd(solo) + " §6§l" + solo + " §6Rôles Solitaires");
+
+        int neutral = this.checkNeutralRoles(count);
+
+        if (neutral != 0)
+            list.add(" §0§l■ §f" + getRemoveOrAdd(neutral) + " §e§l" + solo + " §eRôles Neutres");
+
+        int rez = this.checkResurrectionRoles(count);
+
+        if (rez != 0)
+            list.add(" §0§l■ §f" + getRemoveOrAdd(rez) + " §e§l" + solo + " §aRôles qui réssucitent");
+
+        if (this.checkCouple())
+            list.add(" §0§l■ §fAjouter un §dcouple");
+
+        if (this.checkDoubleCouples())
+            list.add(" §0§l■ §cDésactivez §fle Cupidon ou un Couple Aléatoire pour ne pas avoir 2 couples !");
+
+        return list;
     }
 
 
@@ -248,6 +346,21 @@ public class AssistantCompo {
                 key.contains("scammer") ||
                 key.contains("romulus_remus") ||
                 key.contains("auramancer");
+    }
+
+    private static boolean isRessurectionRole(String key) {
+        return key.contains("elder") ||
+                key.contains("witch") ||
+                key.contains("guard") ||
+                key.contains("stud") ||
+                key.contains("servitor");
+
+    }
+
+    private static String getRemoveOrAdd(int i) {
+        if (i > 0)
+            return "Ajouter";
+        else return "Retirer";
     }
 
     private int getSolosCount() {
