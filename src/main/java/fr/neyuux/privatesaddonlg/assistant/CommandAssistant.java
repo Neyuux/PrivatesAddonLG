@@ -16,7 +16,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
     private final Plugin main;
 
-    private static final List<String> options = Collections.unmodifiableList(Arrays.asList("compo", "map", "config", "scenarios", "save", "storage", "all"));
+    private static final List<String> options = Collections.unmodifiableList(Arrays.asList("compo", "map", "config", "scenarios", "save", "storage", "all", "lg", "lgpotential", "infos", "points"));
 
     public CommandAssistant(Plugin main) {
         this.main = main;
@@ -47,12 +47,14 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                 break;
 
             case "map":
+            case "roofed":
                 break;
 
             case "config":
                 break;
 
             case "scenarios":
+            case "scenario":
                 break;
 
             case "save":
@@ -64,6 +66,28 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                 break;
 
             case "all":
+                break;
+
+            case "lg":
+            case "baselg":
+                break;
+
+            case "lgpotential":
+            case "totallg":
+            case "lgtotal":
+            case "potentiallg":
+                break;
+
+            case "informations":
+            case "info":
+            case "infos":
+                break;
+
+            case "informationspoints":
+            case "points":
+            case "infospoints":
+            case "infopoints":
+            case "pointsinfo":
                 break;
         }
 
