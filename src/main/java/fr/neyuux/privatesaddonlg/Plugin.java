@@ -77,6 +77,9 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     private static Plugin INSTANCE;
 
     @Getter
+    private WorldChangesListener worldListener;
+
+    @Getter
     private final HashMap<UUID, Integer> groupsWarning = new HashMap<>();
 
     private final HashSet<LivingEntity> customEntities = new HashSet<>();
@@ -112,8 +115,10 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         PluginManager pm = this.getServer().getPluginManager();
         CommandPioche commandPioche = new CommandPioche();
 
+        this.worldListener = new WorldChangesListener();
+
         pm.registerEvents(this, this);
-        pm.registerEvents(new WorldChangesListener(), this);
+        pm.registerEvents(this.worldListener, this);
         pm.registerEvents(commandPioche, this);
         pm.registerEvents(new RoleBuffListener(), this);
         pm.registerEvents(new ItemCommand(), this);
