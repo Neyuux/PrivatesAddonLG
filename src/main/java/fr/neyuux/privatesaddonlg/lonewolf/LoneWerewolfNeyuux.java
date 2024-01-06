@@ -1,6 +1,5 @@
 package fr.neyuux.privatesaddonlg.lonewolf;
 
-import fr.neyuux.privatesaddonlg.Plugin;
 import fr.ph1lou.werewolfapi.annotations.Configuration;
 import fr.ph1lou.werewolfapi.annotations.ConfigurationBasic;
 import fr.ph1lou.werewolfapi.annotations.Timer;
@@ -12,9 +11,7 @@ import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.listeners.impl.ListenerWerewolf;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.player.utils.Formatter;
-import fr.ph1lou.werewolfapi.role.interfaces.ICamp;
 import fr.ph1lou.werewolfapi.role.interfaces.IRole;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +21,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Configuration(config = @ConfigurationBasic(key = "privatesaddon.configurations.lone_wolf.name", incompatibleConfigs = "werewolf.configurations.lone_wolf.name"), timers = {@Timer(key = "privatesaddon.configurations.lone_wolf.timer.name", loreKey = "privatesaddon.configurations.lone_wolf.timer.description", defaultValue = 5400, meetUpValue = 1200, step = 30, decrementAfterRole = true, onZero = LoneWerewolfNeyuuxEvent.class)})
+@Configuration(config = @ConfigurationBasic(key = "privatesaddon.configurations.lone_wolf.name", incompatibleConfigs = "werewolf.configurations.lone_wolf.name"), timers = {@Timer(key = "privatesaddon.configurations.lone_wolf.timer.name", loreKey = "privatesaddon.configurations.lone_wolf.timer.description", defaultValue = 3900, meetUpValue = 600, step = 30, decrementAfterRole = true, onZero = LoneWerewolfNeyuuxEvent.class)})
 public class LoneWerewolfNeyuux extends ListenerWerewolf {
 
     public LoneWerewolfNeyuux(WereWolfAPI main) {

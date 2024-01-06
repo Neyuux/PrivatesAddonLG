@@ -2,6 +2,7 @@ package fr.neyuux.privatesaddonlg.assistant;
 
 import fr.neyuux.privatesaddonlg.Plugin;
 import fr.neyuux.privatesaddonlg.listeners.WorldChangesListener;
+import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Sound;
@@ -25,10 +26,12 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
     private static final List<String> options = Collections.unmodifiableList(Arrays.asList("compo", "map", "config", "players", "scenarios", "save", "storage", "all", "lg", "lgpotential", "infos", "points"));
 
     private final AssistantCompo compo;
+    private final AssistantConfig config;
 
     public CommandAssistant(Plugin main) {
         this.main = main;
         this.compo = new AssistantCompo(main);
+        this.config = new AssistantConfig(main);
     }
 
     @Override
@@ -55,6 +58,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
         }
 
         WereWolfAPI game = main.getGame();
+        IConfiguration config = game.getConfig();
 
         switch (args[0]) {
 
@@ -63,7 +67,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                     switch (args[1]) {
                         case "removecouples":
                             main.getRegisterManager().getLoversRegister()
-                                    .forEach(loverRegister -> game.getConfig().setLoverCount(loverRegister.getMetaDatas().key(), 0));
+                                    .forEach(loverRegister -> config.setLoverCount(loverRegister.getMetaDatas().key(), 0));
 
                             sender.sendMessage(Plugin.getPrefix() + "§fCouples supprimés avec §asuccès §f!");
                             player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
@@ -71,7 +75,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
                         case "setprotectiondiamond":
                             if (args.length > 2 && StringUtils.isNumeric(args[2])) {
-                                game.getConfig().setLimitProtectionDiamond(Integer.parseInt(args[2]));
+                                config.setLimitProtectionDiamond(Integer.parseInt(args[2]));
 
                                 sender.sendMessage(Plugin.getPrefix() + "§fLimite de Protection en §bDiamant §fmis à §a§l"+args[2]+" §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
@@ -80,7 +84,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
                         case "setprotectioniron":
                             if (args.length > 2 && StringUtils.isNumeric(args[2])) {
-                                game.getConfig().setLimitProtectionIron(Integer.parseInt(args[2]));
+                                config.setLimitProtectionIron(Integer.parseInt(args[2]));
 
                                 sender.sendMessage(Plugin.getPrefix() + "§fLimite de Protection en §7Fer §fmis à §a§l"+args[2]+" §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
@@ -89,7 +93,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
                         case "setpower":
                             if (args.length > 2 && StringUtils.isNumeric(args[2])) {
-                                game.getConfig().setLimitPowerBow(Integer.parseInt(args[2]));
+                                config.setLimitPowerBow(Integer.parseInt(args[2]));
 
                                 sender.sendMessage(Plugin.getPrefix() + "§fLimite de Puissance §fmis à §a§l"+args[2]+" §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
@@ -98,7 +102,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
                         case "setsharpnessiron":
                             if (args.length > 2 && StringUtils.isNumeric(args[2])) {
-                                game.getConfig().setLimitSharpnessIron(Integer.parseInt(args[2]));
+                                config.setLimitSharpnessIron(Integer.parseInt(args[2]));
 
                                 sender.sendMessage(Plugin.getPrefix() + "§fLimite de Tranchant en §7Fer §fmis à §a§l"+args[2]+" §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
@@ -107,9 +111,81 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
                         case "setsharpnessdiamond":
                             if (args.length > 2 && StringUtils.isNumeric(args[2])) {
-                                game.getConfig().setLimitSharpnessDiamond(Integer.parseInt(args[2]));
+                                config.setLimitSharpnessDiamond(Integer.parseInt(args[2]));
 
                                 sender.sendMessage(Plugin.getPrefix() + "§fLimite de Tranchant en §bDiamant §fmis à §a§l"+args[2]+" §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "setrandomcouplecupid":
+                            if (args.length > 2) {
+                                config.setConfig(args[2] + ".roles.cupid.configurations.random_cupid", true);
+
+                                sender.sendMessage(Plugin.getPrefix() + "§fLe §dCouple Aléatoire §fdu Cupidon a été §aactivé §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "removeautorezwitch":
+                            if (args.length > 2) {
+                                config.setConfig(args[2] + ".roles.cupid.configurations.auto_rez_witch", false);
+
+                                sender.sendMessage(Plugin.getPrefix() + "§fL'§dAuto-Résurrection §fde la Sorcière a été §cdésactivée §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "removeautorezipdl":
+                            if (args.length > 2) {
+                                config.setConfig(args[2] + ".roles.cupid.configurations.auto_rez", false);
+
+                                sender.sendMessage(Plugin.getPrefix() + "§fL'§dAuto-Résurrection §fde l'IPDL a été §cdésactivée §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "activate":
+                            if (args.length > 2) {
+                                config.setConfig(args[2], true);
+
+                                sender.sendMessage(Plugin.getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §aactivé §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "desactivate":
+                            if (args.length > 2) {
+                                config.setConfig(args[2], false);
+
+                                sender.sendMessage(Plugin.getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §cdésactivé §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "set":
+                            if (args.length > 3 && StringUtils.isNumeric(args[3])) {
+                                config.setValue(args[2], Integer.parseInt(args[3]));
+
+                                sender.sendMessage(Plugin.getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été mis à §a§l"+args[3]+" §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "desactivatescenario":
+                            if (args.length > 2) {
+                                config.setScenario(args[2], false);
+
+                                sender.sendMessage(Plugin.getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §cdésactivé §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "activatescenario":
+                            if (args.length > 2) {
+                                config.setScenario(args[2], true);
+
+                                sender.sendMessage(Plugin.getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §aactivé §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -119,6 +195,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
             case "compo":
             case "roles":
+
                 break;
 
             case "map":

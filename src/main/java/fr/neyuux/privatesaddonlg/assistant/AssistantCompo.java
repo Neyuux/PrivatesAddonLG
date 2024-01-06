@@ -307,9 +307,8 @@ public class AssistantCompo {
             list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(potentialLG) + " §c§l" + potentialLG + " §cLG Potentiel"));
 
         int info = this.checkInformationRoles(count);
-
         if (info != 0)
-            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(info) + " §d§l" + info + " §dRôles à infos"));
+            list.add(utils.createClickableText(" §0§l■ §f" + getRemoveOrAdd(info) + " §d§l" + info + " §dRôles à infos", "/assistant informationspoints", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour voir les points des rôles à information"));
 
         int solo = this.checkSoloRoles(count);
 
