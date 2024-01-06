@@ -1,6 +1,9 @@
 package fr.neyuux.privatesaddonlg.listeners;
 
 import fr.neyuux.privatesaddonlg.Plugin;
+import fr.ph1lou.werewolfapi.game.WereWolfAPI;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -16,7 +19,15 @@ import java.text.DecimalFormat;
 
 public class WorldChangesListener implements Listener {
 
+    public WorldChangesListener() {
+        Plugin.getINSTANCE().addServiceLoadTask(game -> game.getMapManager().loadMap());
+    }
+
     private int chunksLoaded = 0;
+
+    @Getter
+    @Setter
+    private RoofedSize size = RoofedSize.MEDIUM;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInitWerewolfWorld(WorldInitEvent ev) {
@@ -34,10 +45,12 @@ public class WorldChangesListener implements Listener {
 
         if (event.isNewChunk() && w.getName().equals("werewolf_map")){
 
+            int maximum = this.size.getPlusChunkCoord();
+            int minimum = this.size.getMinusChunkCoord();
             final Chunk c = event.getChunk();
             int X = c.getX();
             int Z = c.getZ();
-            if (X <= -110 && X >= -140 && Z <= -110 && Z >= -140 ){
+            if (X <= maximum && X >= minimum && Z <= maximum && Z >= minimum ){
 
                 this.addChunk();
 
@@ -60,5 +73,27 @@ public class WorldChangesListener implements Listener {
         Bukkit.getLogger().info("[LG UHC > PrivatesAddon] Add Roofed : " + this.chunksLoaded + " / 900 terminé.  (~" + (new DecimalFormat("0.0")).format(percentage) + "%)");
         if (this.chunksLoaded == 900)
             Bukkit.broadcastMessage(Plugin.getPrefix() + "§2La génération de la Roofed Forest est terminée !");
+    }
+
+
+    public enum RoofedSize {
+        LARGE(15),
+        MEDIUM(11),
+        SMALL(7);
+
+        @Getter
+        private final int size;
+
+        RoofedSize(int size) {
+            this.size = size;
+        }
+
+        public int getPlusChunkCoord() {
+            return -125 + size;
+        }
+
+        public int getMinusChunkCoord() {
+            return -125 - size;
+        }
     }
 }

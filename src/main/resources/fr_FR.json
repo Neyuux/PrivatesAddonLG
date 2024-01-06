@@ -13,6 +13,11 @@
         "groupchecks":{
           "command": "groupchecks",
           "description": "Permet de vérifer le nombre de fois où un joueur n'a pas respecté les groupes."
+        },
+
+        "roofedsize": {
+          "command": "roofedsize",
+          "description": "Permet de changer la taille de la roofed"
         }
       },
 

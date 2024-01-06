@@ -275,6 +275,9 @@ public class RoleBuffListener implements Listener {
         double maxDamageBonusPercentage = 1.05;
         double healthPercentage = calculateHealthPercentage(damagerWW.getHealth(), damagerWW.getMaxHealth()) / 100.0D;
 
+        if (Bukkit.getPlayer(damagerWW.getUUID()).hasPotionEffect(PotionEffectType.INCREASE_DAMAGE))
+            return 1.0D;
+
         return minDamageBonusPercentage +
                 (maxDamageBonusPercentage - minDamageBonusPercentage) * healthPercentage;
     }
