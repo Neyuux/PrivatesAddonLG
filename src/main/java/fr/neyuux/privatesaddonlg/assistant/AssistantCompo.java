@@ -9,6 +9,9 @@ import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.lovers.ILover;
 import fr.ph1lou.werewolfapi.role.interfaces.IRole;
 import fr.ph1lou.werewolfapi.utils.Wrapper;
+import fr.ph1lou.werewolfapi.versions.VersionUtils;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -289,44 +292,45 @@ public class AssistantCompo {
     }
 
 
-    public List<String> getSummary(int count) {
-        List<String> list = new ArrayList<>();
+    public List<TextComponent> getSummary(int count) {
+        List<TextComponent> list = new ArrayList<>();
+        VersionUtils utils = VersionUtils.getVersionUtils();
 
         int baseLG = this.checkBaseWerewolves(count);
 
         if (baseLG != 0)
-            list.add(" §0§l■ §f" + getRemoveOrAdd(baseLG) + " §c§l" + baseLG + " §cLG");
+            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(baseLG) + " §c§l" + baseLG + " §cLG"));
 
         int potentialLG = this.checkPotentialWerewolves(count);
 
         if (potentialLG != 0)
-            list.add(" §0§l■ §f" + getRemoveOrAdd(potentialLG) + " §c§l" + potentialLG + " §cLG Potentiel");
+            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(potentialLG) + " §c§l" + potentialLG + " §cLG Potentiel"));
 
         int info = this.checkInformationRoles(count);
 
         if (info != 0)
-            list.add(" §0§l■ §f" + getRemoveOrAdd(info) + " §d§l" + info + " §dRôles à infos");
+            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(info) + " §d§l" + info + " §dRôles à infos"));
 
         int solo = this.checkSoloRoles(count);
 
         if (solo != 0)
-            list.add(" §0§l■ §f" + getRemoveOrAdd(solo) + " §6§l" + solo + " §6Rôles Solitaires");
+            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(solo) + " §6§l" + solo + " §6Rôles Solitaires"));
 
         int neutral = this.checkNeutralRoles(count);
 
         if (neutral != 0)
-            list.add(" §0§l■ §f" + getRemoveOrAdd(neutral) + " §e§l" + solo + " §eRôles Neutres");
+            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(neutral) + " §e§l" + solo + " §eRôles Neutres"));
 
         int rez = this.checkResurrectionRoles(count);
 
         if (rez != 0)
-            list.add(" §0§l■ §f" + getRemoveOrAdd(rez) + " §e§l" + solo + " §aRôles qui réssucitent");
+            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(rez) + " §e§l" + solo + " §aRôles qui réssucitent"));
 
         if (this.checkCouple())
-            list.add(" §0§l■ §fAjouter un §dcouple");
+            list.add(new TextComponent(" §0§l■ §fAjouter un §dcouple"));
 
         if (this.checkDoubleCouples())
-            list.add(" §0§l■ §cDésactivez §fle Cupidon ou un Couple Aléatoire pour ne pas avoir 2 couples !");
+            list.add(utils.createClickableText(" §0§l■ §cDésactivez §fle Cupidon ou un Couple Aléatoire pour ne pas avoir 2 couples !", "/assistant clickablemessage removecouples", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour retirer les couples"));
 
         return list;
     }

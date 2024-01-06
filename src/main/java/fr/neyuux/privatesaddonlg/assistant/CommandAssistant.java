@@ -1,11 +1,15 @@
 package fr.neyuux.privatesaddonlg.assistant;
 
 import fr.neyuux.privatesaddonlg.Plugin;
+import fr.neyuux.privatesaddonlg.listeners.WorldChangesListener;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +36,11 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
         if (!main.isLoaded())
             return true;
 
+        if (!(sender instanceof Player))
+            return true;
+
+        Player player = (Player)sender;
+
         if (args.length == 0) {
             sender.sendMessage(Plugin.getPrefix() + "§cVous devez renseigner un argument. Argument disponibles : " + options
                     .stream()
@@ -48,6 +57,66 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
         WereWolfAPI game = main.getGame();
 
         switch (args[0]) {
+
+            case "clickablemessage":
+                if (args.length > 1) {
+                    switch (args[1]) {
+                        case "removecouples":
+                            main.getRegisterManager().getLoversRegister()
+                                    .forEach(loverRegister -> game.getConfig().setLoverCount(loverRegister.getMetaDatas().key(), 0));
+
+                            sender.sendMessage(Plugin.getPrefix() + "§fCouples supprimés avec §asuccès §f!");
+                            player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            break;
+
+                        case "setprotectiondiamond":
+                            if (args.length > 2 && StringUtils.isNumeric(args[2])) {
+                                game.getConfig().setLimitProtectionDiamond(Integer.parseInt(args[2]));
+
+                                sender.sendMessage(Plugin.getPrefix() + "§fLimite de Protection en §bDiamant §fmis à §a§l"+args[2]+" §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "setprotectioniron":
+                            if (args.length > 2 && StringUtils.isNumeric(args[2])) {
+                                game.getConfig().setLimitProtectionIron(Integer.parseInt(args[2]));
+
+                                sender.sendMessage(Plugin.getPrefix() + "§fLimite de Protection en §7Fer §fmis à §a§l"+args[2]+" §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "setpower":
+                            if (args.length > 2 && StringUtils.isNumeric(args[2])) {
+                                game.getConfig().setLimitPowerBow(Integer.parseInt(args[2]));
+
+                                sender.sendMessage(Plugin.getPrefix() + "§fLimite de Puissance §fmis à §a§l"+args[2]+" §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "setsharpnessiron":
+                            if (args.length > 2 && StringUtils.isNumeric(args[2])) {
+                                game.getConfig().setLimitSharpnessIron(Integer.parseInt(args[2]));
+
+                                sender.sendMessage(Plugin.getPrefix() + "§fLimite de Tranchant en §7Fer §fmis à §a§l"+args[2]+" §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "setsharpnessdiamond":
+                            if (args.length > 2 && StringUtils.isNumeric(args[2])) {
+                                game.getConfig().setLimitSharpnessDiamond(Integer.parseInt(args[2]));
+
+                                sender.sendMessage(Plugin.getPrefix() + "§fLimite de Tranchant en §bDiamant §fmis à §a§l"+args[2]+" §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+                    }
+                }
+                break;
+
             case "compo":
             case "roles":
                 break;
@@ -119,5 +188,19 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
     public int getPlayerCount() {
         if (!main.isLoaded()) return -1;
         return (playerCount == -1 ? main.getGame().getPlayersCount() : playerCount);
+    }
+
+
+    public WorldChangesListener.RoofedSize getRecommandedRoofedSize() {
+        if (this.getPlayerCount() <= 17)
+            return WorldChangesListener.RoofedSize.SMALL;
+        else if (this.getPlayerCount() <= 23)
+            return WorldChangesListener.RoofedSize.MEDIUM;
+        else
+            return WorldChangesListener.RoofedSize.LARGE;
+    }
+
+    public boolean checkRoofedSize() {
+        return Plugin.getINSTANCE().getWorldListener().getSize() != this.getRecommandedRoofedSize();
     }
 }
