@@ -1,6 +1,7 @@
 package fr.neyuux.privatesaddonlg.assistant;
 
 import fr.neyuux.privatesaddonlg.Plugin;
+import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.versions.VersionUtils;
@@ -92,11 +93,11 @@ public class AssistantConfig {
                                 list.add(utils.createClickableText(" §0§l■ §fActiver le §dCouple Aléatoire §f§o(avec Cupidon)", "/assistant clickablemessage setrandomcouplecupid " + addon, ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour §aactiver §fle §dCouple Aléatoire §fdu Cupidon"));
 
                         } else if (key.contains("witch")) {
-                            if (!config.isConfigActive(addon + ".roles.witch.configurations.auto_rez_witch"))
+                            if (config.isConfigActive(addon + ".roles.witch.configurations.auto_rez_witch"))
                                 list.add(utils.createClickableText(" §0§l■ §fDésactiver l'§dAuto-Résurrection §fde la Sorcière", "/assistant clickablemessage removeautorezwitch " + addon, ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour §cdésactiver §fl'§dAuto-Résurrection §fde la Sorcière"));
 
                         } else if (key.contains("infect_father_of_the_wolves")) {
-                            if (!config.isConfigActive(addon + ".roles.infect_father_of_the_wolves.configurations.auto_rez"))
+                            if (config.isConfigActive(addon + ".roles.infect_father_of_the_wolves.configurations.auto_rez"))
                                 list.add(utils.createClickableText(" §0§l■ §fDésactiver l'§dAuto-Résurrection §fde l'IPDL", "/assistant clickablemessage removeautorezipdl " + addon, ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour §cdésactiver §fl'§dAuto-Résurrection §fde l'IPDL"));
                         }
                     }

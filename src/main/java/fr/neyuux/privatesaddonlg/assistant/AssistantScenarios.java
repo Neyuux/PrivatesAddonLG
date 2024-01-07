@@ -66,10 +66,14 @@ public class AssistantScenarios {
                             if (config.getValue("werewolf.scenarios.vanilla+.configurations.flint_rate") < 50) {
                                 list.add(utils.createClickableText(" §0§l■ §fAugmenter le taux de drop du Silex", "/assistant clickablemessage set werewolf.scenarios.vanilla+.configurations.flint_rate 50", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour mettre le taux de drop du silex à §a§l50%"));
 
-                            } else if (config.getValue("werewolf.scenarios.vanilla+.configurations.ender_pearl_rate") != 10) {
+                            }
+
+                            if (config.getValue("werewolf.scenarios.vanilla+.configurations.ender_pearl_rate") != 10) {
                                 list.add(utils.createClickableText(" §0§l■ §fMettre le taux de drop des Ender Pearls à §a§l10%", "/assistant clickablemessage set werewolf.scenarios.vanilla+.configurations.ender_pearl_rate 10", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour mettre le taux de drop des Ender Pearls à §a§l10%"));
 
-                            } else if (config.getValue("werewolf.scenarios.vanilla+.configurations.apple_rate") < 8) {
+                            }
+
+                            if (config.getValue("werewolf.scenarios.vanilla+.configurations.apple_rate") < 8) {
                                 list.add(utils.createClickableText(" §0§l■ §fAugmenter le taux de drop des Pommes", "/assistant clickablemessage set werewolf.scenarios.vanilla+.configurations.apple_rate 8", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour mettre le taux de drop des pommes à §a§l8%"));
 
                             } else if (config.getValue("werewolf.scenarios.vanilla+.configurations.apple_rate") > 13) {

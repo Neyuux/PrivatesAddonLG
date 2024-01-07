@@ -39,12 +39,19 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
     @Getter
     private final AssistantScenarios scenarios;
 
+
     public CommandAssistant(Plugin main) {
         this.main = main;
         this.compo = new AssistantCompo(main);
         this.config = new AssistantConfig(main);
         this.scenarios = new AssistantScenarios(main);
     }
+
+
+    public static String getPrefix() {
+        return "§3§lAssistant §8» §r";
+    }
+
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
@@ -57,7 +64,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
         Player player = (Player)sender;
 
         if (args.length == 0) {
-            sender.sendMessage(Plugin.getPrefix() + "§cVous devez renseigner un argument. Argument disponibles : " + options
+            sender.sendMessage(getPrefix() + "§cVous devez renseigner un argument. Argument disponibles : " + options
                     .stream()
                     .map(s -> {
                         if (options.get(options.size() - 1).equals(s))
@@ -81,7 +88,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             main.getRegisterManager().getLoversRegister()
                                     .forEach(loverRegister -> config.setLoverCount(loverRegister.getMetaDatas().key(), 0));
 
-                            sender.sendMessage(Plugin.getPrefix() + "§fCouples supprimés avec §asuccès §f!");
+                            sender.sendMessage(getPrefix() + "§fCouples supprimés avec §asuccès §f!");
                             player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             break;
 
@@ -89,7 +96,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2 && StringUtils.isNumeric(args[2])) {
                                 config.setLimitProtectionDiamond(Integer.parseInt(args[2]));
 
-                                sender.sendMessage(Plugin.getPrefix() + "§fLimite de Protection en §bDiamant §fmis à §a§l"+args[2]+" §favec succès !");
+                                sender.sendMessage(getPrefix() + "§fLimite de Protection en §bDiamant §fmis à §a§l"+args[2]+" §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -98,7 +105,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2 && StringUtils.isNumeric(args[2])) {
                                 config.setLimitProtectionIron(Integer.parseInt(args[2]));
 
-                                sender.sendMessage(Plugin.getPrefix() + "§fLimite de Protection en §7Fer §fmis à §a§l"+args[2]+" §favec succès !");
+                                sender.sendMessage(getPrefix() + "§fLimite de Protection en §7Fer §fmis à §a§l"+args[2]+" §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -107,7 +114,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2 && StringUtils.isNumeric(args[2])) {
                                 config.setLimitPowerBow(Integer.parseInt(args[2]));
 
-                                sender.sendMessage(Plugin.getPrefix() + "§fLimite de Puissance §fmis à §a§l"+args[2]+" §favec succès !");
+                                sender.sendMessage(getPrefix() + "§fLimite de Puissance §fmis à §a§l"+args[2]+" §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -116,7 +123,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2 && StringUtils.isNumeric(args[2])) {
                                 config.setLimitSharpnessIron(Integer.parseInt(args[2]));
 
-                                sender.sendMessage(Plugin.getPrefix() + "§fLimite de Tranchant en §7Fer §fmis à §a§l"+args[2]+" §favec succès !");
+                                sender.sendMessage(getPrefix() + "§fLimite de Tranchant en §7Fer §fmis à §a§l"+args[2]+" §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -125,7 +132,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2 && StringUtils.isNumeric(args[2])) {
                                 config.setLimitSharpnessDiamond(Integer.parseInt(args[2]));
 
-                                sender.sendMessage(Plugin.getPrefix() + "§fLimite de Tranchant en §bDiamant §fmis à §a§l"+args[2]+" §favec succès !");
+                                sender.sendMessage(getPrefix() + "§fLimite de Tranchant en §bDiamant §fmis à §a§l"+args[2]+" §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -134,7 +141,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2) {
                                 config.setConfig(args[2] + ".roles.cupid.configurations.random_cupid", true);
 
-                                sender.sendMessage(Plugin.getPrefix() + "§fLe §dCouple Aléatoire §fdu Cupidon a été §aactivé §favec succès !");
+                                sender.sendMessage(getPrefix() + "§fLe §dCouple Aléatoire §fdu Cupidon a été §aactivé §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -143,7 +150,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2) {
                                 config.setConfig(args[2] + ".roles.cupid.configurations.auto_rez_witch", false);
 
-                                sender.sendMessage(Plugin.getPrefix() + "§fL'§dAuto-Résurrection §fde la Sorcière a été §cdésactivée §favec succès !");
+                                sender.sendMessage(getPrefix() + "§fL'§dAuto-Résurrection §fde la Sorcière a été §cdésactivée §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -152,7 +159,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2) {
                                 config.setConfig(args[2] + ".roles.cupid.configurations.auto_rez", false);
 
-                                sender.sendMessage(Plugin.getPrefix() + "§fL'§dAuto-Résurrection §fde l'IPDL a été §cdésactivée §favec succès !");
+                                sender.sendMessage(getPrefix() + "§fL'§dAuto-Résurrection §fde l'IPDL a été §cdésactivée §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -161,7 +168,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2) {
                                 config.setConfig(args[2], true);
 
-                                sender.sendMessage(Plugin.getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §aactivé §favec succès !");
+                                sender.sendMessage(getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §aactivé §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -170,7 +177,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2) {
                                 config.setConfig(args[2], false);
 
-                                sender.sendMessage(Plugin.getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §cdésactivé §favec succès !");
+                                sender.sendMessage(getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §cdésactivé §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -179,7 +186,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 3 && StringUtils.isNumeric(args[3])) {
                                 config.setValue(args[2], Integer.parseInt(args[3]));
 
-                                sender.sendMessage(Plugin.getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été mis à §a§l"+args[3]+" §favec succès !");
+                                sender.sendMessage(getPrefix() + "§f\"§e" + game.translate(args[2]).replace("&number&%", "").replace("%", "").trim() + "§f\" a été mis à §a§l"+args[3]+" §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -188,7 +195,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2) {
                                 config.setScenario(args[2], false);
 
-                                sender.sendMessage(Plugin.getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §cdésactivé §favec succès !");
+                                sender.sendMessage(getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §cdésactivé §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -197,7 +204,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             if (args.length > 2) {
                                 config.setScenario(args[2], true);
 
-                                sender.sendMessage(Plugin.getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §aactivé §favec succès !");
+                                sender.sendMessage(getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §aactivé §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;
@@ -208,7 +215,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
             case "compo":
             case "roles":
                 player.sendMessage("§f§m                                                                           §r");
-                player.sendMessage("§dConseils pour améliorer la composition : ");
+                player.sendMessage(getPrefix() + "§dConseils pour améliorer la composition : ");
                 player.sendMessage("");
 
                 compo.getSummary(this.getPlayerCount())
@@ -219,7 +226,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
             case "map":
             case "roofed":
                 player.sendMessage("§f§m                                                                           §r");
-                player.sendMessage("§2Conseils pour améliorer la carte : ");
+                player.sendMessage(getPrefix() + "§2Conseils pour améliorer la carte : ");
 
                 player.spigot().sendMessage(VersionUtils.getVersionUtils().createClickableText(" §0§l■ §fMettre la taille de la map en §a" + this.getRecommandedRoofedSize(), "/ww roofedsize" + this.getRecommandedRoofedSize().name(), ClickEvent.Action.RUN_COMMAND, "Cliquez ici pour mettre la taille de la roofed en §a" + this.getRecommandedRoofedSize()));
 
@@ -228,7 +235,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
             case "config":
                 player.sendMessage("§f§m                                                                           §r");
-                player.sendMessage("§eConseils pour améliorer la configuration : ");
+                player.sendMessage(getPrefix() + "§eConseils pour améliorer la configuration : ");
                 player.sendMessage("");
 
                 this.config.getSummary()
@@ -239,7 +246,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
             case "scenarios":
             case "scenario":
                 player.sendMessage("§f§m                                                                           §r");
-                player.sendMessage("§bConseils pour améliorer les scénarios : ");
+                player.sendMessage(getPrefix() + "§bConseils pour améliorer les scénarios : ");
                 player.sendMessage("");
 
                 scenarios.getSummary()
@@ -257,21 +264,21 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
             case "all":
                 player.sendMessage("§f§m                                                                           §r");
-                player.sendMessage("§bConseils de l'Assistant :");
+                player.sendMessage(getPrefix() + "§bConseils pour §3§l"+this.getPlayerCount()+"§b joueurs :");
                 player.sendMessage("");
 
                 player.sendMessage(" §3§l■ §dConseils sur la composition : ");
                 player.sendMessage("");
 
                 compo.getSummary(this.getPlayerCount())
-                        .forEach(msg -> player.spigot().sendMessage(msg));
+                        .forEach(msg -> player.spigot().sendMessage(insertSpace(msg)));
 
                 player.sendMessage("");
 
                 player.sendMessage(" §3§l■ §2Conseils sur la carte : ");
                 player.sendMessage("");
 
-                player.spigot().sendMessage(this.getClickableMessageRoofedSize());
+                player.spigot().sendMessage(insertSpace(this.getClickableMessageRoofedSize()));
 
                 player.sendMessage("");
 
@@ -279,7 +286,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                 player.sendMessage("");
 
                 this.config.getSummary()
-                        .forEach(msg -> player.spigot().sendMessage(msg));
+                        .forEach(msg -> player.spigot().sendMessage(insertSpace(msg)));
 
                 player.sendMessage("");
 
@@ -287,9 +294,10 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                 player.sendMessage("");
 
                 this.scenarios.getSummary()
-                        .forEach(msg -> player.spigot().sendMessage(msg));
+                        .forEach(msg -> player.spigot().sendMessage(insertSpace(msg)));
 
                 player.sendMessage("§f§m                                                                           §r");
+                //TODO message when no advises
                 break;
 
             case "setplayers":
@@ -298,7 +306,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                 if (args.length > 1 && StringUtils.isNumeric(args[1])) {
                     this.playerCount = Integer.parseInt(args[1]);
 
-                    player.sendMessage(Plugin.getPrefix() + "Le nombre de joueurs a bien été mis à §7§l" + args[1] + "§f.");
+                    player.sendMessage(getPrefix() + "Le nombre de joueurs a bien été mis à §7§l" + args[1] + "§f.");
                     player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
 
                 } else player.sendMessage(Plugin.getPrefixWithColor(ChatColor.RED) + "§cPrécisez le nombre de joueurs de la partie.");
@@ -377,6 +385,18 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
     }
 
     public TextComponent getClickableMessageRoofedSize() {
-        return VersionUtils.getVersionUtils().createClickableText(" §0§l■ §fMettre la taille de la map en §a" + this.getRecommandedRoofedSize(), "/ww roofedsize" + this.getRecommandedRoofedSize().name(), ClickEvent.Action.RUN_COMMAND, "Cliquez ici pour mettre la taille de la roofed en §a" + this.getRecommandedRoofedSize());
+        return VersionUtils.getVersionUtils().createClickableText(" §0§l■ §fMettre la taille de la map en §a" + this.getRecommandedRoofedSize(), "/a roofedsize " + this.getRecommandedRoofedSize().name(), ClickEvent.Action.RUN_COMMAND, "Cliquez ici pour mettre la taille de la roofed en §a" + this.getRecommandedRoofedSize());
+    }
+
+
+    private static TextComponent insertSpace(TextComponent component) {
+        TextComponent newComponent = new TextComponent(component);
+        String text = component.getText();
+        if (text.length() > 6) {
+            String firstPart = text.substring(0, 5);
+            String secondPart = text.substring(5);
+            newComponent.setText(firstPart + " " + secondPart);
+        }
+        return newComponent;
     }
 }

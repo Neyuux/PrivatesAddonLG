@@ -126,35 +126,39 @@ public class AssistantCompo {
                 .stream()
                 .filter(roleRegister -> {
                     String key = roleRegister.getMetaDatas().key();
+                    int number = game.getConfig().getRoleCount(key);
                     if (key.contains("white_werewolf")) {
-                        whiteWerewolf.addAndGet(game.getConfig().getRoleCount(key));
+                        whiteWerewolf.addAndGet(number);
                         return true;
 
                     }
 
                     if (roleRegister.getMetaDatas().attribute() == RoleAttribute.HYBRID) {
                         if (AssistantCompo.isPotentialWerewolf(roleRegister.getMetaDatas().key())) {
-                            maxWW.incrementAndGet();
+                            maxWW.addAndGet(number);
                             return false;
                         }
                     }
 
-                    if (key.contains("romulus_remus"))
+                    if (key.contains("romulus_remus") && number > 0)
                         romulusRemus.set(true);
 
-                    if (roleRegister.getMetaDatas().weight() == 1.5F)
-                        maxWW.incrementAndGet();
+                    if (roleRegister.getMetaDatas().weight() == 1.5F) {
+                        maxWW.addAndGet(number);
+                    }
 
                     return roleRegister.getMetaDatas().category() == Category.WEREWOLF;
                 })
                 .flatMapToInt(roleRegisterx -> IntStream.range(0, game.getConfig().getRoleCount(roleRegisterx.getMetaDatas().key())))
                 .count();
 
+
         if (game.getConfig().isConfigActive("privatesaddon.configurations.lone_wolf.name") || game.getConfig().isConfigActive("werewolf.configurations.lone_wolf.name"))
             whiteWerewolf.incrementAndGet();
 
         if (romulusRemus.get())
             maxWW.decrementAndGet();
+
 
         maxWW.addAndGet(currentWW);
         count += whiteWerewolf.get();
@@ -197,13 +201,22 @@ public class AssistantCompo {
         int recommandedIP = Math.round(count * 1.25f + 0.8f * -this.checkBaseWerewolves(count));
         int currentIP = 0;
 
+        System.out.println("info points recommanded " + recommandedIP);
+
         for (Wrapper<IRole, Role> roleRegister : main.getRegisterManager().getRolesRegister())
             for (String s : this.informationsPoints.keySet())
-                if (roleRegister.getMetaDatas().key().contains(s))
-                    if (roleRegister.getMetaDatas().requireDouble())
-                        currentIP = informationsPoints.get(s);
-                    else
-                        currentIP += informationsPoints.get(s) * game.getConfig().getRoleCount(roleRegister.getMetaDatas().key());
+                if (roleRegister.getMetaDatas().key().contains(s)) {
+                    int number = game.getConfig().getRoleCount(roleRegister.getMetaDatas().key());
+                    System.out.println("found ip " + s);
+
+                    if (roleRegister.getMetaDatas().requireDouble()) {
+                        System.out.println("add (double) " + (number == 0 ? 0 : informationsPoints.get(s)));
+                        currentIP += (number == 0 ? 0 : informationsPoints.get(s));
+                    } else {
+                        System.out.println("add " + informationsPoints.get(s) * number);
+                        currentIP += informationsPoints.get(s) * number;
+                    }
+                }
 
         return recommandedIP - currentIP;
     }
@@ -233,7 +246,12 @@ public class AssistantCompo {
 
         int recommandedNeutral = Math.round(count / 16.5f - (currentSolos / (count < 18 ? 2f : 2.30f)));
 
-        return recommandedNeutral - currentNeutral;
+        int difference = recommandedNeutral - currentNeutral;
+
+        if (difference < 0 && currentNeutral == 0)
+            return 0;
+
+        return difference;
     }
 
     public boolean checkDoubleCouples() {
@@ -314,17 +332,17 @@ public class AssistantCompo {
         int solo = this.checkSoloRoles(count);
 
         if (solo != 0)
-            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(solo) + " §6§l" + solo + " §6Rôles Solitaires"));
+            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(solo) + " §6§l" + Math.abs(solo) + " §6Rôles Solitaires"));
 
         int neutral = this.checkNeutralRoles(count);
 
         if (neutral != 0)
-            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(neutral) + " §e§l" + solo + " §eRôles Neutres"));
+            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(neutral) + " §e§l" + Math.abs(neutral) + " §eRôles Neutres"));
 
         int rez = this.checkResurrectionRoles(count);
 
         if (rez != 0)
-            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(rez) + " §e§l" + solo + " §aRôles qui réssucitent"));
+            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(rez) + " §e§l" + Math.abs(rez) + " §aRôles qui réssucitent"));
 
         if (this.checkCouple())
             list.add(new TextComponent(" §0§l■ §fAjouter un §dcouple"));
@@ -337,15 +355,15 @@ public class AssistantCompo {
 
 
     public TextComponent getClickableMessageBaseLG(int baseLG) {
-        return new TextComponent(" §0§l■ §f" + getRemoveOrAdd(baseLG) + " §c§l" + baseLG + " §cLG");
+        return new TextComponent(" §0§l■ §f" + getRemoveOrAdd(baseLG) + " §c§l" + Math.abs(baseLG) + " §cLG");
     }
 
     public TextComponent getClickableMessagePotentialLG(int potentialLG) {
-        return new TextComponent(" §0§l■ §f" + getRemoveOrAdd(potentialLG) + " §c§l" + potentialLG + " §cLG Potentiel");
+        return new TextComponent(" §0§l■ §f" + getRemoveOrAdd(potentialLG) + " §c§l" + Math.abs(potentialLG) + " §cLG Potentiel");
     }
 
     public TextComponent getClickableMessageInfos(int info) {
-        return VersionUtils.getVersionUtils().createClickableText(" §0§l■ §f" + getRemoveOrAdd(info) + " §d§l" + info + " §dRôles à infos", "/assistant informationspoints", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour voir les points des rôles à information");
+        return VersionUtils.getVersionUtils().createClickableText(" §0§l■ §f" + getRemoveOrAdd(info) + " §d§l" + Math.abs(info) + " §dPoints d'information", "/assistant informationspoints", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour voir les points des rôles à information");
     }
 
     private static boolean isPotentialWerewolf(String key) {
