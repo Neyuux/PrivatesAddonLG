@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Role(key="privatesaddon.roles.innkeeperbuffed.display", category=Category.VILLAGER, attributes={RoleAttribute.VILLAGER, RoleAttribute.MINOR_INFORMATION}, configValues={@IntValue(key="privatesaddon.roles.innkeeperbuffed.configurations.detection_radius", defaultValue=10, meetUpValue=10, step=1, item=UniversalMaterial.IRON_DOOR)})
+@Role(key="privatesaddon.roles.innkeeperbuffed.display", category=Category.VILLAGER, attribute=RoleAttribute.MINOR_INFORMATION, configValues={@IntValue(key="privatesaddon.roles.innkeeperbuffed.configurations.detection_radius", defaultValue=10, meetUpValue=10, step=1, item=UniversalMaterial.IRON_DOOR)})
 public class InnkeeperBuffed
         extends RoleImpl
         implements IPower {
