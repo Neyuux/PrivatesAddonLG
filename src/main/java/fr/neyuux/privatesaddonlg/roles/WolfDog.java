@@ -26,7 +26,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
-@Role(key = "privatesaddon.roles.wolf_dog.display", category = Category.VILLAGER, attributes = {RoleAttribute.HYBRID}, defaultAura = Aura.DARK)
+@Role(key = "privatesaddon.roles.wolf_dog.display", category = Category.VILLAGER, attribute = RoleAttribute.HYBRID, defaultAura = Aura.DARK)
 public class WolfDog extends RoleImpl implements ITransformed, IPower {
     private boolean transformed = false;
 

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Role(key = "privatesaddon.roles.mystical_werewolf.display", category = Category.WEREWOLF, attributes = {RoleAttribute.WEREWOLF}, defaultAura = Aura.LIGHT)
+@Role(key = "privatesaddon.roles.mystical_werewolf.display", category = Category.WEREWOLF, attribute = RoleAttribute.WEREWOLF, defaultAura = Aura.LIGHT)
 public class MysticalWerewolf extends RoleWereWolf {
 
     private final List<IPlayerWW> list = new ArrayList<>();
