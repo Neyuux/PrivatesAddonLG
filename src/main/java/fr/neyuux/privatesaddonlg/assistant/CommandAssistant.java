@@ -208,7 +208,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
             case "compo":
             case "roles":
                 player.sendMessage("§f§m                                                                           §r");
-                player.sendMessage("§5Conseils pour améliorer la composition : ");
+                player.sendMessage("§dConseils pour améliorer la composition : ");
                 player.sendMessage("");
 
                 compo.getSummary(this.getPlayerCount())
@@ -257,10 +257,10 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
             case "all":
                 player.sendMessage("§f§m                                                                           §r");
-                player.sendMessage("§1Conseils de l'Assistant :");
+                player.sendMessage("§bConseils de l'Assistant :");
                 player.sendMessage("");
 
-                player.sendMessage(" §3§l■ §5Conseils sur la composition : ");
+                player.sendMessage(" §3§l■ §dConseils sur la composition : ");
                 player.sendMessage("");
 
                 compo.getSummary(this.getPlayerCount())

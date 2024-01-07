@@ -132,7 +132,7 @@ public class AssistantCompo {
 
                     }
 
-                    if (Arrays.stream(roleRegister.getMetaDatas().attributes()).anyMatch(roleAttribute -> roleAttribute == RoleAttribute.HYBRID)) {
+                    if (roleRegister.getMetaDatas().attribute() == RoleAttribute.HYBRID) {
                         if (AssistantCompo.isPotentialWerewolf(roleRegister.getMetaDatas().key())) {
                             maxWW.incrementAndGet();
                             return false;
@@ -382,7 +382,7 @@ public class AssistantCompo {
     private int getSolosCount() {
         return (int) main.getRegisterManager().getRolesRegister()
                 .stream()
-                .filter(roleRegister -> Arrays.stream(roleRegister.getMetaDatas().attributes()).anyMatch(attribute -> attribute == RoleAttribute.NEUTRAL) && !roleRegister.getMetaDatas().key().contains("white_werewolf"))
+                .filter(roleRegister -> roleRegister.getMetaDatas().attribute() == RoleAttribute.NEUTRAL && !roleRegister.getMetaDatas().key().contains("white_werewolf"))
                 .flatMapToInt(roleRegisterx -> IntStream.range(0, main.getGame().getConfig().getRoleCount(roleRegisterx.getMetaDatas().key())))
                 .count();
     }

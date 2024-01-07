@@ -324,8 +324,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         return this.ww.getRegisterManager().getRolesRegister()
                 .stream()
                 .filter(roleRegister -> roleRegister.getClazz().equals(role.getClass()))
-                .anyMatch(roleRegister -> Arrays.stream(roleRegister.getMetaDatas().attributes())
-                        .anyMatch(roleAttribute -> attribute == roleAttribute));
+                .anyMatch(roleRegister -> roleRegister.getMetaDatas().attribute() == attribute);
     }
 
     public InventoryManager getInvManager() {
