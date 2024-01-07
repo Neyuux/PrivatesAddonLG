@@ -10,6 +10,7 @@ import fr.ph1lou.werewolfapi.lovers.ILover;
 import fr.ph1lou.werewolfapi.role.interfaces.IRole;
 import fr.ph1lou.werewolfapi.utils.Wrapper;
 import fr.ph1lou.werewolfapi.versions.VersionUtils;
+import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -25,6 +26,7 @@ public class AssistantCompo {
 
     private final Plugin main;
 
+    @Getter
     private final HashMap<String, Integer> informationsPoints = new HashMap<>();
 
     public AssistantCompo(Plugin main) {
@@ -203,7 +205,6 @@ public class AssistantCompo {
                     else
                         currentIP += informationsPoints.get(s) * game.getConfig().getRoleCount(roleRegister.getMetaDatas().key());
 
-        //TODO Points GUI
         return recommandedIP - currentIP;
     }
 
@@ -299,16 +300,16 @@ public class AssistantCompo {
         int baseLG = this.checkBaseWerewolves(count);
 
         if (baseLG != 0)
-            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(baseLG) + " §c§l" + baseLG + " §cLG"));
+            list.add(this.getClickableMessageBaseLG(baseLG));
 
         int potentialLG = this.checkPotentialWerewolves(count);
 
         if (potentialLG != 0)
-            list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(potentialLG) + " §c§l" + potentialLG + " §cLG Potentiel"));
+            list.add(this.getClickableMessagePotentialLG(potentialLG));
 
         int info = this.checkInformationRoles(count);
         if (info != 0)
-            list.add(utils.createClickableText(" §0§l■ §f" + getRemoveOrAdd(info) + " §d§l" + info + " §dRôles à infos", "/assistant informationspoints", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour voir les points des rôles à information"));
+            list.add(this.getClickableMessageInfos(info));
 
         int solo = this.checkSoloRoles(count);
 
@@ -334,6 +335,18 @@ public class AssistantCompo {
         return list;
     }
 
+
+    public TextComponent getClickableMessageBaseLG(int baseLG) {
+        return new TextComponent(" §0§l■ §f" + getRemoveOrAdd(baseLG) + " §c§l" + baseLG + " §cLG");
+    }
+
+    public TextComponent getClickableMessagePotentialLG(int potentialLG) {
+        return new TextComponent(" §0§l■ §f" + getRemoveOrAdd(potentialLG) + " §c§l" + potentialLG + " §cLG Potentiel");
+    }
+
+    public TextComponent getClickableMessageInfos(int info) {
+        return VersionUtils.getVersionUtils().createClickableText(" §0§l■ §f" + getRemoveOrAdd(info) + " §d§l" + info + " §dRôles à infos", "/assistant informationspoints", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour voir les points des rôles à information");
+    }
 
     private static boolean isPotentialWerewolf(String key) {
         return key.contains("amnesiac_werewolf") ||

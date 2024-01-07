@@ -82,6 +82,9 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     private WorldChangesListener worldListener;
 
     @Getter
+    private CommandAssistant assistant;
+
+    @Getter
     private final HashMap<UUID, Integer> groupsWarning = new HashMap<>();
 
     private final HashSet<LivingEntity> customEntities = new HashSet<>();
@@ -117,6 +120,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         PluginManager pm = this.getServer().getPluginManager();
         CommandPioche commandPioche = new CommandPioche();
 
+        this.assistant = new CommandAssistant(this);
         this.worldListener = new WorldChangesListener();
 
         pm.registerEvents(this, this);
@@ -131,7 +135,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         this.getCommand("pioche").setExecutor(commandPioche);
         this.getCommand("dlimits").setExecutor(new CommandDLimits());
         this.getCommand("don").setExecutor(new DonCommand());
-        this.getCommand("assistant").setExecutor(new CommandAssistant(this));
+        this.getCommand("assistant").setExecutor(assistant);
 
         super.onEnable();
     }

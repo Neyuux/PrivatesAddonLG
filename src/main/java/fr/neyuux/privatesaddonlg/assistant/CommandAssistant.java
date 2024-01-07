@@ -4,7 +4,12 @@ import fr.neyuux.privatesaddonlg.Plugin;
 import fr.neyuux.privatesaddonlg.listeners.WorldChangesListener;
 import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
+import fr.ph1lou.werewolfapi.versions.VersionUtils;
+import lombok.Getter;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -25,13 +30,20 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
     private static final List<String> options = Collections.unmodifiableList(Arrays.asList("compo", "map", "config", "players", "scenarios", "save", "storage", "all", "lg", "lgpotential", "infos", "points"));
 
+    @Getter
     private final AssistantCompo compo;
+
+    @Getter
     private final AssistantConfig config;
+
+    @Getter
+    private final AssistantScenarios scenarios;
 
     public CommandAssistant(Plugin main) {
         this.main = main;
         this.compo = new AssistantCompo(main);
         this.config = new AssistantConfig(main);
+        this.scenarios = new AssistantScenarios(main);
     }
 
     @Override
@@ -195,18 +207,44 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
             case "compo":
             case "roles":
+                player.sendMessage("§f§m                                                                           §r");
+                player.sendMessage("§5Conseils pour améliorer la composition : ");
+                player.sendMessage("");
 
+                compo.getSummary(this.getPlayerCount())
+                        .forEach(msg -> player.spigot().sendMessage(msg));
+                player.sendMessage("§f§m                                                                           §r");
                 break;
 
             case "map":
             case "roofed":
+                player.sendMessage("§f§m                                                                           §r");
+                player.sendMessage("§2Conseils pour améliorer la carte : ");
+
+                player.spigot().sendMessage(VersionUtils.getVersionUtils().createClickableText(" §0§l■ §fMettre la taille de la map en §a" + this.getRecommandedRoofedSize(), "/ww roofedsize" + this.getRecommandedRoofedSize().name(), ClickEvent.Action.RUN_COMMAND, "Cliquez ici pour mettre la taille de la roofed en §a" + this.getRecommandedRoofedSize()));
+
+                player.sendMessage("§f§m                                                                           §r");
                 break;
 
             case "config":
+                player.sendMessage("§f§m                                                                           §r");
+                player.sendMessage("§eConseils pour améliorer la configuration : ");
+                player.sendMessage("");
+
+                this.config.getSummary()
+                        .forEach(msg -> player.spigot().sendMessage(msg));
+                player.sendMessage("§f§m                                                                           §r");
                 break;
 
             case "scenarios":
             case "scenario":
+                player.sendMessage("§f§m                                                                           §r");
+                player.sendMessage("§bConseils pour améliorer les scénarios : ");
+                player.sendMessage("");
+
+                scenarios.getSummary()
+                        .forEach(msg -> player.spigot().sendMessage(msg));
+                player.sendMessage("§f§m                                                                           §r");
                 break;
 
             case "save":
@@ -218,26 +256,82 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                 break;
 
             case "all":
+                player.sendMessage("§f§m                                                                           §r");
+                player.sendMessage("§1Conseils de l'Assistant :");
+                player.sendMessage("");
+
+                player.sendMessage(" §3§l■ §5Conseils sur la composition : ");
+                player.sendMessage("");
+
+                compo.getSummary(this.getPlayerCount())
+                        .forEach(msg -> player.spigot().sendMessage(msg));
+
+                player.sendMessage("");
+
+                player.sendMessage(" §3§l■ §2Conseils sur la carte : ");
+                player.sendMessage("");
+
+                player.spigot().sendMessage(this.getClickableMessageRoofedSize());
+
+                player.sendMessage("");
+
+                player.sendMessage(" §3§l■ §eConseils sur la configuration : ");
+                player.sendMessage("");
+
+                this.config.getSummary()
+                        .forEach(msg -> player.spigot().sendMessage(msg));
+
+                player.sendMessage("");
+
+                player.sendMessage(" §3§l■ §bConseils sur les scénarios : ");
+                player.sendMessage("");
+
+                this.scenarios.getSummary()
+                        .forEach(msg -> player.spigot().sendMessage(msg));
+
+                player.sendMessage("§f§m                                                                           §r");
                 break;
 
             case "setplayers":
             case "players":
             case "setcount":
+                if (args.length > 1 && StringUtils.isNumeric(args[1])) {
+                    this.playerCount = Integer.parseInt(args[1]);
+
+                    player.sendMessage(Plugin.getPrefix() + "Le nombre de joueurs a bien été mis à §7§l" + args[1] + "§f.");
+                    player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+
+                } else player.sendMessage(Plugin.getPrefixWithColor(ChatColor.RED) + "§cPrécisez le nombre de joueurs de la partie.");
                 break;
 
             case "lg":
             case "baselg":
+                player.sendMessage("§f§m                                                                           §r");
+
+                player.spigot().sendMessage(compo.getClickableMessageBaseLG(compo.checkBaseWerewolves(this.getPlayerCount())));
+
+                player.sendMessage("§f§m                                                                           §r");
                 break;
 
             case "lgpotential":
             case "totallg":
             case "lgtotal":
             case "potentiallg":
+                player.sendMessage("§f§m                                                                           §r");
+
+                player.spigot().sendMessage(compo.getClickableMessagePotentialLG(compo.checkPotentialWerewolves(this.getPlayerCount())));
+
+                player.sendMessage("§f§m                                                                           §r");
                 break;
 
             case "informations":
             case "info":
             case "infos":
+                player.sendMessage("§f§m                                                                           §r");
+
+                player.spigot().sendMessage(compo.getClickableMessageInfos(compo.checkInformationRoles(this.getPlayerCount())));
+
+                player.sendMessage("§f§m                                                                           §r");
                 break;
 
             case "informationspoints":
@@ -245,6 +339,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
             case "infospoints":
             case "infopoints":
             case "pointsinfo":
+                InformationsPointsGUI.INVENTORY.open(player);
                 break;
         }
 
@@ -279,5 +374,9 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
     public boolean checkRoofedSize() {
         return Plugin.getINSTANCE().getWorldListener().getSize() != this.getRecommandedRoofedSize();
+    }
+
+    public TextComponent getClickableMessageRoofedSize() {
+        return VersionUtils.getVersionUtils().createClickableText(" §0§l■ §fMettre la taille de la map en §a" + this.getRecommandedRoofedSize(), "/ww roofedsize" + this.getRecommandedRoofedSize().name(), ClickEvent.Action.RUN_COMMAND, "Cliquez ici pour mettre la taille de la roofed en §a" + this.getRecommandedRoofedSize());
     }
 }
