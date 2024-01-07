@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 @Role(key = "privatesaddon.roles.omniscient.display",
         defaultAura = Aura.NEUTRAL,
         category = Category.NEUTRAL,
-        attributes = RoleAttribute.NEUTRAL)
+        attribute = RoleAttribute.NEUTRAL)
 public class Omniscient extends RoleNeutral {
 
     public Omniscient(WereWolfAPI api, IPlayerWW playerWW) {
