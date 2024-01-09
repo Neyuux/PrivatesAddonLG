@@ -78,6 +78,9 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
         WereWolfAPI game = main.getGame();
         IConfiguration config = game.getConfig();
+        List<TextComponent> summaryScens = this.scenarios.getSummary();
+        List<TextComponent> summaryCompo = compo.getSummary(this.getPlayerCount());
+        List<TextComponent> summaryConfig = this.config.getSummary();
 
         switch (args[0]) {
 
@@ -214,44 +217,62 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
             case "compo":
             case "roles":
-                player.sendMessage("§f§m                                                                           §r");
-                player.sendMessage(getPrefix() + "§dConseils pour améliorer la composition : ");
-                player.sendMessage("");
 
-                compo.getSummary(this.getPlayerCount())
-                        .forEach(msg -> player.spigot().sendMessage(msg));
-                player.sendMessage("§f§m                                                                           §r");
+                if (!summaryCompo.isEmpty()) {
+                    player.sendMessage("§f§m                                                                           §r");
+                    player.sendMessage(getPrefix() + "§dConseils pour améliorer la composition : ");
+                    player.sendMessage("");
+
+                    summaryCompo
+                            .forEach(msg -> player.spigot().sendMessage(msg));
+                    player.sendMessage("§f§m                                                                           §r");
+
+                } else {
+                    player.sendMessage(getPrefix() + "§aL'Assistant n'a plus de conseils à donner pour la composition.");
+                }
                 break;
 
             case "map":
             case "roofed":
-                player.sendMessage("§f§m                                                                           §r");
-                player.sendMessage(getPrefix() + "§2Conseils pour améliorer la carte : ");
+                if (this.checkRoofedSize()) {
+                    player.sendMessage("§f§m                                                                           §r");
+                    player.sendMessage(getPrefix() + "§2Conseils pour améliorer la carte : ");
 
-                player.spigot().sendMessage(VersionUtils.getVersionUtils().createClickableText(" §0§l■ §fMettre la taille de la map en §a" + this.getRecommandedRoofedSize(), "/ww roofedsize" + this.getRecommandedRoofedSize().name(), ClickEvent.Action.RUN_COMMAND, "Cliquez ici pour mettre la taille de la roofed en §a" + this.getRecommandedRoofedSize()));
+                    player.spigot().sendMessage(VersionUtils.getVersionUtils().createClickableText(" §0§l■ §fMettre la taille de la map en §a" + this.getRecommandedRoofedSize(), "/ww roofedsize" + this.getRecommandedRoofedSize().name(), ClickEvent.Action.RUN_COMMAND, "Cliquez ici pour mettre la taille de la roofed en §a" + this.getRecommandedRoofedSize()));
 
-                player.sendMessage("§f§m                                                                           §r");
+                    player.sendMessage("§f§m                                                                           §r");
+                } else {
+                    player.sendMessage(getPrefix() + "§aL'Assistant n'a plus de conseils à donner pour la carte.");
+                }
                 break;
 
             case "config":
-                player.sendMessage("§f§m                                                                           §r");
-                player.sendMessage(getPrefix() + "§eConseils pour améliorer la configuration : ");
-                player.sendMessage("");
+                if (!summaryConfig.isEmpty()) {
+                    player.sendMessage("§f§m                                                                           §r");
+                    player.sendMessage(getPrefix() + "§eConseils pour améliorer la configuration : ");
+                    player.sendMessage("");
 
-                this.config.getSummary()
-                        .forEach(msg -> player.spigot().sendMessage(msg));
-                player.sendMessage("§f§m                                                                           §r");
+                    summaryConfig
+                            .forEach(msg -> player.spigot().sendMessage(msg));
+                    player.sendMessage("§f§m                                                                           §r");
+                } else {
+                    player.sendMessage(getPrefix() + "§aL'Assistant n'a plus de conseils à donner pour la configuration.");
+                }
                 break;
 
             case "scenarios":
             case "scenario":
-                player.sendMessage("§f§m                                                                           §r");
-                player.sendMessage(getPrefix() + "§bConseils pour améliorer les scénarios : ");
-                player.sendMessage("");
+                if (!summaryScens.isEmpty()) {
+                    player.sendMessage("§f§m                                                                           §r");
+                    player.sendMessage(getPrefix() + "§bConseils pour améliorer les scénarios : ");
+                    player.sendMessage("");
 
-                scenarios.getSummary()
-                        .forEach(msg -> player.spigot().sendMessage(msg));
-                player.sendMessage("§f§m                                                                           §r");
+                    summaryScens
+                            .forEach(msg -> player.spigot().sendMessage(msg));
+                    player.sendMessage("§f§m                                                                           §r");
+                } else {
+                    player.sendMessage(getPrefix() + "§aL'Assistant n'a plus de conseils à donner pour les scénarios.");
+                }
                 break;
 
             case "save":
@@ -263,41 +284,50 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                 break;
 
             case "all":
+                if (summaryCompo.isEmpty() && summaryConfig.isEmpty() && summaryScens.isEmpty() && !this.checkRoofedSize()) {
+                    player.sendMessage(getPrefix() + "§aL'Assistant n'a plus de conseils à donner. Vous avez fini le jeu. (Neyuux_ n'a plus le droit de se plaindre ez)");
+                    return true;
+                }
+
                 player.sendMessage("§f§m                                                                           §r");
                 player.sendMessage(getPrefix() + "§bConseils pour §3§l"+this.getPlayerCount()+"§b joueurs :");
-                player.sendMessage("");
 
-                player.sendMessage(" §3§l■ §dConseils sur la composition : ");
-                player.sendMessage("");
+                if (!summaryCompo.isEmpty()) {
+                    player.sendMessage("");
+                    player.sendMessage(" §3§l■ §dConseils sur la composition : ");
+                    player.sendMessage("");
 
-                compo.getSummary(this.getPlayerCount())
-                        .forEach(msg -> player.spigot().sendMessage(insertSpace(msg)));
+                    summaryCompo
+                            .forEach(msg -> player.spigot().sendMessage(insertSpace(msg)));
+                }
 
-                player.sendMessage("");
+                if (this.checkRoofedSize()) {
+                    player.sendMessage("");
+                    player.sendMessage(" §3§l■ §2Conseils sur la carte : ");
+                    player.sendMessage("");
 
-                player.sendMessage(" §3§l■ §2Conseils sur la carte : ");
-                player.sendMessage("");
+                    player.spigot().sendMessage(insertSpace(this.getClickableMessageRoofedSize()));
+                }
 
-                player.spigot().sendMessage(insertSpace(this.getClickableMessageRoofedSize()));
+                if (!summaryConfig.isEmpty()) {
+                    player.sendMessage("");
+                    player.sendMessage(" §3§l■ §eConseils sur la configuration : ");
+                    player.sendMessage("");
 
-                player.sendMessage("");
+                    summaryConfig
+                            .forEach(msg -> player.spigot().sendMessage(insertSpace(msg)));
+                }
 
-                player.sendMessage(" §3§l■ §eConseils sur la configuration : ");
-                player.sendMessage("");
+                if (!summaryScens.isEmpty()) {
+                    player.sendMessage("");
+                    player.sendMessage(" §3§l■ §bConseils sur les scénarios : ");
+                    player.sendMessage("");
 
-                this.config.getSummary()
-                        .forEach(msg -> player.spigot().sendMessage(insertSpace(msg)));
-
-                player.sendMessage("");
-
-                player.sendMessage(" §3§l■ §bConseils sur les scénarios : ");
-                player.sendMessage("");
-
-                this.scenarios.getSummary()
-                        .forEach(msg -> player.spigot().sendMessage(insertSpace(msg)));
+                    summaryScens
+                            .forEach(msg -> player.spigot().sendMessage(insertSpace(msg)));
+                }
 
                 player.sendMessage("§f§m                                                                           §r");
-                //TODO message when no advises
                 break;
 
             case "setplayers":
@@ -316,6 +346,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
             case "baselg":
                 player.sendMessage("§f§m                                                                           §r");
 
+                player.sendMessage(" §0§l■ §cNombre de LGs recommandé : §l" + compo.getRecommandedLGs(this.getPlayerCount()));
                 player.spigot().sendMessage(compo.getClickableMessageBaseLG(compo.checkBaseWerewolves(this.getPlayerCount())));
 
                 player.sendMessage("§f§m                                                                           §r");
@@ -327,6 +358,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
             case "potentiallg":
                 player.sendMessage("§f§m                                                                           §r");
 
+                player.sendMessage(" §0§l■ §cNombre de LGs potentiels recommandé : §l" + compo.getRecommandedPotentialLGs(this.getPlayerCount()));
                 player.spigot().sendMessage(compo.getClickableMessagePotentialLG(compo.checkPotentialWerewolves(this.getPlayerCount())));
 
                 player.sendMessage("§f§m                                                                           §r");

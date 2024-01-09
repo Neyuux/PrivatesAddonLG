@@ -83,7 +83,7 @@ public class AssistantCompo {
             whiteWerewolf.incrementAndGet();
 
         count += whiteWerewolf.get();
-        float ww = count / 3f;
+        float ww = this.getRecommandedLGs(count);
         double floorWW = Math.floor(ww);
 
 
@@ -162,7 +162,7 @@ public class AssistantCompo {
 
         maxWW.addAndGet(currentWW);
         count += whiteWerewolf.get();
-        float ww = count / 3f + count / 15f;
+        float ww = this.getRecommandedPotentialLGs(count);
         double floorWW = Math.round(ww);
 
         if (floorWW > maxWW.get()) {
@@ -200,8 +200,6 @@ public class AssistantCompo {
 
         int recommandedIP = Math.round(count * 1.25f + 0.8f * -this.checkBaseWerewolves(count));
         int currentIP = 0;
-
-        System.out.println("info points recommanded " + recommandedIP);
 
         for (Wrapper<IRole, Role> roleRegister : main.getRegisterManager().getRolesRegister())
             for (String s : this.informationsPoints.keySet())
@@ -364,6 +362,14 @@ public class AssistantCompo {
 
     public TextComponent getClickableMessageInfos(int info) {
         return VersionUtils.getVersionUtils().createClickableText(" §0§l■ §f" + getRemoveOrAdd(info) + " §d§l" + Math.abs(info) + " §dPoints d'information", "/assistant informationspoints", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour voir les points des rôles à information");
+    }
+
+    public float getRecommandedLGs(int count) {
+        return count / 3f;
+    }
+
+    public float getRecommandedPotentialLGs(int count) {
+        return count / 3f + count / 15f;
     }
 
     private static boolean isPotentialWerewolf(String key) {

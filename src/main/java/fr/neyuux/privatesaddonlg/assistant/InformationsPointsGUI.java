@@ -156,7 +156,7 @@ public class InformationsPointsGUI implements InventoryProvider {
         }
         IConfiguration config = game.getConfig();
         if (config.getRoleCount(key) > 0) {
-            //TODO game.setRoleInitialSize(game.getRoleInitialSize() - 1);
+            game.setTotalRoles(game.getTotalRoles() - 1);
             config.removeOneRole(key);
         }
     }
@@ -167,6 +167,6 @@ public class InformationsPointsGUI implements InventoryProvider {
         }
         IConfiguration config = game.getConfig();
         config.addOneRole(key);
-        //TODO game.setRoleInitialSize(game.getRoleInitialSize() + 1);
+        game.setTotalRoles(game.getTotalRoles() + 1);
     }
 }
