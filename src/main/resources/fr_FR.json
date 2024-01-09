@@ -96,7 +96,7 @@
         "description": "Vous devez gagner seul, pour vous aider à accomplir cette tâche, vous possèdez une commande qui vous permet de connaître l'identité de tous les joueurs de la partie."
       },
 
-      "innkeeperbuffed": {
+      "innkeeper": {
         "display": "Aubergiste",
         "effect": "Speed quand toutes les chambres sont fermées",
         "available": "Votre pouvoir est de nouveau disponible",

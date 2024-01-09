@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import fr.minuskube.inv.InventoryManager;
+import fr.neyuux.privatesaddonlg.assistant.CommandAssistant;
 import fr.neyuux.privatesaddonlg.commands.CommandDLimits;
 import fr.neyuux.privatesaddonlg.commands.CommandPioche;
 import fr.neyuux.privatesaddonlg.commands.CommandSay;
@@ -24,6 +25,7 @@ import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
+import fr.ph1lou.werewolfapi.registers.IRegisterManager;
 import fr.ph1lou.werewolfapi.role.interfaces.IRole;
 import fr.ph1lou.werewolfapi.utils.ItemBuilder;
 import lombok.Getter;
@@ -80,6 +82,9 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     private WorldChangesListener worldListener;
 
     @Getter
+    private CommandAssistant assistant;
+
+    @Getter
     private final HashMap<UUID, Integer> groupsWarning = new HashMap<>();
 
     private final HashSet<LivingEntity> customEntities = new HashSet<>();
@@ -115,6 +120,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         PluginManager pm = this.getServer().getPluginManager();
         CommandPioche commandPioche = new CommandPioche();
 
+        this.assistant = new CommandAssistant(this);
         this.worldListener = new WorldChangesListener();
 
         pm.registerEvents(this, this);
@@ -129,6 +135,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         this.getCommand("pioche").setExecutor(commandPioche);
         this.getCommand("dlimits").setExecutor(new CommandDLimits());
         this.getCommand("don").setExecutor(new DonCommand());
+        this.getCommand("assistant").setExecutor(assistant);
 
         super.onEnable();
     }
@@ -322,6 +329,10 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     public InventoryManager getInvManager() {
         return this.ww.getInvManager();
+    }
+
+    public IRegisterManager getRegisterManager() {
+        return this.ww.getRegisterManager();
     }
 
 

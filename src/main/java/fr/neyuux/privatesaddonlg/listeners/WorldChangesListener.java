@@ -33,8 +33,8 @@ public class WorldChangesListener implements Listener {
     public void onInitWerewolfWorld(WorldInitEvent ev) {
         World w = ev.getWorld();
         if (w.getName().equals("werewolf_map")) {
-            w.loadChunk(-125, -125);
             this.chunksLoaded = 0;
+            w.loadChunk(-125, -125);
         }
     }
 
@@ -68,10 +68,10 @@ public class WorldChangesListener implements Listener {
     private void addChunk() {
         this.chunksLoaded++;
 
-        double percentage = this.chunksLoaded / 900.0D * 100.0D;
+        double percentage = this.chunksLoaded / (double)this.getSize().getChunks() * 100.0D;
 
-        Bukkit.getLogger().info("[LG UHC > PrivatesAddon] Add Roofed : " + this.chunksLoaded + " / 900 terminé.  (~" + (new DecimalFormat("0.0")).format(percentage) + "%)");
-        if (this.chunksLoaded == 900)
+        Bukkit.getLogger().info("[LG UHC > PrivatesAddon] Add Roofed : " + this.chunksLoaded + " / "+this.getSize().getChunks()+" terminé.  (~" + (new DecimalFormat("0.0")).format(percentage) + "%)");
+        if (this.chunksLoaded == this.getSize().getChunks())
             Bukkit.broadcastMessage(Plugin.getPrefix() + "§2La génération de la Roofed Forest est terminée !");
     }
 
@@ -84,8 +84,25 @@ public class WorldChangesListener implements Listener {
         @Getter
         private final int size;
 
+        @Getter
+        private final int chunks;
+
         RoofedSize(int size) {
             this.size = size;
+
+            int i = 0;
+            int maximum = -125 + size;
+            int minimum = -125 - size;
+
+            for (int x = -400; x <= 400; x++) {
+                for (int z = -400; z <= 400; z++) {
+                    if (x <= maximum && x >= minimum && z <= maximum && z >= minimum) {
+                        i++;
+                    }
+                }
+            }
+
+            this.chunks = i;
         }
 
         public int getPlusChunkCoord() {

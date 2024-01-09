@@ -22,3 +22,9 @@ commands:
     aliases:
       - d
       - wwdon
+  assistant:
+    description: Assistant de configuration LG
+    aliases:
+      - assist
+      - ass
+      - as

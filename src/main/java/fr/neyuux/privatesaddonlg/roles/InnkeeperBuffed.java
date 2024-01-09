@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Role(key="privatesaddon.roles.innkeeperbuffed.display", category=Category.VILLAGER, attribute=RoleAttribute.MINOR_INFORMATION, configValues={@IntValue(key="privatesaddon.roles.innkeeperbuffed.configurations.detection_radius", defaultValue=10, meetUpValue=10, step=1, item=UniversalMaterial.IRON_DOOR)})
+@Role(key="privatesaddon.roles.innkeeper.display", category=Category.VILLAGER, attribute=RoleAttribute.MINOR_INFORMATION, configValues={@IntValue(key="privatesaddon.roles.innkeeper.configurations.detection_radius", defaultValue=10, meetUpValue=10, step=1, item=UniversalMaterial.IRON_DOOR)})
 public class InnkeeperBuffed
         extends RoleImpl
         implements IPower {
@@ -53,10 +53,10 @@ public class InnkeeperBuffed
     @NotNull
     public String getDescription() {
         return new DescriptionBuilder(this.game, this)
-                .setDescription(this.game.translate("privatesaddon.roles.innkeeperbuffed.description"))
-                .setEffects(this.game.translate("privatesaddon.roles.innkeeperbuffed.effect"))
-                .setPower(game.translate("privatesaddon.roles.innkeeperbuffed.available_room", Formatter.number(this.availableRooms)))
-                .addExtraLines(game.translate("privatesaddon.roles.innkeeperbuffed.list",
+                .setDescription(this.game.translate("privatesaddon.roles.innkeeper.description"))
+                .setEffects(this.game.translate("privatesaddon.roles.innkeeper.effect"))
+                .setPower(game.translate("privatesaddon.roles.innkeeper.available_room", Formatter.number(this.availableRooms)))
+                .addExtraLines(game.translate("privatesaddon.roles.innkeeper.list",
                         Formatter.format("&list&", clientDatas
                                 .stream()
                                 .map(clientData -> clientData.playerWW.getName())
@@ -150,7 +150,7 @@ public class InnkeeperBuffed
                                     !iPlayerWW.equals(clientData.playerWW) &&
                                     iPlayerWW.isState(StatePlayer.ALIVE) &&
                                     iPlayerWW.getLocation().getWorld() == clientData.playerWW.getLocation().getWorld() &&
-                                    ((iPlayerWW.getLocation().distance(clientData.playerWW.getLocation()) <= InnkeeperBuffed.this.game.getConfig().getValue("privatesaddon.roles.innkeeperbuffed.configurations.detection_radius"))))
+                                    ((iPlayerWW.getLocation().distance(clientData.playerWW.getLocation()) <= InnkeeperBuffed.this.game.getConfig().getValue("privatesaddon.roles.innkeeper.configurations.detection_radius"))))
                             .forEach(clientData.seenPlayers::add);
                 }
             }
