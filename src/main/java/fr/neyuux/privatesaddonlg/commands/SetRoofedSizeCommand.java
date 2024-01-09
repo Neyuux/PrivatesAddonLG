@@ -1,4 +1,4 @@
-package fr.neyuux.privatesaddonlg.groupscheck;
+package fr.neyuux.privatesaddonlg.commands;
 
 import fr.neyuux.privatesaddonlg.Plugin;
 import fr.neyuux.privatesaddonlg.listeners.WorldChangesListener;
@@ -24,7 +24,7 @@ public class SetRoofedSizeCommand implements ICommand {
         String options = Arrays.stream(WorldChangesListener.RoofedSize.values()).map(size -> size.name() + " ").collect(Collectors.joining());
 
         if (args.length == 0) {
-            player.sendMessage(Plugin.getPrefix() + "§2Taille actuelle de la roofed : §l" + worldListener.getSize().name());
+            player.sendMessage(Plugin.getPrefix() + "§2Taille actuelle de la roofed : §e§l" + worldListener.getSize().name());
             player.sendMessage("§2Options disponibles : §e" + options);
 
             return;
@@ -40,7 +40,7 @@ public class SetRoofedSizeCommand implements ICommand {
 
             worldListener.setSize(size);
 
-            Bukkit.broadcastMessage(Plugin.getPrefix() + "§2Création d'une nouvelle carte avec une roofed §l" + size.name() + "§2...");
+            Bukkit.broadcastMessage(Plugin.getPrefix() + "§2Création d'une nouvelle carte avec une roofed §e§l" + size.name() + "§2...");
 
             game.getMapManager().loadMap();
 

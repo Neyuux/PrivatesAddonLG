@@ -10,7 +10,6 @@ import fr.ph1lou.werewolfapi.events.game.vote.VoteResultEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.listeners.impl.ListenerWerewolf;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
-import fr.ph1lou.werewolfapi.versions.VersionUtils_1_8;
 import fr.ph1lou.werewolfapi.vote.IVoteManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
