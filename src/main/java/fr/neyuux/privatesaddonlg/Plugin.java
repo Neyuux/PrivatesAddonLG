@@ -21,8 +21,11 @@ import fr.ph1lou.werewolfapi.enums.RoleAttribute;
 import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
+import fr.ph1lou.werewolfapi.events.UpdatePlayerNameTagEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
+import fr.ph1lou.werewolfapi.events.game.permissions.UpdateModeratorNameTagEvent;
+import fr.ph1lou.werewolfapi.events.game.utils.WinConditionsCheckEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.registers.IRegisterManager;
@@ -141,6 +144,11 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     }
 
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onDebug(WinConditionsCheckEvent ev) {
+        ev.setVictoryTeam(null);
+    }
+
     @EventHandler
     public void onGameStart(StartEvent ev) {
         Bukkit.getScheduler().runTaskLater(this, () -> this.getGame().setGameName("@Neyuux_"), 20L);
@@ -172,6 +180,11 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     public void onResurrection(ResurrectionEvent ev){
         if (!ev.isCancelled())
             ev.getPlayerWW().addPlayerHealth(32);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onModTabHeart(UpdateModeratorNameTagEvent ev) {
+        ev.setSuffix(ev.getSuffix().replace('♥', '❤'));
     }
 
     @Override

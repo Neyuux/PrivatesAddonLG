@@ -38,16 +38,17 @@ public class Omniscient extends RoleNeutral {
     public @NotNull String getDescription() {
 
         return new DescriptionBuilder(game, this)
-                .setDescription("privatesaddon.roles.omniscient.description")
+                .setDescription(game.translate("privatesaddon.roles.omniscient.description"))
                 .setItems(game.translate("privatesaddon.roles.omniscient.items"))
-                .setCommand("privatesaddon.roles.omniscient.command")
+                .setCommand(game.translate("privatesaddon.roles.omniscient.command"))
                 .build();
     }
 
 
     @Override
     public void recoverPower() {
-
+        Plugin.getINSTANCE().getGame().getPlayersWW()
+                .forEach(playerWW -> Bukkit.getPluginManager().callEvent(new UpdateNameTagEvent(playerWW)));
     }
 
 
@@ -71,41 +72,31 @@ public class Omniscient extends RoleNeutral {
         if (player == null || target == null || !this.isAbilityEnabled())
             return;
 
-        Scoreboard scoreboard = target.getScoreboard();
-        Team team = scoreboard.getTeam(player.getName());
+        if (!target.getUniqueId().equals(this.getPlayerUUID()))
+            return;
+
+
         StringBuilder prefix = new StringBuilder(ev.getPrefix());
         StringBuilder suffix = new StringBuilder(ev.getSuffix());
 
-        if (ev.isTabVisibility()) {
-            VersionUtils.getVersionUtils().showPlayer(target, player);
-        } else {
-            VersionUtils.getVersionUtils().hidePlayer(target, player);
-        }
+        game.getPlayerWW(target.getUniqueId()).ifPresent(targetWW -> {
 
-        if (team != null) {
-            game.getPlayerWW(target.getUniqueId()).ifPresent(targetWW -> {
+            game.getPlayerWW(player.getUniqueId())
+                    .ifPresent(playerWW -> {
+                        UpdateModeratorNameTagEvent modNameTag = new UpdateModeratorNameTagEvent(player.getUniqueId());
+                        Bukkit.getPluginManager().callEvent(modNameTag);
 
-                game.getPlayerWW(player.getUniqueId())
-                        .ifPresent(playerWW -> {
-                            UpdateModeratorNameTagEvent modNameTag = new UpdateModeratorNameTagEvent(player.getUniqueId());
-                            Bukkit.getPluginManager().callEvent(modNameTag);
+                        prefix.append(modNameTag.getPrefix());
 
-                            prefix.append(modNameTag.getPrefix());
+                        suffix.append(modNameTag.getSuffix());
 
-                            suffix.append(modNameTag.getSuffix());
+                        if(playerWW.isState(StatePlayer.ALIVE) && !targetWW.getColor(playerWW).equals("")){
+                            prefix.append(targetWW.getColor(playerWW));
+                        }
+                    });
+        });
 
-                            if(playerWW.isState(StatePlayer.ALIVE)){
-                                prefix.append(targetWW.getColor(playerWW));
-                            }
-                        });
-
-            });
-
-            String string1 = suffix.toString();
-            team.setSuffix(string1.substring(0, Math.min(16, string1.length())));
-            String string2 = prefix.toString();
-            team.setPrefix(string2.substring(Math.max(string2.length() - 16, 0)));
-            VersionUtils.getVersionUtils().setTeamNameTagVisibility(team, ev.isVisibility());
-        }
+        ev.setPrefix(String.valueOf(prefix));
+        ev.setSuffix(String.valueOf(suffix));
     }
 }

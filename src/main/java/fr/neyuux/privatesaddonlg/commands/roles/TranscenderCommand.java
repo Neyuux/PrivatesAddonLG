@@ -28,7 +28,6 @@ public class TranscenderCommand
     @Override
     public void execute(WereWolfAPI game, IPlayerWW playerWW, String[] args) {
         UUID uuid = playerWW.getUUID();
-        Omniscient omniscient = (Omniscient) playerWW.getRole();
         Player player = Bukkit.getPlayer(uuid);
 
         if (args.length == 0) {
@@ -43,7 +42,7 @@ public class TranscenderCommand
             players.addAll(game.getPlayersWW().stream().filter(playerWW1 -> playerWW1.getRole().isNeutral() || playerWW1.getRole().isSolitary()).collect(Collectors.toList()));
             players.addAll(game.getPlayersWW().stream().filter(this::isVillager).collect(Collectors.toList()));
 
-            players.forEach(playerWW1 -> player.sendMessage(this.getColor(playerWW1) + " §fest " + this.getColor(playerWW1) + Plugin.getRoleTranslated(playerWW1.getRole().getKey())));
+            players.forEach(playerWW1 -> player.sendMessage(this.getColor(playerWW1) + playerWW1.getName() + " §fest " + this.getColor(playerWW1) + Plugin.getRoleTranslated(playerWW1.getRole().getKey())));
 
             player.sendMessage("§f§m                                                                           §r");
             return;
@@ -76,6 +75,9 @@ public class TranscenderCommand
 
         IRole role = targetWW.getRole();
         player.sendMessage(" §0§l■ §fRôle : " + c + Plugin.getRoleTranslated(role.getKey()));
+
+        if (role.isInfected())
+            player.sendMessage(" §0§l■ §fInfecté : " + this.getYesOrNo(role.isInfected()));
 
         if (role instanceof IPower)
             player.sendMessage(" §0§l■ §fPouvoir Disponible : " + this.getYesOrNo(((IPower) role).hasPower()));
@@ -174,7 +176,7 @@ public class TranscenderCommand
 
     private ChatColor getColor(IPlayerWW playerWW) {
         if (this.isWerewolf(playerWW))
-            return ChatColor.DARK_RED;
+            return ChatColor.RED;
         else if (this.isVillager(playerWW))
             return ChatColor.GREEN;
         else
