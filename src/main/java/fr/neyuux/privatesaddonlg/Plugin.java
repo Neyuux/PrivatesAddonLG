@@ -29,6 +29,7 @@ import fr.ph1lou.werewolfapi.registers.IRegisterManager;
 import fr.ph1lou.werewolfapi.role.interfaces.IRole;
 import fr.ph1lou.werewolfapi.utils.ItemBuilder;
 import lombok.Getter;
+import lombok.NonNull;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -51,6 +52,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URL;
@@ -357,6 +359,48 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         }catch(IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * Envoyer un title à un joueur
+     *
+     * @param player Le joueur ciblé
+     * @param fadeIn Le fondu entrant (en ticks)
+     * @param stay Le temps que le title va rester (en ticks)
+     * @param fadeOut Le fondu sortant (en ticks)
+     * @param title Le texte du titre
+     */
+    public static void sendTitle(@NonNull Player player, int fadeIn, int stay, int fadeOut, @NonNull String title) {
+        sendTitle(player, fadeIn, stay, fadeOut, title, null);
+    }
+
+    /**
+     * Envoyer un title à un joueur
+     *
+     * @param player Le joueur ciblé
+     * @param fadeIn Le fondu entrant (en ticks)
+     * @param stay Le temps que le title va rester (en ticks)
+     * @param fadeOut Le fondu sortant (en ticks)
+     * @param title Le texte du titre
+     * @param subtitle Le texte du sous-titre
+     */
+    public static void sendTitle(@NonNull Player player, int fadeIn, int stay, int fadeOut, @Nullable String title, @Nullable String subtitle) {
+        // Pour entrer juste un subtitle, il faut un title vide. Pas besoin pour le subtitle
+        if (title == null) title = "";
+        PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
+
+        PacketPlayOutTitle packetTimes = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, null, fadeIn, stay, fadeOut);
+        connection.sendPacket(packetTimes);
+
+        IChatBaseComponent titleMain = new ChatComponentText(title);
+        PacketPlayOutTitle packetPlayOutTitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleMain);
+        connection.sendPacket(packetPlayOutTitle);
+
+        if (subtitle != null) {
+            IChatBaseComponent titleSub = new ChatComponentText(subtitle);
+            PacketPlayOutTitle packetPlayOutSubTitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, titleSub);
+            connection.sendPacket(packetPlayOutSubTitle);
         }
     }
 }

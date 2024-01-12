@@ -10,6 +10,7 @@ import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.game.day_cycle.DayEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
+import fr.ph1lou.werewolfapi.player.impl.PotionModifier;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.role.impl.RoleImpl;
 import fr.ph1lou.werewolfapi.role.interfaces.IAffectedPlayers;
@@ -19,16 +20,17 @@ import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Role(
         key = "privatesaddon.roles.beaconer.display",
@@ -44,9 +46,14 @@ import java.util.List;
 )
 public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
 
-    private final HashMap<IPlayerWW, BeaconType> affectedPlayers = new HashMap<>();
+    public final HashMap<IPlayerWW, BeaconType> affectedPlayers = new HashMap<>();
 
     private boolean power = true;
+
+    @Getter
+    @Setter
+    @Nullable
+    private BeaconType nextBeacon;
 
 
     public Beaconer(WereWolfAPI api, IPlayerWW playerWW) {
@@ -87,6 +94,11 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
         return new ArrayList<>(this.affectedPlayers.keySet());
     }
 
+    @Unmodifiable
+    public List<BeaconType> getUnavailableBeacons() {
+        return new ArrayList<>(this.affectedPlayers.values());
+    }
+
     @Override
     public void setPower(boolean b) {
         this.power = b;
@@ -108,7 +120,30 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
         if (!this.isAbilityEnabled() || !this.hasPower() || !this.getPlayerWW().isState(StatePlayer.ALIVE))
             return;
 
+        if (ev.getRightClicked().getType() != EntityType.PLAYER)
+            return;
 
+        Player player = ev.getPlayer();
+
+        if (!player.getUniqueId().equals(this.getPlayerUUID()))
+            return;
+
+        Player target = (Player) ev.getRightClicked();
+        this.game.getPlayerWW(target.getUniqueId()).ifPresent(targetWW -> {
+            if (this.nextBeacon != null) {
+                if (!this.getAffectedPlayers().contains(targetWW)) {
+
+                    this.affectedPlayers.put(targetWW, this.nextBeacon);
+                    Plugin.sendTitle(player, 20, 40, 20, "§a§lBalise posée !", "§bVous avez posé une balise " + this.nextBeacon.getName() + " sur " + target.getName() + ".");
+                    player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+
+                    this.setPower(false);
+                    this.setNextBeacon(null);
+                } else {
+                    player.sendMessage(Plugin.getPrefix() + "§cVous avez déjà posé une balise sur ce joueur.");
+                }
+            }
+        });
     }
 
     @EventHandler
@@ -134,6 +169,9 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
         
         @Setter
         private float activationProgression;
+
+        @Setter
+        private float plantProgression;
         
         @Setter
         private boolean isAvailable;
@@ -148,6 +186,10 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
             this.activationProgression += added;
         }
 
+        public void addPlantProgression(int added) {
+            this.plantProgression += added;
+        }
+
         public void sendInfos() {
 
         }
@@ -155,15 +197,39 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
         public void giveEffects(Beaconer beaconer) {
             Player player = Bukkit.getPlayer(beaconer.getPlayerUUID());
 
-            if (player != null)
-                player.setWalkSpeed(player.getWalkSpeed() * 1.10f);
+            switch (this) {
+                case CAMP:
+                    beaconer.affectedPlayers.entrySet()
+                            .stream()
+                            .filter(entry -> entry.getValue() == CAMP)
+                            .map(entry -> entry.getKey().getRole())
+                            .findFirst()
+                            .ifPresent(role -> {
+                                if (role.isWereWolf() || role.isSolitary())
+                                    beaconer.getPlayerWW().addPotionModifier(PotionModifier.add(PotionEffectType.INCREASE_DAMAGE, "privatesaddon.roles.beaconer.display"));
+                                else
+                                    beaconer.getPlayerWW().addPotionModifier(PotionModifier.add(PotionEffectType.DAMAGE_RESISTANCE, "privatesaddon.roles.beaconer.display"));
+                            });
+
+                    break;
+                case EFFECTS:
+                    if (player != null)
+                        player.setWalkSpeed(player.getWalkSpeed() * 1.10f);
+                    break;
+            }
         }
 
         public void removeEffects(Beaconer beaconer) {
             Player player = Bukkit.getPlayer(beaconer.getPlayerUUID());
 
-            if (player != null)
-                player.setWalkSpeed(player.getWalkSpeed() / 1.10f);
+            switch (this) {
+                case CAMP:
+                    break;
+                case EFFECTS:
+                    if (player != null)
+                        player.setWalkSpeed(player.getWalkSpeed() / 1.10f);
+                    break;
+            }
         }
         
         public String getDescription() {
@@ -173,7 +239,7 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                 sb.append("Disponible");
             else {
 
-                sb.append((this.getActivationProgression() >= 100f ? "Activée (" : (this.getActivationProgression() <= 0f ? "Posage (" : "Posée (")) + Math.round(Math.min(100f, this.getActivationProgression())) + "%)");
+                sb.append((this.getActivationProgression() >= 100f ? "Activée (" : (this.getPlantProgression() >= 100f ? "Posée (" : "Posage (")) + Math.round(Math.min(100f, this.getActivationProgression())) + "%)");
             }
 
             return sb.toString();
