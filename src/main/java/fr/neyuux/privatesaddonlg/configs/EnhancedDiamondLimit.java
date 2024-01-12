@@ -295,7 +295,7 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
 
         public final static LimitLevel LEVEL_1 = new LimitLevel(1, 13, 1);
         public final static LimitLevel LEVEL_2 = new LimitLevel(2, 17, 2);
-        public final static LimitLevel LEVEL_3 = new LimitLevel(3, 22, 3, 0.05D, 0.10D);
-        public final static LimitLevel LEVEL_4 = new LimitLevel(4, 29, 4, 0.10D, 0.13D);
+        public final static LimitLevel LEVEL_3 = new LimitLevel(3, 22, 3, 0.05D, 0.15D);
+        public final static LimitLevel LEVEL_4 = new LimitLevel(4, 29, 4, 0.10D, 0.20D);
     }
 }

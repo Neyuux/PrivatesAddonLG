@@ -5,6 +5,7 @@ import fr.ph1lou.werewolfapi.annotations.Lover;
 import fr.ph1lou.werewolfapi.annotations.Role;
 import fr.ph1lou.werewolfapi.enums.Category;
 import fr.ph1lou.werewolfapi.enums.RoleAttribute;
+import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.lovers.ILover;
 import fr.ph1lou.werewolfapi.role.interfaces.IRole;
@@ -308,6 +309,24 @@ public class AssistantCompo {
         return recommandedRez - currentRez;
     }
 
+    public boolean checkGrimyLG() {
+        if (!main.isLoaded())
+            return false;
+
+        IConfiguration config = main.getGame().getConfig();
+
+        return config.getRoleCount("werewolf.roles.grimy_werewolf.display") > 0 && config.getRoleCount("werewolf.roles.werewolf.display") == 0;
+    }
+
+    public boolean checkCharmerCupi() {
+        if (!main.isLoaded())
+            return false;
+
+        IConfiguration config = main.getGame().getConfig();
+
+        return config.getRoleCount("werewolf.roles.charmer.display") > 0 && config.getRoleCount("werewolf.roles.cupid.display") > 0;
+    }
+
 
     public List<TextComponent> getSummary(int count) {
         List<TextComponent> list = new ArrayList<>();
@@ -347,6 +366,12 @@ public class AssistantCompo {
 
         if (this.checkDoubleCouples())
             list.add(utils.createClickableText(" §0§l■ §cDésactivez §fle Cupidon ou un Couple Aléatoire pour ne pas avoir 2 couples !", "/assistant clickablemessage removecouples", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour retirer les couples"));
+
+        if (this.checkGrimyLG())
+            list.add(new TextComponent(" §0§l■ §cLoup-Garou Grimeur : §fAjouter un §cLoup-Garou §fpour dissumler le grimage"));
+
+        if (this.checkCharmerCupi())
+            list.add(new TextComponent(" §0§l■ §fDésactiver le §dCupidon §fsi vous voulez garder la §6Charmeuse"));
 
         return list;
     }
