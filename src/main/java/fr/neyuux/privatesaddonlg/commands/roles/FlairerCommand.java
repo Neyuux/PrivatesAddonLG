@@ -39,7 +39,7 @@ public class FlairerCommand
             return;
         }
         if (playerWW1 == null || !playerWW1.isState(StatePlayer.ALIVE)) {
-            player.sendMessage(Plugin.getPrefixWithColor(ChatColor.RED) + "§cCe joueur n'existe pas, est dans le couloir de la Mort ou est déjà Mort.");
+            player.sendMessage(Plugin.getPrefixWithColor(ChatColor.RED) + "§cCe joueur est dans le couloir de la Mort ou est déjà Mort.");
             return;
         }
         if (((ILimitedUse) fox).getUse() >= game.getConfig().getValue("privatesaddon.roles.fox.configurations.fox_smell_number")) {

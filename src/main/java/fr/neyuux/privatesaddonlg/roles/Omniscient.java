@@ -1,12 +1,10 @@
 package fr.neyuux.privatesaddonlg.roles;
 
-import com.avaje.ebean.annotation.UpdateMode;
 import fr.neyuux.privatesaddonlg.Plugin;
 import fr.ph1lou.werewolfapi.annotations.Role;
 import fr.ph1lou.werewolfapi.enums.Aura;
 import fr.ph1lou.werewolfapi.enums.Category;
 import fr.ph1lou.werewolfapi.enums.RoleAttribute;
-import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.events.UpdateNameTagEvent;
 import fr.ph1lou.werewolfapi.events.UpdatePlayerNameTagEvent;
 import fr.ph1lou.werewolfapi.events.game.permissions.UpdateModeratorNameTagEvent;
@@ -14,13 +12,10 @@ import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.role.impl.RoleNeutral;
 import fr.ph1lou.werewolfapi.role.utils.DescriptionBuilder;
-import fr.ph1lou.werewolfapi.versions.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -79,21 +74,14 @@ public class Omniscient extends RoleNeutral {
         StringBuilder prefix = new StringBuilder(ev.getPrefix());
         StringBuilder suffix = new StringBuilder(ev.getSuffix());
 
-        game.getPlayerWW(target.getUniqueId()).ifPresent(targetWW -> {
+        game.getPlayerWW(target.getUniqueId()).flatMap(targetWW ->
+                game.getPlayerWW(player.getUniqueId())).ifPresent(playerWW -> {
+            UpdateModeratorNameTagEvent modNameTag = new UpdateModeratorNameTagEvent(player.getUniqueId());
+            Bukkit.getPluginManager().callEvent(modNameTag);
 
-            game.getPlayerWW(player.getUniqueId())
-                    .ifPresent(playerWW -> {
-                        UpdateModeratorNameTagEvent modNameTag = new UpdateModeratorNameTagEvent(player.getUniqueId());
-                        Bukkit.getPluginManager().callEvent(modNameTag);
+            prefix.append(modNameTag.getPrefix());
 
-                        prefix.append(modNameTag.getPrefix());
-
-                        suffix.append(modNameTag.getSuffix());
-
-                        if(playerWW.isState(StatePlayer.ALIVE) && !targetWW.getColor(playerWW).equals("")){
-                            prefix.append(targetWW.getColor(playerWW));
-                        }
-                    });
+            suffix.append(modNameTag.getSuffix());
         });
 
         ev.setPrefix(String.valueOf(prefix));

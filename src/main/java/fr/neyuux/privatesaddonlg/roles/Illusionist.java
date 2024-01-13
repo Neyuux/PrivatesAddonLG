@@ -41,7 +41,7 @@ public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {
     @Override
     @NotNull
     public String getDescription() {
-        return (new DescriptionBuilder(this.game, this)).setDescription(this.game.translate("werewolf.roles.illusionist.description", new Formatter[0])).setPower(this.game.translate("werewolf.roles.illusionist.power", new Formatter[0])).setCommand(this.game.translate(this.hasPower() ? "werewolf.roles.illusionist.activate" : "werewolf.roles.illusionist.already_activate", new Formatter[0])).build();
+        return (new DescriptionBuilder(this.game, this)).setDescription(this.game.translate("werewolf.roles.illusionist.description")).setPower(this.game.translate("werewolf.roles.illusionist.power")).setCommand(this.game.translate(this.hasPower() ? "werewolf.roles.illusionist.activate" : "werewolf.roles.illusionist.already_activate")).build();
     }
 
     @EventHandler
@@ -66,7 +66,7 @@ public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {
                         Bukkit.getPluginManager().callEvent(illusionistAddPlayerOnWerewolfListEvent);
 
                         if (illusionistAddPlayerOnWerewolfListEvent.isCancelled()) {
-                            this.getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.check.cancel", new Formatter[0]);
+                            this.getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.check.cancel");
                         } else {
                             this.addAffectedPlayer(playerWW);
                             Bukkit.getPluginManager().callEvent(new NewWereWolfEvent(playerWW));
@@ -74,7 +74,7 @@ public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {
                             BukkitUtils.scheduleSyncDelayedTask(this.game, () -> {
                                 if (this.getPlayerWW().isState(StatePlayer.ALIVE)) {
 
-                                    playerWW.sendMessageWithKey("werewolf.prefix.green", "werewolf.roles.illusionist.reveal", new Formatter[0]);
+                                    playerWW.sendMessageWithKey("werewolf.prefix.green", "werewolf.roles.illusionist.reveal");
 
                                     List<IPlayerWW> players1WW = this.game.getPlayersWW()
                                             .stream()
@@ -89,11 +89,11 @@ public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {
                                         List<IPlayerWW> finalPlayersWW = new ArrayList<>(Arrays.asList(playerWW, players1WW.get(0), players1WW.get(1)));
                                         Collections.shuffle(finalPlayersWW, this.game.getRandom());
 
-                                        IllusionistGetNamesEvent illusionistGetNamesEvent = new IllusionistGetNamesEvent(this.getPlayerWW(), new HashSet(finalPlayersWW));
+                                        IllusionistGetNamesEvent illusionistGetNamesEvent = new IllusionistGetNamesEvent(this.getPlayerWW(), new HashSet<>(finalPlayersWW));
                                         Bukkit.getPluginManager().callEvent(illusionistGetNamesEvent);
 
                                         if (illusionistGetNamesEvent.isCancelled())
-                                            this.getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.check.cancel", new Formatter[0]);
+                                            this.getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.check.cancel");
                                         else
                                             this.getPlayerWW().sendMessageWithKey("werewolf.prefix.green", "werewolf.roles.illusionist.reveal_pseudos", Formatter.format("&names&", finalPlayersWW.stream().map(IPlayerWW::getName).collect(Collectors.joining(", "))));
                                     }

@@ -58,6 +58,7 @@ public class AssistantCompo {
         informationsPoints.put("sister", 1);
         informationsPoints.put("little_girl", 3);
         informationsPoints.put("witness", 2);
+        informationsPoints.put("omniscient", 4);
     }
 
 
@@ -199,20 +200,17 @@ public class AssistantCompo {
 
         WereWolfAPI game = main.getGame();
 
-        int recommandedIP = Math.round(count * 1.25f + 0.8f * -this.checkBaseWerewolves(count));
+        int recommandedIP = Math.round(count * 1.10f);
         int currentIP = 0;
 
         for (Wrapper<IRole, Role> roleRegister : main.getRegisterManager().getRolesRegister())
             for (String s : this.informationsPoints.keySet())
-                if (roleRegister.getMetaDatas().key().contains(s)) {
+                if (Arrays.asList(roleRegister.getMetaDatas().key().split("\\.")).contains(s)) {
                     int number = game.getConfig().getRoleCount(roleRegister.getMetaDatas().key());
-                    System.out.println("found ip " + s);
 
                     if (roleRegister.getMetaDatas().requireDouble()) {
-                        System.out.println("add (double) " + (number == 0 ? 0 : informationsPoints.get(s)));
                         currentIP += (number == 0 ? 0 : informationsPoints.get(s));
                     } else {
-                        System.out.println("add " + informationsPoints.get(s) * number);
                         currentIP += informationsPoints.get(s) * number;
                     }
                 }

@@ -54,7 +54,7 @@ public class LoneWerewolfNeyuux extends ListenerWerewolf {
         LoneWolfEvent loneWolfEvent = new LoneWolfEvent(playerWW);
         Bukkit.getPluginManager().callEvent(loneWolfEvent);
 
-        playerWW.sendMessageWithKey("privatesaddon.prefix.red", "privatesaddon.configurations.lone_wolf.message", new Formatter[0]);
+        playerWW.sendMessageWithKey("privatesaddon.prefix.red", "privatesaddon.configurations.lone_wolf.message");
         if (player != null)
             Sound.WITHER_HURT.play(player, 5f, 0.80f);
 

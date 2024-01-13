@@ -130,8 +130,7 @@ public class AssistantConfig {
 
 
     private static boolean isOutdatedConfig(String key) {
-        return key.equals("werewolf.configurations.red_name_tag.name") ||
-                key.equals("werewolf.configurations.lone_wolf.name");
+        return key.equals("werewolf.configurations.lone_wolf.name");
     }
 
 

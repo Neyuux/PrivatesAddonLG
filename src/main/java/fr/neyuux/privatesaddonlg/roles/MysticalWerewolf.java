@@ -35,8 +35,8 @@ public class MysticalWerewolf extends RoleWereWolf {
     @NotNull
     public String getDescription() {
         return (new DescriptionBuilder(this.game, this))
-                .setDescription(this.game.translate("werewolf.roles.mystical_werewolf.description", new Formatter[0]))
-                .setEffects(this.game.translate("werewolf.description.werewolf", new Formatter[0]))
+                .setDescription(this.game.translate("werewolf.roles.mystical_werewolf.description"))
+                .setEffects(this.game.translate("werewolf.description.werewolf"))
                 .build();
     }
 
@@ -47,7 +47,7 @@ public class MysticalWerewolf extends RoleWereWolf {
     public void onMessage(WereWolfCanSpeakInChatEvent event) {
         if (!event.getPlayerWW().equals(getPlayerWW()))
             return;
-        getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.roles.mystical_werewolf.no_message", new Formatter[0]);
+        getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.roles.mystical_werewolf.no_message");
         event.setCanSpeak(false);
     }
 
@@ -58,10 +58,16 @@ public class MysticalWerewolf extends RoleWereWolf {
         if (!event.getPlayerWW().getRole().isWereWolf())
             return;
         if (!isAbilityEnabled()) {
-            getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.roles.mystical_werewolf.ability_disabled", new Formatter[0]);
+            getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.roles.mystical_werewolf.ability_disabled");
             return;
         }
         int max = 5;
+
+        if (list.isEmpty()) {
+            list.addAll(game.getPlayersWW());
+            Collections.shuffle(list);
+        }
+
         IPlayerWW selected = list.remove(0);
         while (!selected.isState(StatePlayer.ALIVE) || !(!selected.getRole().isDisplayCamp(Camp.WEREWOLF.getKey()) || selected.getRole().getDisplayCamp().equals(selected.getRole().getCamp().getKey()) && !selected.getRole().isWereWolf())) {
             if (max == 0)

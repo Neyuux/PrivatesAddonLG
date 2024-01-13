@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Role(key="privatesaddon.roles.fox.display", category=Category.VILLAGER, auraDescriptionSpecialUseCase = "werewolf.roles.fox.aura", attribute=RoleAttribute.INFORMATION, timers={@Timer(key="privatesaddon.roles.fox.timers.fox_smell_duration", defaultValue=90, meetUpValue=30)}, configValues={@IntValue(key="privatesaddon.roles.fox.configurations.fox_smell_number", defaultValue=3, meetUpValue=3, step=1, item=UniversalMaterial.CARROT), @IntValue(key="privatesaddon.roles.fox.configurations.distance", defaultValue=20, meetUpValue=20, step=2, item=UniversalMaterial.ORANGE_WOOL), @IntValue(key = "privatesaddon.roles.fox.configurations.timer_reveal", meetUpValue = 120, defaultValue = 120, step = 5, item = UniversalMaterial.ENDER_PEARL)})
+@Role(key="privatesaddon.roles.fox.display", category=Category.VILLAGER, auraDescriptionSpecialUseCase = "werewolf.roles.fox.aura", attribute=RoleAttribute.INFORMATION, timers={@Timer(key="privatesaddon.roles.fox.timers.fox_smell_duration", defaultValue=120, meetUpValue=60)}, configValues={@IntValue(key="privatesaddon.roles.fox.configurations.fox_smell_number", defaultValue=3, meetUpValue=3, step=1, item=UniversalMaterial.CARROT), @IntValue(key="privatesaddon.roles.fox.configurations.distance", defaultValue=15, meetUpValue=15, step=2, item=UniversalMaterial.ORANGE_WOOL), @IntValue(key = "privatesaddon.roles.fox.configurations.timer_reveal", meetUpValue = 120, defaultValue = 120, step = 5, item = UniversalMaterial.ENDER_PEARL)})
 public class OldFox
         extends RoleImpl
         implements IProgress,
@@ -133,7 +133,12 @@ public class OldFox
     @Override
     @NotNull
     public String getDescription() {
-        return new DescriptionBuilder(this.game, this).setDescription(this.game.translate("privatesaddon.roles.fox.description", Formatter.number(this.game.getConfig().getValue("privatesaddon.roles.fox.configurations.distance")), Formatter.timer(this.game, "privatesaddon.roles.fox.timers.fox_smell_duration"), Formatter.format("&number1&", this.game.getConfig().getValue("privatesaddon.roles.fox.configurations.fox_smell_number") - this.use))).setEffects(this.game.translate("privatesaddon.roles.fox.effect")).setPower(this.game.translate("privatesaddon.roles.fox.progress", Formatter.format("&progress&", Math.min(100.0, Math.floor(this.getProgress()))))).build();
+        return new DescriptionBuilder(this.game, this)
+                .setDescription(this.game.translate("privatesaddon.roles.fox.description", Formatter.number(this.game.getConfig().getValue("privatesaddon.roles.fox.configurations.distance")), Formatter.timer(this.game, "privatesaddon.roles.fox.timers.fox_smell_duration"), Formatter.format("&number1&", this.game.getConfig().getValue("privatesaddon.roles.fox.configurations.fox_smell_number") - this.use)))
+                .setEffects(this.game.translate("privatesaddon.roles.fox.effect"))
+                .setPower(this.game.translate("privatesaddon.roles.fox.progress", Formatter.format("&progress&", Math.min(100.0, Math.floor(this.getProgress())))))
+                .setCommand(this.game.translate("privatesaddon.roles.fox.command"))
+                .build();
     }
 
     @Override

@@ -15,10 +15,13 @@ import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.utils.Formatter;
+import fr.ph1lou.werewolfapi.role.interfaces.IRole;
 import fr.ph1lou.werewolfapi.utils.ItemBuilder;
+import fr.ph1lou.werewolfapi.utils.Wrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class InformationsPointsGUI implements InventoryProvider {
 
@@ -55,68 +59,58 @@ public class InformationsPointsGUI implements InventoryProvider {
 
         main.getRegisterManager().getRolesRegister()
                 .stream()
-                .filter(roleRegister -> main.getAssistant().getCompo().getInformationsPoints().keySet().stream().anyMatch(s -> roleRegister.getMetaDatas().key().contains(s)))
+                .filter(roleRegister -> main.getAssistant().getCompo().getInformationsPoints().keySet().stream().anyMatch(s -> Arrays.asList(roleRegister.getMetaDatas().key().split("\\.")).contains(s)))
                 .sorted((o1, o2) -> Plugin.getRoleTranslated(o1.getMetaDatas().key()).compareToIgnoreCase(Plugin.getRoleTranslated(o2.getMetaDatas().key())))
                 .forEach(roleRegister -> {
                     WereWolfAPI game = Plugin.getINSTANCE().getGame();
                     boolean isActivated = game.getConfig().getRoleCount(roleRegister.getMetaDatas().key()) > 0;
-                    ChatColor color = (isActivated ? ChatColor.GREEN : ChatColor.RED);
-                    int points = main.getAssistant().getCompo().getInformationsPoints().get(main.getAssistant().getCompo().getInformationsPoints().keySet().stream().filter(s -> roleRegister.getMetaDatas().key().contains(s)).findFirst().get());
+                    @SuppressWarnings("OptionalGetWithoutIsPresent") int points = main.getAssistant().getCompo().getInformationsPoints().get(main.getAssistant().getCompo().getInformationsPoints().keySet().stream().filter(s -> Arrays.asList(roleRegister.getMetaDatas().key().split("\\.")).contains(s)).findFirst().get());
                     int number = game.getConfig().getRoleCount(roleRegister.getMetaDatas().key());
+
+                    Optional<String> incompatible = Arrays.stream(roleRegister.getMetaDatas().incompatibleRoles()).filter(s -> game.getConfig().getRoleCount(s) > 0).map(game::translate).findFirst();
 
                     i.addAndGet(number);
                     infopoints.addAndGet(number * points);
 
-                    items.add(ClickableItem.of(new ItemBuilder((isActivated ? UniversalMaterial.GREEN_TERRACOTTA.getStack() : UniversalMaterial.RED_TERRACOTTA.getStack()))
-                            .setDisplayName(color + game.translate(roleRegister.getMetaDatas().key()))
-                            .setLore(Arrays.asList("§fNombre de Points : §b§l" + points, "", ">>§7Clic droit pour §cretirer", "§7>>Clic gauche pour §aajouter"))
-                            .setAmount(game.getConfig().getRoleCount(roleRegister.getMetaDatas().key()))
-                            .build(), ev -> {
+                    items.add(ClickableItem.of(this.getRoleItem(roleRegister, isActivated, points, number, incompatible.orElse(null)), ev -> {
+
                         String key = roleRegister.getMetaDatas().key();
                         AtomicBoolean unRemovable = new AtomicBoolean(false);
-                        ArrayList<String> lore = new ArrayList<>(Arrays.asList(game.translate("werewolf.menus.lore.left"), game.translate("werewolf.menus.lore.right")));
-                        ArrayList<String> lore2 = new ArrayList<>(lore);
-                        lore2.add(game.translate("werewolf.menus.lore.shift"));
-                        Aura aura = roleRegister.getMetaDatas().defaultAura();
-                        lore2.add(game.translate("werewolf.commands.player.aura.menu_role", Formatter.format("&aura&", game.translate(aura.getKey()))));
-                        RoleAttribute roleAttribute = roleRegister.getMetaDatas().attribute();
-                        lore2.add(game.translate("werewolf.attributes.menu", Formatter.format("&attribute&", game.translate(roleAttribute.getKey()))));
-                        Arrays.stream(roleRegister.getMetaDatas().requireRoles()).forEach(roleKey -> lore2.add(game.translate("werewolf.menus.roles.need", Formatter.role(game.translate(roleKey)))));
-                        main.getRegisterManager().getRolesRegister().stream().filter(roleRegister1 -> Arrays.stream(roleRegister1.getMetaDatas().requireRoles()).anyMatch(requiredRole -> requiredRole.equals(roleRegister1.getMetaDatas().key()))).map(iRoleRoleWrapper -> iRoleRoleWrapper.getMetaDatas().key()).filter(roleRegister1Key -> game.getConfig().getRoleCount(roleRegister1Key) > 0).findFirst().ifPresent(role -> {
-                            lore2.add(game.translate("werewolf.menus.roles.dependant_load", Formatter.role(game.translate(role))));
-                            unRemovable.set(true);
-                        });
-                        Optional<String> incompatible = Arrays.stream(roleRegister.getMetaDatas().incompatibleRoles()).filter(s -> game.getConfig().getRoleCount(s) > 0).map(game::translate).findFirst();
-                        incompatible.ifPresent(role -> lore2.add(game.translate("werewolf.menus.roles.incompatible", Formatter.role(role))));
+
+                        main.getRegisterManager().getRolesRegister()
+                                .stream()
+                                .filter(roleRegister1 -> Arrays.stream(roleRegister1.getMetaDatas().requireRoles())
+                                        .anyMatch(requiredRole -> requiredRole.equals(roleRegister1.getMetaDatas().key())))
+                                .map(iRoleRoleWrapper -> iRoleRoleWrapper.getMetaDatas().key())
+                                .filter(roleRegister1Key -> game.getConfig().getRoleCount(roleRegister1Key) > 0)
+                                .findFirst()
+                                .ifPresent(role -> unRemovable.set(true));
+
                         if (game.getConfig().getRoleCount(key) > 0) {
-                            items.add(ClickableItem.of(new ItemBuilder(UniversalMaterial.GREEN_TERRACOTTA.getStack()).setAmount(game.getConfig().getRoleCount(key)).setLore(lore2).setDisplayName(game.translate(key)).build(), e -> {
-                                if (e.isLeftClick()) {
-                                    this.selectPlus(game, key);
-                                } else if (e.isRightClick()) {
-                                    int count = game.getConfig().getRoleCount(key);
-                                    if (!unRemovable.get() || count > 1) {
-                                        if (roleRegister.getMetaDatas().requireDouble() && count == 2) {
-                                            this.selectMinus(game, key);
-                                        }
+                            if (ev.isLeftClick()) {
+                                this.selectPlus(game, key);
+                            } else if (ev.isRightClick()) {
+                                int count = game.getConfig().getRoleCount(key);
+                                if (!unRemovable.get() || count > 1) {
+                                    if (roleRegister.getMetaDatas().requireDouble() && count == 2) {
                                         this.selectMinus(game, key);
                                     }
+                                    this.selectMinus(game, key);
                                 }
-                            }));
+                            }
                         } else {
-                            items.add(ClickableItem.of(new ItemBuilder(UniversalMaterial.RED_TERRACOTTA.getStack()).setAmount(1).setLore(lore2).setDisplayName(game.translate(key)).build(), e -> {
-                                if (e.isLeftClick()) {
-                                    if (incompatible.isPresent()) {
-                                        return;
-                                    }
-                                    if (Arrays.stream(roleRegister.getMetaDatas().requireRoles()).anyMatch(requireRole -> game.getConfig().getRoleCount(requireRole) == 0)) {
-                                        return;
-                                    }
-                                    if (roleRegister.getMetaDatas().requireDouble()) {
-                                        this.selectPlus(game, key);
-                                    }
+                            if (ev.isLeftClick()) {
+                                if (incompatible.isPresent()) {
+                                    return;
+                                }
+                                if (Arrays.stream(roleRegister.getMetaDatas().requireRoles()).anyMatch(requireRole -> game.getConfig().getRoleCount(requireRole) == 0)) {
+                                    return;
+                                }
+                                if (roleRegister.getMetaDatas().requireDouble()) {
                                     this.selectPlus(game, key);
                                 }
-                            }));
+                                this.selectPlus(game, key);
+                            }
                         }
                     }));
                 });
@@ -149,6 +143,55 @@ public class InformationsPointsGUI implements InventoryProvider {
             .closeable(true)
             .manager(Plugin.getINSTANCE().getInvManager())
             .build();
+
+
+    private ItemStack getRoleItem(Wrapper<IRole, Role> datas, boolean isActivated, int point, int number, String incompatible) {
+        ChatColor color = (isActivated ? ChatColor.GREEN : ChatColor.RED);
+
+        List<String> lore = new ArrayList<>();
+
+        List<String> unremovable = main.getRegisterManager().getRolesRegister()
+                .stream()
+                .filter(roleRegister1 -> Arrays.stream(roleRegister1.getMetaDatas().requireRoles())
+                        .anyMatch(requiredRole -> requiredRole.equals(roleRegister1.getMetaDatas().key())))
+                .map(iRoleRoleWrapper -> iRoleRoleWrapper.getMetaDatas().key())
+                .filter(roleRegister1Key -> main.getGame().getConfig().getRoleCount(roleRegister1Key) > 0)
+                .collect(Collectors.toList());
+
+        lore.add("§fNombre de Points : §b§l" + point);
+        lore.add("");
+        lore.add("§fCatégorie : " + main.getGame().translate(datas.getMetaDatas().category().getChatColor()) + main.getGame().translate(datas.getMetaDatas().category().getKey()));
+        lore.add("§fAttribut : §b§l" + main.getGame().translate(datas.getMetaDatas().attribute().getKey()));
+        lore.add("§fAura : " + main.getGame().translate(datas.getMetaDatas().defaultAura().getKey()));
+        lore.add("§fProvenance : §b§l" + main.getGame().translate(datas.getAddonKey()));
+        lore.add("");
+
+        if (datas.getMetaDatas().requireRoles() != null && datas.getMetaDatas().requireRoles().length > 0) {
+            lore.add("§fRôles nécessaires : ");
+            Arrays.stream(datas.getMetaDatas().requireRoles()).forEach(roleKey -> lore.add(" §3§l■ §b" + main.getGame().translate(roleKey)));
+            lore.add("");
+        }
+
+        if (!unremovable.isEmpty()) {
+            unremovable.forEach(roleKey -> lore.add("§fNon-supprimable car §b" + main.getGame().translate(roleKey) + " §fchargé"));
+            lore.add("");
+        }
+
+        if (incompatible != null && !incompatible.equals("")) {
+            lore.add("§fIncompatible avec le rôle : §b§l" + main.getGame().translate(incompatible));
+            lore.add("");
+        }
+
+        lore.add("§7>>Clic droit pour §cretirer");
+        lore.add("§7>>Clic gauche pour §aajouter");
+
+
+        return new ItemBuilder(isActivated ? UniversalMaterial.GREEN_TERRACOTTA.getStack() : UniversalMaterial.RED_TERRACOTTA.getStack())
+                .setDisplayName(color + Plugin.getRoleTranslated(datas.getMetaDatas().key()))
+                .setLore(lore)
+                .setAmount(number)
+                .build();
+    }
 
     public void selectMinus(WereWolfAPI game, String key) {
         if (game.isState(StateGame.GAME)) {

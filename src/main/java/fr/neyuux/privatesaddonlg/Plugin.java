@@ -108,9 +108,8 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         new BukkitRunnable() {
             @Override
             public void run() {
-                getServer().getServicesManager().getRegistrations(GetWereWolfAPI.class).stream().filter(provider -> provider.getService().equals(GetWereWolfAPI.class)).findFirst().ifPresent(provider -> {
-                    ww = provider.getProvider();
-                });
+                getServer().getServicesManager().getRegistrations(GetWereWolfAPI.class).stream().filter(provider -> provider.getService().equals(GetWereWolfAPI.class)).findFirst().ifPresent(provider ->
+                        ww = provider.getProvider());
 
                 if (ww != null && ww.getWereWolfAPI() != null) {
                     Bukkit.getLogger().info("PrivatesAddon -> Service WereWolfAPI found");
@@ -240,7 +239,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
                 new BukkitRunnable() {
 
-                    long start = System.currentTimeMillis();
+                    final long start = System.currentTimeMillis();
 
                     @Override
                     public void run() {
