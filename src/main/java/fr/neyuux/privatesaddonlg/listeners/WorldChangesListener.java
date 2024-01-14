@@ -1,7 +1,6 @@
 package fr.neyuux.privatesaddonlg.listeners;
 
 import fr.neyuux.privatesaddonlg.Plugin;
-import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;

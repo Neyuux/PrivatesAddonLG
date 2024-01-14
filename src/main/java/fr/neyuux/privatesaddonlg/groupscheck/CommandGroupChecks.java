@@ -6,7 +6,6 @@ import fr.ph1lou.werewolfapi.commands.ICommand;
 import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @AdminCommand(key = "privatesaddon.commands.admin.groupchecks.command", descriptionKey = "privatesaddon.commands.admin.groupchecks.description", argNumbers = {1}, statesGame = {StateGame.GAME})

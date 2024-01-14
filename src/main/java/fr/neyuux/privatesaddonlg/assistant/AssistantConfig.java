@@ -1,7 +1,6 @@
 package fr.neyuux.privatesaddonlg.assistant;
 
 import fr.neyuux.privatesaddonlg.Plugin;
-import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.versions.VersionUtils;
