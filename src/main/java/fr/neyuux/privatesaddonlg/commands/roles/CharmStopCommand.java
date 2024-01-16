@@ -2,6 +2,7 @@ package fr.neyuux.privatesaddonlg.commands.roles;
 
 import fr.neyuux.privatesaddonlg.Plugin;
 import fr.ph1lou.werewolfapi.annotations.RoleCommand;
+import fr.ph1lou.werewolfapi.basekeys.LoverBase;
 import fr.ph1lou.werewolfapi.commands.ICommandRole;
 import fr.ph1lou.werewolfapi.enums.Sound;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
@@ -18,14 +19,15 @@ public class CharmStopCommand
 
         if (!((IAffectedPlayers) playerWW.getRole()).getAffectedPlayers().isEmpty()) {
             playerWW.getLovers().stream()
-                    .filter(iLover -> iLover.isKey("werewolf.lovers.fake_lover.display"))
+                    .filter(iLover -> iLover.isKey(LoverBase.FAKE_LOVER))
                     .forEach(iLover -> {
                         iLover.getLovers().forEach(iPlayerWW -> {
-                            Player player = Bukkit.getPlayer(iPlayerWW.getUUID());
+                            if (!iPlayerWW.getUUID().equals(playerWW.getUUID())) {
+                                Player player = Bukkit.getPlayer(iPlayerWW.getUUID());
 
-                            player.sendMessage(Plugin.getPrefix() + "§dVotre Couple avec §5§l" + playerWW.getName() + " §détait §c§lFAUX§d ! Vous pouvez désormais vivre serainement.");
-                            Sound.COW_HURT.play(player, 5f, 1.3f);
-
+                                player.sendMessage(Plugin.getPrefix() + "§dVotre Couple avec §5§l" + playerWW.getName() + " §détait §c§lFAUX§d ! Vous pouvez désormais vivre serainement.");
+                                Sound.COW_HURT.play(player, 5f, 1.3f);
+                            }
                             iPlayerWW.removeLover(iLover);
                         });
 
@@ -35,6 +37,5 @@ public class CharmStopCommand
 
             Bukkit.getPlayer(playerWW.getUUID()).sendMessage(Plugin.getPrefix() + "§dVous avez révélé votre identité à votre charmé.");
         }
-
    }
 }
