@@ -14,6 +14,7 @@ import fr.neyuux.privatesaddonlg.commands.roles.ItemCommand;
 import fr.neyuux.privatesaddonlg.listeners.ArmorListener;
 import fr.neyuux.privatesaddonlg.listeners.RoleBuffListener;
 import fr.neyuux.privatesaddonlg.listeners.WorldChangesListener;
+import fr.neyuux.privatesaddonlg.utils.Reflection;
 import fr.ph1lou.werewolfapi.GetWereWolfAPI;
 import fr.ph1lou.werewolfapi.annotations.Author;
 import fr.ph1lou.werewolfapi.annotations.ModuleWerewolf;
@@ -22,6 +23,7 @@ import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
+import fr.ph1lou.werewolfapi.events.game.game_cycle.StopEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
 import fr.ph1lou.werewolfapi.events.game.permissions.UpdateModeratorNameTagEvent;
 import fr.ph1lou.werewolfapi.events.game.utils.WinConditionsCheckEvent;
@@ -151,6 +153,19 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     public void onGameStart(StartEvent ev) {
         Bukkit.getScheduler().runTaskLater(this, () -> this.getGame().setGameName("@Neyuux_"), 20L);
         this.groupsWarning.clear();
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onStop(StopEvent ev) {
+        if (!this.isLoaded())
+            return;
+
+        try {
+            System.out.println("[Reflection] set crack value to : false");
+            Reflection.setValue(this.getGame(), "crack", false);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
