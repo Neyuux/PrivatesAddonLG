@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Role(
-        key = "privates.roles.illusionist.display",
+        key = "privatesaddon.roles.illusionist.display",
         category = Category.VILLAGER,
         attribute = RoleAttribute.VILLAGER
 )
