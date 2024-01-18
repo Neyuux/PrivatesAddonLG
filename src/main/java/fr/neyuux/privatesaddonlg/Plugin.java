@@ -144,11 +144,6 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     }
 
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDebug(WinConditionsCheckEvent ev) {
-        ev.setVictoryTeam(null);
-    }
-
     @EventHandler
     public void onGameStart(StartEvent ev) {
         Bukkit.getScheduler().runTaskLater(this, () -> this.getGame().setGameName("@Neyuux_"), 20L);
