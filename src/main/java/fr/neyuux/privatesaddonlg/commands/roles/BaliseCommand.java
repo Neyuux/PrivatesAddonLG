@@ -23,14 +23,8 @@ public class BaliseCommand implements ICommandRole {
     @Override
     public void execute(WereWolfAPI game, IPlayerWW playerWW, String[] args) {
         Beaconer beaconer = (Beaconer) playerWW.getRole();
-        @Nullable Beaconer.BeaconType beacon = beaconer.getNextBeacon();
 
-        if (beacon == Beaconer.BeaconType.CAMP)
-            beaconer.setNextBeacon(Beaconer.BeaconType.EFFECTS);
-        else if (beacon == Beaconer.BeaconType.EFFECTS)
-            beaconer.setNextBeacon(null);
-        else if (beacon == null)
-            beaconer.setNextBeacon(Beaconer.BeaconType.CAMP);
+        beaconer.setNextBeacon(this.getNextBeacon(beaconer.getNextBeacon(), beaconer));
 
         if (beaconer.getNextBeacon() != null)
             playerWW.sendMessage(new TextComponent(Plugin.getPrefix() + "§fVous avez équipé votre balise \"§b§l" + beaconer.getNextBeacon().getName() + "§f\". Faites un clic droit sur un joueur pour la poser. Refaites la commande pour changer de balise."));
@@ -45,8 +39,20 @@ public class BaliseCommand implements ICommandRole {
 
 
     private Beaconer.BeaconType getNextBeacon(Beaconer.BeaconType beaconType, Beaconer beaconer) {
-        int index = beaconsOrder.indexOf(beaconType);
-        int beacon = (index == beaconsOrder.size() - 1 ? 0 : ++index);
+        int index = beaconsOrder.indexOf(beaconType) + 1;
+        if (index == beaconsOrder.size())
+            index = 0;
 
+        Beaconer.BeaconType newtype = beaconsOrder.get(index);
+
+        while (beaconer.getUnavailableBeacons().contains(newtype)) {
+            index = beaconsOrder.indexOf(newtype) + 1;
+            if (index == beaconsOrder.size())
+                index = 0;
+
+            newtype = beaconsOrder.get(index);
+        }
+
+        return newtype;
     }
 }
