@@ -57,6 +57,7 @@ public class AssistantCompo {
         informationsPoints.put("sister", 1);
         informationsPoints.put("little_girl", 3);
         informationsPoints.put("witness", 2);
+        informationsPoints.put("beaconer", 3);
     }
 
 

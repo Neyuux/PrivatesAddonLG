@@ -66,29 +66,42 @@
     },
 
     "roles": {
+      "beaconer": {
+        "display": "Baliseur",
+        "command": "balise",
+        "description": "",
+        "configurations": {
+          "distance_plant": "Distance maximale pour poser la Balise : §b&number&§r",
+          "distance_activated": "Distance minimale pour obtenir les effets : §b&number&§r",
+          "distance_to_activate": "Distance minimale pour activer la Balise : §b&number&§r"
+        },
+        "timers": {
+          "activation_duration": "Temps pour activer la Balise (§b&timer&§r)",
+          "plant_duration": "Temps pour poser la Balise (§b&timer&§r)"
+        }
+      },
       "charmer": {
         "charmstopcommand": "charmstop",
         "itemcommand": "item"
       },
-
-      "mystical_werewolf": {
-        "display": "Loup-Garou Mystique"
+      "fox": {
+        "display": "Renard",
+        "command": "flair",
+        "effect": "Trois minutes de Vitesse après un kill",
+        "description": "Vous pouvez flairer les joueurs pour savoir si ils sont Loup-Garou. Les joueurs devront se situer à moins de §b&number&§f blocs pendant §b&timer&§f. Vous disposez de §b&number1&§f flair(s).",
+        "progress": "Progression du Flair §b&progress&%§r",
+        "timers": {
+          "fox_smell_duration": "Durée du Flair du Renard (§b&timer&§r)"
+        },
+        "configurations": {
+          "fox_smell_number": "Nombre de Flairs du Renard : §b&number&§r",
+          "distance": "Champ d'action du Renard : §b&number& blocks§r",
+          "timer_reveal": "Délai annonçant à un LG le flair : §b&number&s§r"
+        }
       },
-
       "illusionist": {
         "display": "Illusionniste"
       },
-
-      "wolf_dog": {
-        "display": "Chien-Loup",
-        "command": "transformer",
-        "description": "Forme §aVillageois§f : Les Loups Garous vous voient dans leur liste, cependant, vous ne connaissez pas les Loups Garous. Attention, les rôles à informations vous voient dans le camp des Loups Garous. Vous pouvez lire et envoyer des messages dans le chat des Loups Garous",
-        "transform": "Vous pouvez passer dans votre forme Loup Garou avec la commande §b/ww transformer§f (irreversible), vous avez §b&timer&",
-        "time_over": "Vous ne pouvez plus choisir votre forme, vous restez donc Villageois",
-        "perform": "Vous venez de choisir la forme Loup-Garou",
-        "description_2": "Forme §cLoup-Garou§f : Les Loups Garous ne vous voient pas dans leur liste. Cependant, vous connaissez les Loups Garous. Les rôles à informations vous voient dans le camp des Villageois."
-      },
-
       "innkeeper": {
         "display": "Aubergiste",
         "effect": "Speed quand toutes les chambres sont fermées",
@@ -108,21 +121,17 @@
           "detection_radius": "Rayon de détection pour les joueurs rencontrés §b&number&§r"
         }
       },
-
-      "fox":{
-        "display": "Renard",
-        "command": "flair",
-        "effect": "Trois minutes de Vitesse après un kill",
-        "description": "Vous pouvez flairer les joueurs pour savoir si ils sont Loup-Garou. Les joueurs devront se situer à moins de §b&number&§f blocs pendant §b&timer&§f. Vous disposez de §b&number1&§f flair(s).",
-        "progress": "Progression du Flair §b&progress&%§r",
-        "timers": {
-          "fox_smell_duration": "Durée du Flair du Renard (§b&timer&§r)"
-        },
-        "configurations": {
-          "fox_smell_number": "Nombre de Flairs du Renard : §b&number&§r",
-          "distance": "Champ d'action du Renard : §b&number& blocks§r",
-          "timer_reveal": "Délai annonçant à un LG le flair : §b&number&s§r"
-        }
+      "mystical_werewolf": {
+        "display": "Loup-Garou Mystique"
+      },
+      "wolf_dog": {
+        "display": "Chien-Loup",
+        "command": "transformer",
+        "description": "Forme §aVillageois§f : Les Loups Garous vous voient dans leur liste, cependant, vous ne connaissez pas les Loups Garous. Attention, les rôles à informations vous voient dans le camp des Loups Garous. Vous pouvez lire et envoyer des messages dans le chat des Loups Garous",
+        "transform": "Vous pouvez passer dans votre forme Loup Garou avec la commande §b/ww transformer§f (irreversible), vous avez §b&timer&",
+        "time_over": "Vous ne pouvez plus choisir votre forme, vous restez donc Villageois",
+        "perform": "Vous venez de choisir la forme Loup-Garou",
+        "description_2": "Forme §cLoup-Garou§f : Les Loups Garous ne vous voient pas dans leur liste. Cependant, vous connaissez les Loups Garous. Les rôles à informations vous voient dans le camp des Villageois."
       }
     }
   }

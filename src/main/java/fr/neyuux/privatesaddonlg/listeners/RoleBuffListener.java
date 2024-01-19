@@ -174,7 +174,6 @@ public class RoleBuffListener implements Listener {
             return;
         UUID uuid = event.getPlayerUUID();
         IPlayerWW playerWW = game.getPlayerWW(uuid).orElse(null);
-        StringBuilder sb = new StringBuilder(event.getActionBar());
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null)
@@ -185,13 +184,7 @@ public class RoleBuffListener implements Listener {
             return;
 
         if (playerWW.getRole().getKey().equals("werewolf.roles.barbarian.display")) {
-            sb.append(" §7| §cForce : §l").append(new DecimalFormat("#").format(calculateStrengthByHealth(playerWW) * 100.0 - 100.0)).append("%");
-            event.setActionBar(sb.toString());
-
-        } else if (playerWW.getRole().getKey().equals("privatesaddon.roles.innkeeperbuffed.display") && game.isDay(Day.DAY)) {
-            InnkeeperBuffed innkeeper = (InnkeeperBuffed) playerWW.getRole();
-            sb.append(" §7| §fChambres disponibles : §l").append(innkeeper.getAvailableRooms() - innkeeper.getClientDatas().size());
-            event.setActionBar(sb.toString());
+            Plugin.addActionBar(event, "§cForce : §l" + new DecimalFormat("#").format(calculateStrengthByHealth(playerWW) * 100.0 - 100.0) + "%");
         }
     }
     @EventHandler

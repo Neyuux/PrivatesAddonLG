@@ -21,6 +21,7 @@ import fr.ph1lou.werewolfapi.enums.RoleAttribute;
 import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
+import fr.ph1lou.werewolfapi.events.ActionBarEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
@@ -340,6 +341,14 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     public static String getRoleTranslated(String key) {
         return Plugin.getINSTANCE().getGame().translate(key);
+    }
+
+    public static void addActionBar(ActionBarEvent ev, String s) {
+        StringBuilder sb = new StringBuilder(ev.getActionBar());
+
+        sb.append(" §7| ").append(s);
+
+        ev.setActionBar(sb.toString());
     }
 
 

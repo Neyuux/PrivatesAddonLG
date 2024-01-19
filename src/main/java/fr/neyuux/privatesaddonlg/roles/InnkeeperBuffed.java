@@ -4,6 +4,7 @@ import fr.neyuux.privatesaddonlg.Plugin;
 import fr.ph1lou.werewolfapi.annotations.IntValue;
 import fr.ph1lou.werewolfapi.annotations.Role;
 import fr.ph1lou.werewolfapi.enums.*;
+import fr.ph1lou.werewolfapi.events.ActionBarEvent;
 import fr.ph1lou.werewolfapi.events.game.day_cycle.DayEvent;
 import fr.ph1lou.werewolfapi.events.game.day_cycle.NightEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.FinalDeathEvent;
@@ -204,6 +205,14 @@ public class InnkeeperBuffed
         } else {
             this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§cVous n'avez plus assez de chambres pour héberger ce joueur."));
         }
+    }
+
+    @EventHandler
+    public void onActionBarRooms(ActionBarEvent ev) {
+        if (!ev.getPlayerUUID().equals(this.getPlayerUUID()) || !this.game.isDay(Day.DAY))
+            return;
+
+        Plugin.addActionBar(ev, "§fChambres disponibles : §l" + (this.getAvailableRooms() - this.getClientDatas().size()));
     }
 
     @Override

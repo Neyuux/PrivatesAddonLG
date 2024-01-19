@@ -206,7 +206,6 @@ public class OldFox
             return;
         }
 
-        StringBuilder stringBuilder = new StringBuilder(event.getActionBar());
         Player player = Bukkit.getPlayer(event.getPlayerUUID());
         if (player == null) {
             return;
@@ -233,7 +232,6 @@ public class OldFox
 
         float temp = this.getProgress() + 100.0f / (float)(this.game.getConfig().getTimerValue("privatesaddon.roles.fox.timers.fox_smell_duration") + 1);
 
-        stringBuilder.append(" §7| §eFlair ").append(playerWW.getName()).append(" : §l").append(Math.min(100.0, Math.floor(temp))).append("%");
-        event.setActionBar(stringBuilder.toString());
+        Plugin.addActionBar(event, "§eFlair " + playerWW.getName() + " : §l" + Math.min(100.0, Math.floor(temp)) + "%");
     }
 }
