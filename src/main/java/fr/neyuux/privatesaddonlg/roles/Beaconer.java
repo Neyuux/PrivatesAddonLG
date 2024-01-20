@@ -19,6 +19,7 @@ import fr.ph1lou.werewolfapi.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.logging.log4j.core.appender.rolling.AbstractRolloverStrategy;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
@@ -48,6 +49,8 @@ import java.util.*;
 public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
 
     public final HashMap<IPlayerWW, BeaconType> affectedPlayers = new HashMap<>();
+
+    public final HashMap<UUID, PotionEffectType> effects = new HashMap<>();
 
     private boolean power = true;
 
@@ -151,7 +154,7 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
 
                     this.affectedPlayers.put(targetWW, this.nextBeacon);
                     Plugin.sendTitle(player, 20, 40, 20, "§a§lBalise posée !", "§bVous avez posé une balise " + this.nextBeacon.getName() + " sur " + target.getName() + ".");
-                    player.sendMessage(Plugin.getPrefix() + "§fPour activer la balise, vous devez rester §b" + game.getConfig().getValue("privatesaddon.roles.beaconer.timers.plant_duration") + " secondes §fà moins de §b" + game.getConfig().getValue("privatesaddon.roles.beaconer.configurations.distance_plant") + " blocs §fde §e" + targetWW.getName() + "§f.");
+                    player.sendMessage(Plugin.getPrefix() + "§fPour activer la balise, vous devez rester §b" + game.getConfig().getTimerValue("privatesaddon.roles.beaconer.timers.plant_duration") + " secondes §fà moins de §b" + game.getConfig().getValue("privatesaddon.roles.beaconer.configurations.distance_plant") + " blocs §fde §e" + targetWW.getName() + "§f.");
                     player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
 
                     this.setPower(false);
@@ -185,8 +188,8 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
             if (beacon.getPlantProgression() <= 100f && this.canPlant(player, playerWW)) {
                 Plugin.addActionBar(ev, "§ePosage §l"+playerWW.getName()+"§e : §l" + new DecimalFormat("#.0").format(beacon.getPlantProgression()) + "%");
 
-            } else if (beacon.getActivationProgression() <= 100f && this.canActivate(player, playerWW)) {
-                Plugin.addActionBar(ev, "§eActivation §l"+playerWW.getName()+"§e : §l" + new DecimalFormat("#.0").format(beacon.getPlantProgression()) + "%");
+            } else if (beacon.getActivationProgression() <= 100f && this.canActivate(player, playerWW) && beacon.getPlantProgression() >= 100f) {
+                Plugin.addActionBar(ev, "§eActivation §l"+playerWW.getName()+"§e : §l" + new DecimalFormat("#.0").format(beacon.getActivationProgression()) + "%");
 
             }
         });
@@ -225,20 +228,23 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                         player.sendMessage(Plugin.getPrefix() + "§fVotre balise \"§b§l" + beacon.getName() + "§f\" vient de s'activer !");
                         player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
 
-                        beacon.sendInfos(player, playerWW);
+                        beacon.sendInfos(player, this, playerWW);
                     }
-                } else {
-                    Player target = Bukkit.getPlayer(playerWW.getUUID());
+                }
+            }
 
-                    if (target != null) {
-                        double distanceSquared = player.getLocation().distanceSquared(target.getLocation());
-                        double square = this.square("privatesaddon.roles.beaconer.configurations.distance_activated");
+            if (beacon.getActivationProgression() >= 100f) {
+                Player target = Bukkit.getPlayer(playerWW.getUUID());
 
-                        if (distanceSquared >= square && !beacon.isHasEffects())
-                            beacon.giveEffects(this);
-                        else if (distanceSquared < square && beacon.isHasEffects())
-                            beacon.removeEffects(this);
-                    }
+                if (target != null) {
+                    double distanceSquared = player.getLocation().distanceSquared(target.getLocation());
+                    double square = this.square("privatesaddon.roles.beaconer.configurations.distance_activated");
+
+                    if (distanceSquared >= square && !beacon.isHasEffects())
+                        beacon.giveEffects(this);
+
+                    if (distanceSquared < square && beacon.isHasEffects())
+                        beacon.removeEffects(this);
                 }
             }
         });
@@ -290,7 +296,7 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
             return !beaconer.getUnavailableBeacons().contains(this);
         }
 
-        public void sendInfos(Player player, IPlayerWW targetWW) {
+        public void sendInfos(Player player, Beaconer beaconer, IPlayerWW targetWW) {
             switch (this) {
 
                 case CAMP:
@@ -302,17 +308,22 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
 
                         case WEREWOLF:
                             player.sendMessage(Plugin.getPrefix() + "§cVous apprenez que §e" + targetWW.getName() + "§c appartient au camp des §lLoups-Garous§c. §fA partir de maintenant, vous obtiendrez l'effet §cForce §fsi vous êtes à plus de §b" + Plugin.getINSTANCE().getGame().getConfig().getValue("privatesaddon.roles.beaconer.configurations.distance_activated") + " blocs §fde lui.");
+                            beaconer.effects.put(targetWW.getUUID(), PotionEffectType.INCREASE_DAMAGE);
                             break;
                         case NEUTRAL:
                             player.sendMessage(Plugin.getPrefix() + "§6Vous apprenez que §e" + targetWW.getName() + "§6 n'appartient à §lAucun §6des deux camps principaux. §fA partir de maintenant, vous obtiendrez l'effet §cForce §fsi vous êtes à plus de §b" + Plugin.getINSTANCE().getGame().getConfig().getValue("privatesaddon.roles.beaconer.configurations.distance_activated") + " blocs §fde lui.");
+                            beaconer.effects.put(targetWW.getUUID(), PotionEffectType.INCREASE_DAMAGE);
                             break;
                         case VILLAGER:
                             player.sendMessage(Plugin.getPrefix() + "§aVous apprenez que §e" + targetWW.getName() + "§a appartient au camp du §lVillage§a. §fA partir de maintenant, vous obtiendrez l'effet §7Résistance §fsi vous êtes à plus de §b" + Plugin.getINSTANCE().getGame().getConfig().getValue("privatesaddon.roles.beaconer.configurations.distance_activated") + " blocs §fde lui.");
+                            beaconer.effects.put(targetWW.getUUID(), PotionEffectType.DAMAGE_RESISTANCE);
                             break;
                     }
 
                     break;
                 case EFFECTS:
+                    player.sendMessage("§cTODO");
+                    //TODO
                     break;
             }
         }
@@ -327,17 +338,12 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                             .filter(entry -> entry.getValue() == CAMP)
                             .map(entry -> entry.getKey().getRole())
                             .findFirst()
-                            .ifPresent(role -> {
-                                if (role.isWereWolf() || role.isSolitary())
-                                    beaconer.getPlayerWW().addPotionModifier(PotionModifier.add(PotionEffectType.INCREASE_DAMAGE, beaconer.getKey()));
-                                else
-                                    beaconer.getPlayerWW().addPotionModifier(PotionModifier.add(PotionEffectType.DAMAGE_RESISTANCE, beaconer.getKey()));
-                            });
+                            .ifPresent(role -> beaconer.getPlayerWW().addPotionModifier(PotionModifier.add(beaconer.effects.get(role.getPlayerUUID()), beaconer.getKey())));
 
                     break;
                 case EFFECTS:
                     if (player != null)
-                        player.setWalkSpeed(player.getWalkSpeed() + 0.20f * 0.10f);
+                        player.setWalkSpeed(player.getWalkSpeed() + 0.20000001f * 0.10f);
                     break;
             }
 
@@ -352,11 +358,11 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                     beaconer.getPlayerWW().getPotionModifiers()
                             .stream()
                             .filter(pot -> pot.getIdentifier().equals(beaconer.getKey()))
-                            .forEach(pot -> beaconer.getPlayerWW().addPotionModifier(PotionModifier.remove(pot.getPotionEffectType(), pot.getIdentifier())));
+                            .forEach(pot -> beaconer.getPlayerWW().addPotionModifier(PotionModifier.remove(pot.getPotionEffectType(), pot.getIdentifier(), 0)));
                     break;
                 case EFFECTS:
                     if (player != null)
-                        player.setWalkSpeed(player.getWalkSpeed() - 0.20f * 0.10f);
+                        player.setWalkSpeed(player.getWalkSpeed() - 0.20000001f * 0.10f);
                     break;
             }
 
