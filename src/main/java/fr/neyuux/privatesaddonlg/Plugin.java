@@ -150,7 +150,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         this.groupsWarning.clear();
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onStop(StopEvent ev) {
         if (!this.isLoaded())
             return;
