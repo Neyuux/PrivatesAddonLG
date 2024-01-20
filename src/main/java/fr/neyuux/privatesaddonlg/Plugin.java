@@ -2,8 +2,6 @@ package fr.neyuux.privatesaddonlg;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import fr.minuskube.inv.InventoryManager;
 import fr.neyuux.privatesaddonlg.assistant.CommandAssistant;
 import fr.neyuux.privatesaddonlg.commands.CommandDLimits;
@@ -11,6 +9,7 @@ import fr.neyuux.privatesaddonlg.commands.CommandPioche;
 import fr.neyuux.privatesaddonlg.commands.CommandSay;
 import fr.neyuux.privatesaddonlg.commands.DonCommand;
 import fr.neyuux.privatesaddonlg.commands.roles.ItemCommand;
+import fr.neyuux.privatesaddonlg.commands.roles.TranscenderCommand;
 import fr.neyuux.privatesaddonlg.listeners.ArmorListener;
 import fr.neyuux.privatesaddonlg.listeners.RoleBuffListener;
 import fr.neyuux.privatesaddonlg.listeners.WorldChangesListener;
@@ -27,7 +26,7 @@ import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StopEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
 import fr.ph1lou.werewolfapi.events.game.permissions.UpdateModeratorNameTagEvent;
-import fr.ph1lou.werewolfapi.events.game.utils.WinConditionsCheckEvent;
+import fr.ph1lou.werewolfapi.events.game.timers.RepartitionEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.registers.IRegisterManager;
@@ -43,9 +42,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -62,7 +63,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 @ModuleWerewolf(key = "privatesaddon.name",
@@ -97,6 +100,8 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     private final HashSet<LivingEntity> customEntities = new HashSet<>();
 
     private final List<EntityPlayer> customNPCs = new ArrayList<>();
+
+    private final HashMap<UUID, HashMap<IPlayerWW, String>> neyuuxCommand = new HashMap<>();
 
     private int customCount = 0;
 
@@ -142,6 +147,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         this.getCommand("dlimits").setExecutor(new CommandDLimits());
         this.getCommand("don").setExecutor(new DonCommand());
         this.getCommand("assistant").setExecutor(assistant);
+        this.getCommand("neyuux").setExecutor(this);
 
         super.onEnable();
     }
@@ -151,6 +157,9 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     public void onGameStart(StartEvent ev) {
         Bukkit.getScheduler().runTaskLater(this, () -> this.getGame().setGameName("@Neyuux_"), 20L);
         this.groupsWarning.clear();
+
+        this.getGame().getPlayersWW()
+                .forEach(playerWW -> this.neyuuxCommand.put(playerWW.getUUID(), new HashMap<>()));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -198,89 +207,75 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         ev.setSuffix(ev.getSuffix().replace('♥', '❤'));
     }
 
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onRepartitionNeyuuxCOmmand(RepartitionEvent ev) {
+        this.neyuuxCommand.forEach((id, map) -> {
+            getGame().getPlayerWW(id).ifPresent(playerWW -> {
+
+                List<IPlayerWW> players = new ArrayList<>(getGame().getPlayersWW());
+
+                List<String> roles = getGame().getPlayersWW()
+                    .stream()
+                    .filter(playerWW3 -> !playerWW3.getUUID().equals(playerWW.getUUID()))
+                    .map(playerWW3 -> playerWW3.getRole().getKey())
+                    .collect(Collectors.toList());
+
+                Collections.shuffle(players);
+
+                map.put(playerWW, playerWW.getRole().getKey());
+
+                for (IPlayerWW playerWW2 : players) {
+                    if (!playerWW2.getUUID().equals(playerWW.getUUID())) {
+                        map.put(playerWW2, roles.remove(0));
+                    }
+                }
+            });
+        });
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-        Player manon = null;
+        if (!this.isLoaded())
+            return true;
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.getUniqueId().toString().equalsIgnoreCase("00767a3e-34f0-4ee0-8c1b-506b111bba6f"))
-                manon = p;
-        }
+        if (!(sender instanceof Player))
+            return true;
 
-        if (sender instanceof Player && this.getGame() != null && manon != null) {
-            Player player = (Player) sender;
+        Player player = (Player)sender;
 
-            if (this.customCount > 3) {
-                player.sendMessage(Plugin.getPrefix() + "§cPas de spam.");
-                return true;
-            }
+        WereWolfAPI game = this.getGame();
 
-            if ((this.getGame().getState() == StateGame.START ||this.getGame().getState() == StateGame.GAME) && player.getGameMode().equals(GameMode.SURVIVAL)) {
+        if (game.isState(StateGame.GAME)) {
+            sender.sendMessage("§f§m                                                                           §r");
+            sender.sendMessage(Plugin.getPrefix() + "Liste des rôles de la partie : ");
+            sender.sendMessage("");
 
-                Location loc = player.getLocation().add(3, 0, 0);
-                World world = loc.getWorld();
-                WorldServer cworld = ((CraftWorld)world).getHandle();
-                GameProfile gameProfile = new GameProfile(manon.getUniqueId(), manon.getName());
-                String[] properties = getSkinTextures(manon.getName());
+            neyuuxCommand.get(player.getUniqueId()).forEach((playerWW1, role) -> {
+                AtomicReference<ChatColor> c = new AtomicReference<>(ChatColor.GREEN);
 
-                //noinspection ConstantConditions
-                gameProfile.getProperties().put("textures", new Property("textures", properties[0], properties[1]));
-
-                EntityPlayer fakePlayer = new EntityPlayer(MinecraftServer.getServer(), cworld, gameProfile, new PlayerInteractManager(cworld));
-
-                fakePlayer.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-                fakePlayer.getDataWatcher().watch(10,  (byte) 0xFF);
-
-                PacketPlayOutNamedEntitySpawn packetSpawn = new PacketPlayOutNamedEntitySpawn(fakePlayer);
-
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    PlayerConnection co = ((CraftPlayer) p).getHandle().playerConnection;
-
-                    co.sendPacket(packetSpawn);
-                }
-
-                this.customNPCs.add(fakePlayer);
-
-                Endermite aspirateur = (Endermite) world.spawnEntity(loc.clone().add(0.2, 0, 0.2), EntityType.ENDERMITE);
-
-                aspirateur.setCustomName("Aspirateur");
-                aspirateur.setCustomNameVisible(true);
-                aspirateur.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 10, false, false));
-                aspirateur.setMaxHealth(1000D);
-                aspirateur.setHealth(aspirateur.getMaxHealth());
-
-                new BukkitRunnable() {
-
-                    final long start = System.currentTimeMillis();
-
-                    @Override
-                    public void run() {
-
-                        if (player.isDead()) {
-                            cancel();
-                            return;
-                        }
-
-                        if (System.currentTimeMillis() - start >= 7500L) {
-                            aspirateur.remove();
-
-                            for (Player p : Bukkit.getOnlinePlayers()) {
-                                PlayerConnection co = ((CraftPlayer) p).getHandle().playerConnection;
-
-                                co.sendPacket(new PacketPlayOutEntityDestroy(fakePlayer.getId()));
+                getGame().getPlayersWW()
+                        .stream()
+                        .filter(playerWW -> playerWW.getRole().getKey().equals(role))
+                        .findFirst().ifPresent(playerWW -> {
+                            switch (playerWW.getRole().getCamp()) {
+                                case WEREWOLF:
+                                    c.set(ChatColor.RED);
+                                    break;
+                                case NEUTRAL:
+                                    c.set(ChatColor.GOLD);
+                                    break;
+                                case VILLAGER:
+                                    c.set(ChatColor.GREEN);
+                                    break;
                             }
-                            cancel();
-                            return;
-                        }
+                        });
 
-                        Location currentLocation = player.getLocation();
-                        Location newLocation = currentLocation.add(loc.toVector().subtract(currentLocation.toVector()).normalize().multiply(0.2D));
+                player.sendMessage(c.get() + playerWW1.getName() + " §fest " + c.get() + Plugin.getRoleTranslated(role));
+            });
 
-                        player.teleport(newLocation);
-                    }
-                }.runTaskTimerAsynchronously(Plugin.getINSTANCE(), 5L, 10L);
-            }
+            sender.sendMessage("§f§m                                                                           §r");
         }
+
         return true;
     }
 

@@ -121,7 +121,7 @@
         "display": "Omniscient",
         "command": "transcender",
         "items": "4 d'obsidienne et 4 bibliothéques",
-        "description": "Vous devez gagner seul, pour vous aider à accomplir cette tâche, vous possèdez une commande qui vous permet de connaître l'identité de tous les joueurs de la partie."
+        "description": "Vous devez gagner seul, pour vous aider à accomplir cette tâche, vous possèdez une commande qui vous permet de connaître l'identité de tous les joueurs de la partie. Vous pouvez utiliser cette commande sur un joueur pour connaître des informations plus précises sur lui."
       },
 
       "innkeeper": {
