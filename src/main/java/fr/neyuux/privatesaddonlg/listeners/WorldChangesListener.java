@@ -1,7 +1,6 @@
 package fr.neyuux.privatesaddonlg.listeners;
 
 import fr.neyuux.privatesaddonlg.Plugin;
-import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -20,7 +19,7 @@ import java.text.DecimalFormat;
 public class WorldChangesListener implements Listener {
 
     public WorldChangesListener() {
-        Plugin.getINSTANCE().addServiceLoadTask(game -> game.getMapManager().loadMap());
+        Plugin.getINSTANCE().addServiceLoadTask(game -> Bukkit.getScheduler().runTaskLater(Plugin.getINSTANCE(), () -> game.getMapManager().loadMap(), 200L));
     }
 
     private int chunksLoaded = 0;
@@ -70,9 +69,13 @@ public class WorldChangesListener implements Listener {
 
         double percentage = this.chunksLoaded / (double)this.getSize().getChunks() * 100.0D;
 
-        Bukkit.getLogger().info("[LG UHC > PrivatesAddon] Add Roofed : " + this.chunksLoaded + " / "+this.getSize().getChunks()+" terminé.  (~" + (new DecimalFormat("0.0")).format(percentage) + "%)");
+
+        if (chunksLoaded % 30 == 0 || chunksLoaded == this.getSize().getChunks())
+            Bukkit.getLogger().info("[LG UHC > PrivatesAddon] Add Roofed : " + this.chunksLoaded + " / " + this.getSize().getChunks() + " terminé.  (~" + (new DecimalFormat("0.0")).format(percentage) + "%)");
+
         if (this.chunksLoaded == this.getSize().getChunks())
             Bukkit.broadcastMessage(Plugin.getPrefix() + "§2La génération de la Roofed Forest est terminée !");
+
     }
 
 

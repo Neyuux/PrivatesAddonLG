@@ -1,7 +1,6 @@
 package fr.neyuux.privatesaddonlg.assistant;
 
 import fr.neyuux.privatesaddonlg.Plugin;
-import fr.ph1lou.werewolfapi.enums.StateGame;
 import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.versions.VersionUtils;
@@ -130,8 +129,7 @@ public class AssistantConfig {
 
 
     private static boolean isOutdatedConfig(String key) {
-        return key.equals("werewolf.configurations.red_name_tag.name") ||
-                key.equals("werewolf.configurations.lone_wolf.name");
+        return key.equals("werewolf.configurations.lone_wolf.name");
     }
 
 

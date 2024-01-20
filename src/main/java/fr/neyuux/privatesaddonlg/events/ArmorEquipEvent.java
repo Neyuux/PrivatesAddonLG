@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
  * @Website http://codingforcookies.com/
  * @since Jul 30, 2015
  */
+@SuppressWarnings("ALL")
 public final class ArmorEquipEvent extends PlayerEvent implements Cancellable{
 
     private static final HandlerList handlers = new HandlerList();
@@ -144,7 +145,6 @@ public final class ArmorEquipEvent extends PlayerEvent implements Cancellable{
          * When you die causing all armor to unequip
          */
         DEATH,
-        ;
     }
 
     public static ItemStack getFromPlayer(ArmorListener.ArmorType type, HumanEntity who) {

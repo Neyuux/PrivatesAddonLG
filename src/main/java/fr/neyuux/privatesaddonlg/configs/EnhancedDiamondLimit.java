@@ -11,6 +11,7 @@ import fr.neyuux.privatesaddonlg.events.ArmorEquipEvent;
 import fr.ph1lou.werewolfapi.annotations.Configuration;
 import fr.ph1lou.werewolfapi.annotations.ConfigurationBasic;
 import fr.ph1lou.werewolfapi.enums.StateGame;
+import fr.ph1lou.werewolfapi.events.game.day_cycle.DayEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.LoadEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.FinalJoinEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
@@ -122,6 +123,15 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
     }
 
     @EventHandler
+    public void onDayOne(DayEvent ev) {
+        if (ev.getNumber() == 1)
+            this.getGame().getPlayersWW()
+                    .stream()
+                    .filter(playerWW -> levels.containsKey(playerWW.getUUID()) && levels.get(playerWW.getUUID()).getBookGive() != 0)
+                    .forEach(playerWW -> playerWW.addItem(new ItemStack(Material.BOOK, levels.get(playerWW.getUUID()).getBookGive())));
+    }
+
+    @EventHandler
     public void onLoadGame(LoadEvent ev) {
         RELOAD_ALL_LIMITS();
     }
@@ -217,6 +227,7 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
                     "§7Nombre de Pièces en Diamant max : §3§l" + limitLevel.getDiamondPieces(),
                     "§7Probabilité de drop l'or doublé : §3§l" + (goldPercentage > 0 ? goldPercentage + "%" : "Non"),
                     "§7Probabilité de drop le diamant doublé : §3§l" + (diamondPercentage > 0 ? diamondPercentage + "%" : "Non"),
+                    "§7Nombre de livres bonus : §3§l" + limitLevel.getBookGive(),
                     "",
                     "§7>>Clic gauche pour augmenter de niveau",
                     "§7>>Clic droit pour diminuer de niveau"));
@@ -260,13 +271,15 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
         private final int diamondPieces;
         private final double goldBoostPercentage;
         private final double diamondBoostPercentage;
+        private final int bookGive;
 
-        public LimitLevel(int level, int diamonds, int diamondPieces, double goldBoostPercentage, double diamondBoostPercentage) {
+        public LimitLevel(int level, int diamonds, int diamondPieces, double goldBoostPercentage, double diamondBoostPercentage, int bookGive) {
             this.level = level;
             this.diamonds = diamonds;
             this.diamondPieces = diamondPieces;
             this.goldBoostPercentage = goldBoostPercentage;
             this.diamondBoostPercentage = diamondBoostPercentage;
+            this.bookGive = bookGive;
         }
 
         public LimitLevel(int level, int diamonds, int diamondPieces) {
@@ -275,6 +288,7 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
             this.diamondPieces = diamondPieces;
             this.goldBoostPercentage = -1.0D;
             this.diamondBoostPercentage = -1.0D;
+            this.bookGive = 0;
         }
 
 
@@ -295,7 +309,7 @@ public class EnhancedDiamondLimit extends ListenerWerewolf {
 
         public final static LimitLevel LEVEL_1 = new LimitLevel(1, 13, 1);
         public final static LimitLevel LEVEL_2 = new LimitLevel(2, 17, 2);
-        public final static LimitLevel LEVEL_3 = new LimitLevel(3, 22, 3, 0.05D, 0.10D);
-        public final static LimitLevel LEVEL_4 = new LimitLevel(4, 29, 4, 0.10D, 0.13D);
+        public final static LimitLevel LEVEL_3 = new LimitLevel(3, 22, 3, 0.05D, 0.15D, 1);
+        public final static LimitLevel LEVEL_4 = new LimitLevel(4, 29, 4, 0.10D, 0.20D, 2);
     }
 }

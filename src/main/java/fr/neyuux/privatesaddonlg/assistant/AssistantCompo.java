@@ -5,6 +5,7 @@ import fr.ph1lou.werewolfapi.annotations.Lover;
 import fr.ph1lou.werewolfapi.annotations.Role;
 import fr.ph1lou.werewolfapi.enums.Category;
 import fr.ph1lou.werewolfapi.enums.RoleAttribute;
+import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.lovers.ILover;
 import fr.ph1lou.werewolfapi.role.interfaces.IRole;
@@ -58,6 +59,7 @@ public class AssistantCompo {
         informationsPoints.put("little_girl", 3);
         informationsPoints.put("witness", 2);
         informationsPoints.put("beaconer", 3);
+        informationsPoints.put("omniscient", 4);
     }
 
 
@@ -199,20 +201,17 @@ public class AssistantCompo {
 
         WereWolfAPI game = main.getGame();
 
-        int recommandedIP = Math.round(count * 1.25f + 0.8f * -this.checkBaseWerewolves(count));
+        int recommandedIP = Math.round(count * 1.10f);
         int currentIP = 0;
 
         for (Wrapper<IRole, Role> roleRegister : main.getRegisterManager().getRolesRegister())
             for (String s : this.informationsPoints.keySet())
-                if (roleRegister.getMetaDatas().key().contains(s)) {
+                if (Arrays.asList(roleRegister.getMetaDatas().key().split("\\.")).contains(s)) {
                     int number = game.getConfig().getRoleCount(roleRegister.getMetaDatas().key());
-                    System.out.println("found ip " + s);
 
                     if (roleRegister.getMetaDatas().requireDouble()) {
-                        System.out.println("add (double) " + (number == 0 ? 0 : informationsPoints.get(s)));
                         currentIP += (number == 0 ? 0 : informationsPoints.get(s));
                     } else {
-                        System.out.println("add " + informationsPoints.get(s) * number);
                         currentIP += informationsPoints.get(s) * number;
                     }
                 }
@@ -309,6 +308,24 @@ public class AssistantCompo {
         return recommandedRez - currentRez;
     }
 
+    public boolean checkGrimyLG() {
+        if (!main.isLoaded())
+            return false;
+
+        IConfiguration config = main.getGame().getConfig();
+
+        return config.getRoleCount("werewolf.roles.grimy_werewolf.display") > 0 && config.getRoleCount("werewolf.roles.werewolf.display") == 0;
+    }
+
+    public boolean checkCharmerCupi() {
+        if (!main.isLoaded())
+            return false;
+
+        IConfiguration config = main.getGame().getConfig();
+
+        return config.getRoleCount("werewolf.roles.charmer.display") > 0 && config.getRoleCount("werewolf.roles.cupid.display") > 0;
+    }
+
 
     public List<TextComponent> getSummary(int count) {
         List<TextComponent> list = new ArrayList<>();
@@ -348,6 +365,12 @@ public class AssistantCompo {
 
         if (this.checkDoubleCouples())
             list.add(utils.createClickableText(" §0§l■ §cDésactivez §fle Cupidon ou un Couple Aléatoire pour ne pas avoir 2 couples !", "/assistant clickablemessage removecouples", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour retirer les couples"));
+
+        if (this.checkGrimyLG())
+            list.add(new TextComponent(" §0§l■ §cLoup-Garou Grimeur : §fAjouter un §cLoup-Garou §fpour dissumler le grimage"));
+
+        if (this.checkCharmerCupi())
+            list.add(new TextComponent(" §0§l■ §fDésactiver le §dCupidon §fsi vous voulez garder la §6Charmeuse"));
 
         return list;
     }

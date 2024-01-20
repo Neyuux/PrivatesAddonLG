@@ -1,11 +1,7 @@
 package fr.neyuux.privatesaddonlg.roles;
 
 import fr.ph1lou.werewolfapi.annotations.Role;
-import fr.ph1lou.werewolfapi.enums.Aura;
-import fr.ph1lou.werewolfapi.enums.Camp;
-import fr.ph1lou.werewolfapi.enums.Category;
-import fr.ph1lou.werewolfapi.enums.RoleAttribute;
-import fr.ph1lou.werewolfapi.enums.StatePlayer;
+import fr.ph1lou.werewolfapi.enums.*;
 import fr.ph1lou.werewolfapi.events.game.day_cycle.NightEvent;
 import fr.ph1lou.werewolfapi.events.game.timers.WereWolfListEvent;
 import fr.ph1lou.werewolfapi.events.werewolf.AppearInWereWolfListEvent;
@@ -42,11 +38,11 @@ public class WolfDog extends RoleImpl implements ITransformed, IPower {
         return (new DescriptionBuilder(this.game, this))
                 .setDescription(this.power ? (
 
-                        this.game.translate("privatesaddon.roles.wolf_dog.description", new Formatter[0]) + '\n' + this.game.translate("privatesaddon.roles.wolf_dog.description_2", new Formatter[0])) :
+                        this.game.translate("privatesaddon.roles.wolf_dog.description", new Formatter[0]) + '\n' + this.game.translate("privatesaddon.roles.wolf_dog.description_2")) :
 
                         this.game.translate(this.transformed ? "privatesaddon.roles.wolf_dog.description_2" :
 
-                                "privatesaddon.roles.wolf_dog.description", new Formatter[0]))
+                                "privatesaddon.roles.wolf_dog.description"))
                 .build();
     }
 
@@ -54,7 +50,7 @@ public class WolfDog extends RoleImpl implements ITransformed, IPower {
     public void recoverPower() {
         int timer = this.game.getConfig().getTimerValue("werewolf.timers.werewolf_list.name");
         if (timer > 0)
-            getPlayerWW().sendMessageWithKey("werewolf.prefix.green", "werewolf.roles.wolf_dog.transform", new Formatter[] { Formatter.timer(this.game, "werewolf.timers.werewolf_list.name") });
+            getPlayerWW().sendMessageWithKey("werewolf.prefix.green", "werewolf.roles.wolf_dog.transform", Formatter.timer(this.game, "werewolf.timers.werewolf_list.name"));
     }
 
     @Override
@@ -70,7 +66,7 @@ public class WolfDog extends RoleImpl implements ITransformed, IPower {
     @EventHandler
     public void onWereWolfList(WereWolfListEvent event) {
         if (this.power)
-            getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.roles.wolf_dog.time_over", new Formatter[0]);
+            getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.roles.wolf_dog.time_over");
         this.power = false;
     }
 

@@ -7,18 +7,13 @@ import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.events.roles.fox.BeginSniffEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
-import fr.ph1lou.werewolfapi.role.interfaces.IAffectedPlayers;
-import fr.ph1lou.werewolfapi.role.interfaces.ILimitedUse;
-import fr.ph1lou.werewolfapi.role.interfaces.IPower;
-import fr.ph1lou.werewolfapi.role.interfaces.IProgress;
-import fr.ph1lou.werewolfapi.role.interfaces.IRole;
-import java.util.UUID;
-
-import net.md_5.bungee.api.chat.TextComponent;
+import fr.ph1lou.werewolfapi.role.interfaces.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 @RoleCommand(key="privatesaddon.roles.fox.command", roleKeys={"privatesaddon.roles.fox.display"}, requiredPower=true, argNumbers={1})
 public class FlairerCommand
@@ -40,7 +35,7 @@ public class FlairerCommand
             return;
         }
         if (playerWW1 == null || !playerWW1.isState(StatePlayer.ALIVE)) {
-            player.sendMessage(Plugin.getPrefixWithColor(ChatColor.RED) + "§cCe joueur n'existe pas, est dans le couloir de la Mort ou est déjà Mort.");
+            player.sendMessage(Plugin.getPrefixWithColor(ChatColor.RED) + "§cCe joueur est dans le couloir de la Mort ou est déjà Mort.");
             return;
         }
         if (((ILimitedUse) fox).getUse() >= game.getConfig().getValue("privatesaddon.roles.fox.configurations.fox_smell_number")) {

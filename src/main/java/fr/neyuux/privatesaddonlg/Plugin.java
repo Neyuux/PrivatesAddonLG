@@ -14,6 +14,7 @@ import fr.neyuux.privatesaddonlg.commands.roles.ItemCommand;
 import fr.neyuux.privatesaddonlg.listeners.ArmorListener;
 import fr.neyuux.privatesaddonlg.listeners.RoleBuffListener;
 import fr.neyuux.privatesaddonlg.listeners.WorldChangesListener;
+import fr.neyuux.privatesaddonlg.utils.Reflection;
 import fr.ph1lou.werewolfapi.GetWereWolfAPI;
 import fr.ph1lou.werewolfapi.annotations.Author;
 import fr.ph1lou.werewolfapi.annotations.ModuleWerewolf;
@@ -23,7 +24,10 @@ import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.ActionBarEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
+import fr.ph1lou.werewolfapi.events.game.game_cycle.StopEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
+import fr.ph1lou.werewolfapi.events.game.permissions.UpdateModeratorNameTagEvent;
+import fr.ph1lou.werewolfapi.events.game.utils.WinConditionsCheckEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.registers.IRegisterManager;
@@ -108,9 +112,8 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         new BukkitRunnable() {
             @Override
             public void run() {
-                getServer().getServicesManager().getRegistrations(GetWereWolfAPI.class).stream().filter(provider -> provider.getService().equals(GetWereWolfAPI.class)).findFirst().ifPresent(provider -> {
-                    ww = provider.getProvider();
-                });
+                getServer().getServicesManager().getRegistrations(GetWereWolfAPI.class).stream().filter(provider -> provider.getService().equals(GetWereWolfAPI.class)).findFirst().ifPresent(provider ->
+                        ww = provider.getProvider());
 
                 if (ww != null && ww.getWereWolfAPI() != null) {
                     Bukkit.getLogger().info("PrivatesAddon -> Service WereWolfAPI found");
@@ -150,6 +153,19 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         this.groupsWarning.clear();
     }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onStop(StopEvent ev) {
+        if (!this.isLoaded())
+            return;
+
+        try {
+            System.out.println("[Reflection] set crack value to : false");
+            Reflection.setValue(this.getGame(), "crack", false);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
         if (this.customEntities.stream().anyMatch(livingEntity -> livingEntity.getUniqueId().equals(event.getEntity().getUniqueId()))) {
@@ -175,6 +191,11 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     public void onResurrection(ResurrectionEvent ev){
         if (!ev.isCancelled())
             ev.getPlayerWW().addPlayerHealth(32);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onModTabHeart(UpdateModeratorNameTagEvent ev) {
+        ev.setSuffix(ev.getSuffix().replace('♥', '❤'));
     }
 
     @Override
@@ -230,7 +251,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
                 new BukkitRunnable() {
 
-                    long start = System.currentTimeMillis();
+                    final long start = System.currentTimeMillis();
 
                     @Override
                     public void run() {

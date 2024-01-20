@@ -1,0 +1,9 @@
+privatesaddon.roles.omniscient.display:
+  0:
+    ==: org.bukkit.inventory.ItemStack
+    type: BOOKSHELF
+    amount: 4
+  1:
+    ==: org.bukkit.inventory.ItemStack
+    type: OBSIDIAN
+    amount: 4
