@@ -80,6 +80,13 @@
         "charmstopcommand": "charmstop",
         "itemcommand": "item"
       },
+
+      "cursed_werewolf": {
+        "display": "Loup-Garou Maudit",
+        "aura": "Se faire maudire par le §cLoup-Garou Maudit§f donne une aura §4Obscure",
+        "command": "curse"
+      },
+
       "fox": {
         "display": "Renard",
         "command": "flair",

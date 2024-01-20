@@ -276,17 +276,13 @@ public class RoleBuffListener implements Listener {
 
         if (Plugin.getINSTANCE().getGame().getRandom().nextDouble() < 0.10D) {
 
-            while (target.getRole().isCamp(Camp.VILLAGER)) {
-                if (max == 0)
-                    break;
+            while (target.getRole().isCamp(Camp.VILLAGER) && max > 0) {
                 target = Utils.autoSelect(Plugin.getINSTANCE().getGame(), ev.getPlayerWW());
                 max--;
             }
 
         } else {
-            while (!target.getRole().isCamp(Camp.VILLAGER)) {
-                if (max == 0)
-                    break;
+            while (!target.getRole().isCamp(Camp.VILLAGER) && max > 0) {
                 target = Utils.autoSelect(Plugin.getINSTANCE().getGame(), ev.getPlayerWW());
                 max--;
             }
