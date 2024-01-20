@@ -2,6 +2,7 @@ package fr.neyuux.privatesaddonlg.listeners;
 
 import fr.neyuux.privatesaddonlg.Plugin;
 import fr.neyuux.privatesaddonlg.roles.InnkeeperBuffed;
+import fr.neyuux.privatesaddonlg.utils.Reflection;
 import fr.ph1lou.werewolfapi.enums.*;
 import fr.ph1lou.werewolfapi.events.ActionBarEvent;
 import fr.ph1lou.werewolfapi.events.UpdatePlayerNameTagEvent;
@@ -10,14 +11,18 @@ import fr.ph1lou.werewolfapi.events.game.timers.RepartitionEvent;
 import fr.ph1lou.werewolfapi.events.game.utils.EnchantmentEvent;
 import fr.ph1lou.werewolfapi.events.lovers.RevealLoversEvent;
 import fr.ph1lou.werewolfapi.events.roles.StealEvent;
+import fr.ph1lou.werewolfapi.events.roles.angel.AngelTargetEvent;
 import fr.ph1lou.werewolfapi.events.roles.charmer.CharmerGetEffectDeathEvent;
+import fr.ph1lou.werewolfapi.events.roles.falsifier_werewolf.NewDisplayRole;
 import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.impl.PotionModifier;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.role.interfaces.IAffectedPlayers;
+import fr.ph1lou.werewolfapi.utils.Utils;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -251,6 +256,49 @@ public class RoleBuffListener implements Listener {
         player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 3600, 1, false, false));
 
         player.sendMessage(Plugin.getPrefix() + "§fTu as désormais plusieurs effets : §bRapidité 1§f, §eAborption 2 pendant 3 minutes§f et §7Résistance 10% jusqu'à la fin de la partie§f.");
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onAngelTarget(AngelTargetEvent ev){
+
+        ev.getTargetWW().sendMessage(new TextComponent(Plugin.getPrefixWithColor(ChatColor.RED) + "§cVous avez désigné pour être la cible de l'§f§lAnge§c."));
+
+        Player target = Bukkit.getPlayer(ev.getTargetWW().getUUID());
+
+        if (target != null)
+            Sound.ENDERDRAGON_WINGS.play(target, 5f, 1.2f);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onFalsifierDisplayRole(NewDisplayRole ev) {
+        IPlayerWW target = Utils.autoSelect(Plugin.getINSTANCE().getGame(), ev.getPlayerWW());
+        int max = 30;
+
+        if (Plugin.getINSTANCE().getGame().getRandom().nextDouble() < 0.10D) {
+
+            while (target.getRole().isCamp(Camp.VILLAGER)) {
+                if (max == 0)
+                    break;
+                target = Utils.autoSelect(Plugin.getINSTANCE().getGame(), ev.getPlayerWW());
+                max--;
+            }
+
+        } else {
+            while (!target.getRole().isCamp(Camp.VILLAGER)) {
+                if (max == 0)
+                    break;
+                target = Utils.autoSelect(Plugin.getINSTANCE().getGame(), ev.getPlayerWW());
+                max--;
+            }
+        }
+
+        try {
+            Reflection.setValue(ev, "newDisplayRole", target.getRole().getKey());
+            Reflection.setValue(ev, "newDisplayCamp", target.getRole().getCamp().getKey());
+            System.out.println("[Reflection] set Falsifier Role " + ev.getPlayerWW().getName() + " to : " + Plugin.getRoleTranslated(target.getRole().getKey()) + " (" + Plugin.getRoleTranslated(target.getRole().getCamp().getKey()) + ")");
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
 
