@@ -433,4 +433,83 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
             connection.sendPacket(packetPlayOutSubTitle);
         }
     }
+
+    public static String translatePotionEffect(PotionEffectType pet) {
+        String s;
+        String name = pet.getName();
+        switch (name) {
+            case "ABSORPTION":
+                s = "Absorption";
+                break;
+            case "BLINDNESS":
+                s = "Cécité";
+                break;
+            case "CONFUSION":
+                s = "Nausée";
+                break;
+            case "DAMAGE_RESISTANCE":
+                s = "Résistance";
+                break;
+            case "FAST_DIGGING":
+                s = "Hâte";
+                break;
+            case "FIRE_RESISTANCE":
+                s = "Résitance au Feu";
+                break;
+            case "HARM":
+                s = "Dégâts instantanés";
+                break;
+            case "HEAL":
+                s = "Soins instantanés";
+                break;
+            case "HEALTH_BOOST":
+                s = "Bonus de Vie";
+                break;
+            case "HUNGER":
+                s = "Faim";
+                break;
+            case "INCREASE_DAMAGE":
+                s = "Force";
+                break;
+            case "INVISIBILITY":
+                s = "Invisibilité";
+                break;
+            case "JUMP":
+                s = "Bonus de Saut";
+                break;
+            case "NIGHT_VISION":
+                s = "Vision Nocturne";
+                break;
+            case "POISON":
+                s = "Poison";
+                break;
+            case "REGENERATION":
+                s = "Régénération";
+                break;
+            case "SATURATION":
+                s = "Saturation";
+                break;
+            case "SLOW":
+                s = "Lenteur";
+                break;
+            case "SLOW_DIGGING":
+                s = "Fatigue";
+                break;
+            case "SPEED":
+                s = "Rapidité";
+                break;
+            case "WATER_BREATHING":
+                s = "Apnée";
+                break;
+            case "WEAKNESS":
+                s = "Faiblesse";
+                break;
+            case "WITHER":
+                s = "Wither";
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + pet);
+        }
+        return s;
+    }
 }

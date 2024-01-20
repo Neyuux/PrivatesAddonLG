@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Role(
         key = "privatesaddon.roles.beaconer.display",
@@ -322,8 +323,29 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
 
                     break;
                 case EFFECTS:
-                    player.sendMessage("§cTODO");
-                    //TODO
+                    StringBuilder sb = new StringBuilder(Plugin.getPrefix() + "§bVous apprenez que §e" + targetWW.getName());
+
+                    final Stream<String> effects = targetWW.getPotionModifiers()
+                            .stream()
+                            .filter(PotionModifier::isAdd)
+                            .map(pot -> Plugin.translatePotionEffect(pot.getPotionEffectType()))
+                            .distinct();
+
+                    if (!effects.findAny().isPresent())
+                        sb.append("§b ne possède §c§lAUCUN §beffet.");
+
+                    else {
+                        sb.append("§b possède les effets : §c");
+
+                        effects.forEach(eff -> sb.append(eff).append("§b, §c"));
+
+                        sb.delete(sb.length() - 4, sb.length());
+
+                        sb.append(".");
+                    }
+
+                    player.sendMessage(sb.toString());
+
                     break;
             }
         }
@@ -376,7 +398,7 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                 sb.append("Disponible");
             else {
 
-                sb.append((this.getActivationProgression() >= 100f ? "Activée (" : (this.getPlantProgression() >= 100f ? "Posée (" : "Posage (")) + Math.round(Math.min(100f, this.getActivationProgression())) + "%)");
+                sb.append(this.getActivationProgression() >= 100f ? "Activée (" : (this.getPlantProgression() >= 100f ? "Posée (" : "Posage (")).append(Math.round(Math.min(100f, this.getActivationProgression()))).append("%)");
             }
 
             return sb.toString();
