@@ -81,8 +81,8 @@ public class WorldChangesListener implements Listener {
 
     public enum RoofedSize {
         LARGE(15),
-        MEDIUM(11),
-        SMALL(7);
+        MEDIUM(12),
+        SMALL(8);
 
         @Getter
         private final int size;

@@ -1,6 +1,7 @@
 package fr.neyuux.privatesaddonlg.roles;
 
 import fr.neyuux.privatesaddonlg.Plugin;
+import fr.neyuux.privatesaddonlg.events.*;
 import fr.ph1lou.werewolfapi.annotations.IntValue;
 import fr.ph1lou.werewolfapi.annotations.Role;
 import fr.ph1lou.werewolfapi.annotations.Timer;
@@ -21,6 +22,7 @@ import lombok.Setter;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.logging.log4j.core.appender.rolling.AbstractRolloverStrategy;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -33,6 +35,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Role(
@@ -153,6 +156,14 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
             if (this.nextBeacon != null) {
                 if (!this.getAffectedPlayers().contains(targetWW)) {
 
+                    BeaconerClickEvent clickEv = new BeaconerClickEvent(this.getPlayerWW(), targetWW, this.nextBeacon);
+                    Bukkit.getPluginManager().callEvent(clickEv);
+
+                    if (clickEv.isCancelled()) {
+                        this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefixWithColor(ChatColor.RED) + "§cVotre pouvoir a été annulé."));
+                        return;
+                    }
+
                     this.affectedPlayers.put(targetWW, this.nextBeacon);
                     Plugin.sendTitle(player, 20, 40, 20, "§a§lBalise posée !", "§bVous avez posé une balise " + this.nextBeacon.getName() + " sur " + target.getName() + ".");
                     player.sendMessage(Plugin.getPrefix() + "§fPour activer la balise, vous devez rester §b" + game.getConfig().getTimerValue("privatesaddon.roles.beaconer.timers.plant_duration") + " secondes §fà moins de §b" + game.getConfig().getValue("privatesaddon.roles.beaconer.configurations.distance_plant") + " blocs §fde §e" + targetWW.getName() + "§f.");
@@ -215,6 +226,10 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                     beacon.setPlantProgression(beacon.getPlantProgression() + 100.0f / (float)game.getConfig().getTimerValue("privatesaddon.roles.beaconer.timers.plant_duration"));
 
                     if (beacon.getPlantProgression() > 100f) {
+
+                        BeaconerPlantEvent plantEv = new BeaconerPlantEvent(this.getPlayerWW(), playerWW, beacon);
+                        Bukkit.getPluginManager().callEvent(plantEv);
+
                         player.sendMessage(Plugin.getPrefix() + "§fVous avez bien posé votre balise \"§b§l" + beacon.getName() + "§f\" sur §e" + playerWW.getName() + "§f. Pour l'activer, vous devez désormais rester à plus de §b" + game.getConfig().getValue("privatesaddon.roles.beaconer.configurations.distance_to_activate") + " blocs §fpendant §b" + Utils.conversion(game.getConfig().getTimerValue("privatesaddon.roles.beaconer.timers.activation_duration")) + "§f.");
                         player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                     }
@@ -226,6 +241,10 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                     beacon.setActivationProgression(beacon.getActivationProgression() + 100f / (float)game.getConfig().getTimerValue("privatesaddon.roles.beaconer.timers.activation_duration"));
 
                     if (beacon.getActivationProgression() > 100f) {
+
+                        BeaconerActivateEvent activateEvent = new BeaconerActivateEvent(this.getPlayerWW(), playerWW, beacon);
+                        Bukkit.getPluginManager().callEvent(activateEvent);
+
                         player.sendMessage(Plugin.getPrefix() + "§fVotre balise \"§b§l" + beacon.getName() + "§f\" vient de s'activer !");
                         player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
 
@@ -303,6 +322,12 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                 case CAMP:
                     String displayCamp = targetWW.getRole().getDisplayCamp();
 
+                    BeaconerCampInfosEvent infoCampEv = new BeaconerCampInfosEvent(beaconer.getPlayerWW(), targetWW, displayCamp);
+                    Bukkit.getPluginManager().callEvent(infoCampEv);
+
+                    if (infoCampEv.isCancelled())
+                        break;
+
                     switch (Arrays.stream(Camp.values())
                             .filter(camp -> camp.getKey().equals(displayCamp))
                             .findFirst().get()) {
@@ -325,11 +350,16 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                 case EFFECTS:
                     StringBuilder sb = new StringBuilder(Plugin.getPrefix() + "§bVous apprenez que §e" + targetWW.getName());
 
-                    final Stream<String> effects = targetWW.getPotionModifiers()
+                    final Stream<? extends PotionModifier> effects = targetWW.getPotionModifiers()
                             .stream()
                             .filter(PotionModifier::isAdd)
-                            .map(pot -> Plugin.translatePotionEffect(pot.getPotionEffectType()))
                             .distinct();
+
+                    BeaconerEffectsInfosEvent infoEffectsEv = new BeaconerEffectsInfosEvent(beaconer.getPlayerWW(), targetWW, effects.map(PotionModifier::getPotionEffectType).collect(Collectors.toSet()));
+                    Bukkit.getPluginManager().callEvent(infoEffectsEv);
+
+                    if (infoEffectsEv.isCancelled())
+                        break;
 
                     if (!effects.findAny().isPresent())
                         sb.append("§b ne possède §c§lAUCUN §beffet.");
@@ -337,7 +367,7 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                     else {
                         sb.append("§b possède les effets : §c");
 
-                        effects.forEach(eff -> sb.append(eff).append("§b, §c"));
+                        effects.map(pot -> Plugin.translatePotionEffect(pot.getPotionEffectType())).forEach(eff -> sb.append(eff).append("§b, §c"));
 
                         sb.delete(sb.length() - 4, sb.length());
 

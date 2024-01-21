@@ -24,6 +24,7 @@ import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.ActionBarEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StopEvent;
+import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
 import fr.ph1lou.werewolfapi.events.game.permissions.UpdateModeratorNameTagEvent;
 import fr.ph1lou.werewolfapi.events.game.timers.RepartitionEvent;
@@ -163,13 +164,14 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onStop(StopEvent ev) {
+    public void onStatsSending(WinEvent ev) {
         if (!this.isLoaded())
             return;
 
         try {
-            System.out.println("[Reflection] set crack value to : false");
+            System.out.println("[Reflection] starting set crack value to : false");
             Reflection.setValue(this.getGame(), "crack", false);
+            System.out.println("[Reflection] finish set crack");
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }

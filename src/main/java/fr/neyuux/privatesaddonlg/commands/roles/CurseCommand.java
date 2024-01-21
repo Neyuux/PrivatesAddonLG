@@ -1,6 +1,7 @@
 package fr.neyuux.privatesaddonlg.commands.roles;
 
 import fr.neyuux.privatesaddonlg.Plugin;
+import fr.neyuux.privatesaddonlg.events.WerewolfCurseEvent;
 import fr.neyuux.privatesaddonlg.roles.CursedWerewolf;
 import fr.ph1lou.werewolfapi.annotations.RoleCommand;
 import fr.ph1lou.werewolfapi.commands.ICommandRole;
@@ -41,12 +42,12 @@ public class CurseCommand
             return;
         }
         role.setPower(false);
-        /*TODO BeginSniffEvent beginSniffEvent = new BeginSniffEvent(playerWW, playerWW1);
-        Bukkit.getPluginManager().callEvent(beginSniffEvent);
-        if (beginSniffEvent.isCancelled()) {
+        WerewolfCurseEvent curseEvent = new WerewolfCurseEvent(playerWW, playerWW1);
+        Bukkit.getPluginManager().callEvent(curseEvent);
+        if (curseEvent.isCancelled()) {
             player.sendMessage(Plugin.getPrefixWithColor(ChatColor.RED) + "§cVotre pouvoir a été annulé.");
             return;
-        }*/
+        }
         role.clearAffectedPlayer();
         role.addAffectedPlayer(playerWW1);
         player.sendMessage(Plugin.getPrefix() + "§fVous avez §cmaudit §b§l" + playerWW1.getName() + " §f!");
