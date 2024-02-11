@@ -80,7 +80,8 @@ public class WorldChangesListener implements Listener {
 
 
     public enum RoofedSize {
-        LARGE(15),
+        XXL(17),
+        LARGE(14),
         MEDIUM(12),
         SMALL(8);
 

@@ -406,10 +406,12 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
     public WorldChangesListener.RoofedSize getRecommandedRoofedSize() {
         if (this.getPlayerCount() <= 17)
             return WorldChangesListener.RoofedSize.SMALL;
-        else if (this.getPlayerCount() <= 23)
+        else if (this.getPlayerCount() <= 22)
             return WorldChangesListener.RoofedSize.MEDIUM;
-        else
+        else if (this.getPlayerCount() <= 25)
             return WorldChangesListener.RoofedSize.LARGE;
+        else
+            return WorldChangesListener.RoofedSize.XXL;
     }
 
     public boolean checkRoofedSize() {

@@ -43,13 +43,13 @@ public class AssistantCompo {
         informationsPoints.put("priestess", 7);
         informationsPoints.put("shaman", 1);
         informationsPoints.put("oracle", 5);
-        informationsPoints.put("twin", 7);
+        informationsPoints.put("twin", 6);
         informationsPoints.put("druid", 4);
-        informationsPoints.put("fruit_merchant", 5);
+        informationsPoints.put("fruit_merchant", 4);
         informationsPoints.put("wise_elder", 5);
         informationsPoints.put("occultist", 4);
         informationsPoints.put("gravedigger", 15);
-        informationsPoints.put("story_teller", 6);
+        informationsPoints.put("story_teller", 7);
         informationsPoints.put("spy", 3);
         informationsPoints.put("interpreter", 4);
         informationsPoints.put("innkeeper", 4);
@@ -58,7 +58,7 @@ public class AssistantCompo {
         informationsPoints.put("sister", 1);
         informationsPoints.put("little_girl", 3);
         informationsPoints.put("witness", 2);
-        informationsPoints.put("beaconer", 3);
+        informationsPoints.put("beaconer", 4);
         informationsPoints.put("omniscient", 4);
     }
 
@@ -201,7 +201,7 @@ public class AssistantCompo {
 
         WereWolfAPI game = main.getGame();
 
-        int recommandedIP = Math.round(count * 1.10f);
+        int recommandedIP = Math.round(count * 1.07f);
         int currentIP = 0;
 
         for (Wrapper<IRole, Role> roleRegister : main.getRegisterManager().getRolesRegister())
