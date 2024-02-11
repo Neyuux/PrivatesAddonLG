@@ -163,7 +163,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
                 .forEach(playerWW -> this.neyuuxCommand.put(playerWW.getUUID(), new HashMap<>()));
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onStatsSending(WinEvent ev) {
         if (!this.isLoaded())
             return;

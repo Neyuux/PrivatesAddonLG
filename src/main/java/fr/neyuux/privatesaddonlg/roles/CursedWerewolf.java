@@ -65,7 +65,7 @@ public class CursedWerewolf extends RoleWereWolf implements IAffectedPlayers, IP
     public String getDescription() {
         DescriptionBuilder descBuilder = new DescriptionBuilder(this.game, this);
 
-        descBuilder.setDescription("Vous pouvez à chaque maudire un joueur. La malédiction fera en sorte que ce joueur sera vu comme Loup-Garou par les rôles à informations du Village.");
+        descBuilder.setDescription("Vous pouvez maudire un joueur chaque jour. La malédiction fera en sorte que ce joueur sera vu comme Loup-Garou par les rôles à informations du Village.");
 
         descBuilder.setEffects(this.game.translate("werewolf.description.werewolf"));
 

@@ -151,7 +151,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
 
                         case "removeautorezwitch":
                             if (args.length > 2) {
-                                config.setConfig(args[2] + ".roles.cupid.configurations.auto_rez_witch", false);
+                                config.setConfig(args[2] + ".roles.witch.configurations.auto_rez_witch", false);
 
                                 sender.sendMessage(getPrefix() + "§fL'§dAuto-Résurrection §fde la Sorcière a été §cdésactivée §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
