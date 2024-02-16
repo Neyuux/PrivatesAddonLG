@@ -5,6 +5,7 @@ import fr.ph1lou.werewolfapi.enums.*;
 import fr.ph1lou.werewolfapi.events.game.day_cycle.NightEvent;
 import fr.ph1lou.werewolfapi.events.game.timers.WereWolfListEvent;
 import fr.ph1lou.werewolfapi.events.werewolf.AppearInWereWolfListEvent;
+import fr.ph1lou.werewolfapi.events.werewolf.RequestSeeWereWolfListEvent;
 import fr.ph1lou.werewolfapi.events.werewolf.WereWolfCanSpeakInChatEvent;
 import fr.ph1lou.werewolfapi.events.werewolf.WereWolfChatEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
@@ -58,11 +59,6 @@ public class WolfDog extends RoleImpl implements ITransformed, IPower {
         return (super.isWereWolf() || this.transformed);
     }
 
-    @Override
-    public Aura getAura() {
-        return super.getAura();
-    }
-
     @EventHandler
     public void onWereWolfList(WereWolfListEvent event) {
         if (this.power)
@@ -70,17 +66,14 @@ public class WolfDog extends RoleImpl implements ITransformed, IPower {
         this.power = false;
     }
 
-    @EventHandler
-    public void onWWChat(WereWolfChatEvent event) {
-        if (event.isCancelled() || !event.getTargetWW().equals(this.getPlayerWW()))
-            return;
-        if (this.transformed && !super.isWereWolf()) {
-            event.setCancelled(true);
+    @EventHandler(priority = EventPriority.LOW)
+    public void onWerewolfChat(WereWolfChatEvent event){
+
+        if(!event.getTargetWW().equals(this.getPlayerWW())){
             return;
         }
-        if (!getPlayerWW().isState(StatePlayer.ALIVE))
-            return;
-        event.setCancelled(false);
+
+        event.setCancelled(this.transformed && !super.isWereWolf());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -89,24 +82,36 @@ public class WolfDog extends RoleImpl implements ITransformed, IPower {
             return;
         if (this.isWereWolf())
             getPlayerWW().addPotionModifier(PotionModifier.add(PotionEffectType.INCREASE_DAMAGE, "werewolf.roles.werewolf.display"));
+        else
+            getPlayerWW().addPotionModifier(PotionModifier.remove(PotionEffectType.INCREASE_DAMAGE, "werewolf.roles.werewolf.display", 0));
     }
 
     @EventHandler
     public void onChatSpeak(WereWolfCanSpeakInChatEvent event) {
-        if (!event.getPlayerWW().equals(getPlayerWW()))
-            return;
-        if (this.transformed && !super.isWereWolf())
-            return;
-        event.setCanSpeak(true);
+
+        if (!event.getPlayerWW().equals(getPlayerWW())) return;
+
+        event.setCanSpeak(!this.transformed || super.isWereWolf());
     }
 
     @EventHandler
     public void onAppearInWereWolfList(AppearInWereWolfListEvent event) {
-        if (!getPlayerWW().equals(event.getPlayerWW()))
-            return;
-        if (getPlayerWW().isState(StatePlayer.DEATH))
-            return;
-        event.setAppear((!this.transformed || super.isWereWolf()));
+
+        if (!getPlayerWW().equals(event.getTargetWW())) return;
+
+        if (this.getPlayerWW().isState(StatePlayer.DEATH)) return;
+
+        event.setAppear(!this.transformed || super.isWereWolf());
+    }
+
+    @EventHandler
+    public void onRequestSeeWereWolfListEvent(RequestSeeWereWolfListEvent event) {
+
+        if (!getPlayerWW().equals(event.getPlayerWW())) return;
+
+        if (this.getPlayerWW().isState(StatePlayer.DEATH)) return;
+
+        event.setAccept(this.transformed || super.isWereWolf());
     }
 
     @Override

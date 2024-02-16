@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
         category = Category.VILLAGER,
         attribute = RoleAttribute.VILLAGER
 )
-public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {
+public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {//TODO Rework
     private boolean power = true;
     private boolean wait = false;
     private IPlayerWW playerWW;

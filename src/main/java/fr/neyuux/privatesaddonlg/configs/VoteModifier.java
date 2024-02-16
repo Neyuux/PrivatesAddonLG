@@ -6,20 +6,28 @@ import fr.ph1lou.werewolfapi.annotations.ConfigurationBasic;
 import fr.ph1lou.werewolfapi.annotations.IntValue;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
+import fr.ph1lou.werewolfapi.events.game.vote.VoteEvent;
 import fr.ph1lou.werewolfapi.events.game.vote.VoteResultEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.listeners.impl.ListenerWerewolf;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.vote.IVoteManager;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration(config = @ConfigurationBasic(key = "privatesaddon.configurations.old_votes.name", loreKey = "privatesaddon.configurations.old_votes.description", defaultValue = false, meetUpValue = false), configValues = {@IntValue(key = "privatesaddon.configurations.old_votes.configurations.healtimer", defaultValue = 60, meetUpValue = 50, step = 5, item = UniversalMaterial.ARROW)})
 public class VoteModifier extends ListenerWerewolf {
+
+    private final List<IPlayerWW> voted = new ArrayList<>();
 
     public VoteModifier(WereWolfAPI game) {
         super(game);
@@ -36,6 +44,14 @@ public class VoteModifier extends ListenerWerewolf {
         ev.setCancelled(true);
     }
 
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onVoteAlreadyVoted(VoteEvent ev) {
+        if (this.voted.contains(ev.getTargetWW())) {
+            ev.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefixWithColor(ChatColor.YELLOW) + "§cVous ne pouvez pas voter contre ce joueur car il a déjà reçu les votes."));
+            ev.setCancelled(true);
+        }
+    }
+
     public void showResultVote(@Nullable IPlayerWW playerWW) {
         WereWolfAPI game = Plugin.getINSTANCE().getGame();
         IVoteManager voteManager = game.getVoteManager();
@@ -48,6 +64,8 @@ public class VoteModifier extends ListenerWerewolf {
             Bukkit.broadcastMessage("§f[§6LG UHC§f] §eAucun joueur n'a été voté suffisamment de fois.");
             return;
         }
+
+        this.voted.add(playerWW);
 
         Player player = Bukkit.getPlayer(playerWW.getUUID());
         final double baseHealth = playerWW.getMaxHealth();
