@@ -167,6 +167,15 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                             }
                             break;
 
+                        case "setcroupier":
+                            if (args.length > 2) {
+                                config.setConfig(args[2] + ".roles.croupier.configurations.croupier_every_other_day", true);
+
+                                sender.sendMessage(getPrefix() + "§fL'option \"§aCroupier§f un jour sur deux\" a été §aactivée §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
                         case "activate":
                             if (args.length > 2) {
                                 config.setConfig(args[2], true);
@@ -208,6 +217,16 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                                 config.setScenario(args[2], true);
 
                                 sender.sendMessage(getPrefix() + "§f\"§e" + game.translate(args[2]) + "§f\" a été §aactivé §favec succès !");
+                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
+                            }
+                            break;
+
+                        case "addrole":
+                            if (args.length > 2) {
+                                config.addOneRole(args[2]);
+                                game.setTotalRoles(game.getTotalRoles() + 1);
+
+                                sender.sendMessage(getPrefix() + "§fVous avez ajouté un §e"+game.translate(args[2])+" §favec succès !");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 8f, 1.8f);
                             }
                             break;

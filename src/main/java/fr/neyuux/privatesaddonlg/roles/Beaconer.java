@@ -277,7 +277,7 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
     private boolean canPlant(Player player, IPlayerWW targetWW) {
         Player target = Bukkit.getPlayer(targetWW.getUUID());
 
-        if (target == null)
+        if (target == null || targetWW.getState() != StatePlayer.ALIVE || !this.getPlayerWW().isState(StatePlayer.ALIVE))
             return false;
 
         return player.getLocation().distanceSquared(target.getLocation()) <= square("privatesaddon.roles.beaconer.configurations.distance_plant");
@@ -286,7 +286,7 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
     private boolean canActivate(Player player, IPlayerWW targetWW) {
         Player target = Bukkit.getPlayer(targetWW.getUUID());
 
-        if (target == null)
+        if (target == null || targetWW.getState() != StatePlayer.ALIVE || !this.getPlayerWW().isState(StatePlayer.ALIVE))
             return false;
 
         return player.getLocation().distanceSquared(target.getLocation()) >= square("privatesaddon.roles.beaconer.configurations.distance_to_activate");

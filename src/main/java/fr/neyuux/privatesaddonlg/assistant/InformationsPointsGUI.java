@@ -67,7 +67,7 @@ public class InformationsPointsGUI implements InventoryProvider {
                     Optional<String> incompatible = Arrays.stream(roleRegister.getMetaDatas().incompatibleRoles()).filter(s -> game.getConfig().getRoleCount(s) > 0).map(game::translate).findFirst();
 
                     i.addAndGet(number);
-                    infopoints.addAndGet(roleRegister.getMetaDatas().requireDouble() ? points : number * points);
+                    infopoints.addAndGet(roleRegister.getMetaDatas().requireDouble() && number != 0 ? points : number * points);
 
                     items.add(ClickableItem.of(this.getRoleItem(roleRegister, isActivated, points, number, incompatible.orElse(null)), ev -> {
 

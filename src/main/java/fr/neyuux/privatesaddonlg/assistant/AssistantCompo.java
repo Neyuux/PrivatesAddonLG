@@ -201,7 +201,7 @@ public class AssistantCompo {
 
         WereWolfAPI game = main.getGame();
 
-        int recommandedIP = Math.round(count * 1.07f);
+        int recommandedIP = Math.round(count * 1.08f);
         int currentIP = 0;
 
         for (Wrapper<IRole, Role> roleRegister : main.getRegisterManager().getRolesRegister())
@@ -326,6 +326,24 @@ public class AssistantCompo {
         return config.getRoleCount("werewolf.roles.charmer.display") > 0 && config.getRoleCount("werewolf.roles.cupid.display") > 0;
     }
 
+    public boolean checkFearfulHermit() {
+        if (!main.isLoaded())
+            return false;
+
+        IConfiguration config = main.getGame().getConfig();
+
+        return config.getRoleCount("werewolf.roles.hermit.display") + config.getRoleCount("werewolf.roles.fearful_werewolf.display") == 1 && !config.isConfigActive("werewolf.configurations.hide_composition.name");
+    }
+
+    public boolean checkInvisibles() {
+        if (!main.isLoaded())
+            return false;
+
+        IConfiguration config = main.getGame().getConfig();
+
+        return (config.getRoleCount("werewolf.roles.mischievous_werewolf.display") > 0 || config.getRoleCount("werewolf.roles.will_o_the_wisp.display") > 0) && config.getRoleCount("werewolf.roles.little_girl.display") == 0 && !config.isConfigActive("werewolf.configurations.hide_composition.name");
+    }
+
 
     public List<TextComponent> getSummary(int count) {
         List<TextComponent> list = new ArrayList<>();
@@ -352,7 +370,7 @@ public class AssistantCompo {
 
         int neutral = this.checkNeutralRoles(count);
 
-        if (neutral != 0)
+        if (neutral != 0 && solo == 0)
             list.add(new TextComponent(" §0§l■ §f" + getRemoveOrAdd(neutral) + " §e§l" + Math.abs(neutral) + " §eRôles Neutres"));
 
         int rez = this.checkResurrectionRoles(count);
@@ -372,6 +390,20 @@ public class AssistantCompo {
         if (this.checkCharmerCupi())
             list.add(new TextComponent(" §0§l■ §fDésactiver le §dCupidon §fsi vous voulez garder la §6Charmeuse"));
 
+        if (this.checkFearfulHermit()) {
+            IConfiguration config = main.getGame().getConfig();
+            String hermit = "werewolf.roles.hermit.display";
+            String farful = "werewolf.roles.fearful_werewolf.display";
+
+            if (config.getRoleCount(hermit) == 0)
+                list.add(this.getClickableMessageAddRole(hermit));
+            else
+                list.add(this.getClickableMessageAddRole(farful));
+        }
+
+        if (this.checkInvisibles())
+            list.add(this.getClickableMessageAddRole("werewolf.roles.little_girl.display"));
+
         return list;
     }
 
@@ -386,6 +418,10 @@ public class AssistantCompo {
 
     public TextComponent getClickableMessageInfos(int info) {
         return VersionUtils.getVersionUtils().createClickableText(" §0§l■ §f" + getRemoveOrAdd(info) + " §d§l" + Math.abs(info) + " §dPoints d'information", "/assistant informationspoints", ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour voir les points des rôles à information");
+    }
+
+    public TextComponent getClickableMessageAddRole(String role) {
+        return VersionUtils.getVersionUtils().createClickableText(" §0§l■ §fAjouter un §e" + Plugin.getRoleTranslated(role), "/assistant clickablemessage addrole " + role, ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour ajouter un §e" + Plugin.getRoleTranslated(role));
     }
 
     public float getRecommandedLGs(int count) {

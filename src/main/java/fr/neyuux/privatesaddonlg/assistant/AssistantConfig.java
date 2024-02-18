@@ -95,9 +95,9 @@ public class AssistantConfig {
                             if (config.isConfigActive(addon + ".roles.witch.configurations.auto_rez_witch"))
                                 list.add(utils.createClickableText(" §0§l■ §fDésactiver l'§dAuto-Résurrection §fde la Sorcière", "/assistant clickablemessage removeautorezwitch " + addon, ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour §cdésactiver §fl'§dAuto-Résurrection §fde la Sorcière"));
 
-                        } else if (key.contains("infect_father_of_the_wolves")) {
-                            if (config.isConfigActive(addon + ".roles.infect_father_of_the_wolves.configurations.auto_rez"))
-                                list.add(utils.createClickableText(" §0§l■ §fDésactiver l'§dAuto-Résurrection §fde l'IPDL", "/assistant clickablemessage removeautorezipdl " + addon, ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour §cdésactiver §fl'§dAuto-Résurrection §fde l'IPDL"));
+                        } else if (key.contains("croupier")) {
+                            if (config.isConfigActive(addon + ".roles.croupier.configurations.croupier_every_other_day"))
+                                list.add(utils.createClickableText(" §0§l■ §fActiver §aCroupier §fun jour sur deux", "/assistant clickablemessage setcroupier " + addon, ClickEvent.Action.RUN_COMMAND, "§fCliquez ici pour §cdésactiver §fl'§dAuto-Résurrection §fde l'IPDL"));
                         }
                     }
                 });
