@@ -257,7 +257,7 @@ public class CommandAssistant implements CommandExecutor, TabCompleter {
                     player.sendMessage("§f§m                                                                           §r");
                     player.sendMessage(getPrefix() + "§2Conseils pour améliorer la carte : ");
 
-                    player.spigot().sendMessage(VersionUtils.getVersionUtils().createClickableText(" §0§l■ §fMettre la taille de la map en §a" + this.getRecommandedRoofedSize(), "/ww roofedsize" + this.getRecommandedRoofedSize().name(), ClickEvent.Action.RUN_COMMAND, "Cliquez ici pour mettre la taille de la roofed en §a" + this.getRecommandedRoofedSize()));
+                    player.spigot().sendMessage(this.getClickableMessageRoofedSize());
 
                     player.sendMessage("§f§m                                                                           §r");
                 } else {

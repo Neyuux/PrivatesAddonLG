@@ -1,8 +1,10 @@
 package fr.neyuux.privatesaddonlg.roles;
 
+import fr.neyuux.privatesaddonlg.Plugin;
 import fr.ph1lou.werewolfapi.annotations.Role;
 import fr.ph1lou.werewolfapi.enums.Category;
 import fr.ph1lou.werewolfapi.enums.RoleAttribute;
+import fr.ph1lou.werewolfapi.enums.Sound;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.FinalDeathEvent;
 import fr.ph1lou.werewolfapi.events.roles.illusionist.IllusionistAddPlayerOnWerewolfListEvent;
@@ -18,8 +20,10 @@ import fr.ph1lou.werewolfapi.role.interfaces.IPower;
 import fr.ph1lou.werewolfapi.role.utils.DescriptionBuilder;
 import fr.ph1lou.werewolfapi.utils.BukkitUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,7 +33,7 @@ import java.util.stream.Collectors;
         category = Category.VILLAGER,
         attribute = RoleAttribute.VILLAGER
 )
-public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {//TODO Rework
+public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {
     private boolean power = true;
     private boolean wait = false;
     private IPlayerWW playerWW;
@@ -41,7 +45,7 @@ public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {/
     @Override
     @NotNull
     public String getDescription() {
-        return (new DescriptionBuilder(this.game, this)).setDescription(this.game.translate("werewolf.roles.illusionist.description")).setPower(this.game.translate("werewolf.roles.illusionist.power")).setCommand(this.game.translate(this.hasPower() ? "werewolf.roles.illusionist.activate" : "werewolf.roles.illusionist.already_activate")).build();
+        return (new DescriptionBuilder(this.game, this)).setDescription(this.game.translate("werewolf.roles.illusionist.description")).setPower(this.game.translate("werewolf.roles.illusionist.power")).setCommand(this.game.translate(this.hasPower() ? "privatesaddon.roles.illusionist.activate" : "werewolf.roles.illusionist.already_activate")).build();
     }
 
     @EventHandler
@@ -75,6 +79,11 @@ public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {/
                                 if (this.getPlayerWW().isState(StatePlayer.ALIVE)) {
 
                                     playerWW.sendMessageWithKey("werewolf.prefix.green", "werewolf.roles.illusionist.reveal");
+                                    @Nullable Player player = Bukkit.getPlayer(playerWW.getUUID());
+                                    if (player != null) {
+                                        Sound.ANVIL_LAND.play(player, 7f, 1.3f);
+                                        Plugin.sendTitle(player, 10, 30, 10, "§c§lVous avez été ajouté à la liste des LGs !", "§bL'§lIllusioniste§b a utilisé son pouvoir sur vous.");
+                                    }
 
                                     List<IPlayerWW> players1WW = this.game.getPlayersWW()
                                             .stream()
@@ -94,8 +103,11 @@ public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {/
 
                                         if (illusionistGetNamesEvent.isCancelled())
                                             this.getPlayerWW().sendMessageWithKey("werewolf.prefix.red", "werewolf.check.cancel");
-                                        else
+                                        else {
                                             this.getPlayerWW().sendMessageWithKey("werewolf.prefix.green", "werewolf.roles.illusionist.reveal_pseudos", Formatter.format("&names&", finalPlayersWW.stream().map(IPlayerWW::getName).collect(Collectors.joining(", "))));
+                                            if (Bukkit.getPlayer(this.getPlayerUUID()) != null)
+                                                Sound.LEVEL_UP.play(Bukkit.getPlayer(this.getPlayerWW().getUUID()), 8f, 1.8f);
+                                        }
                                     }
                                 }
                             }, 1200L);

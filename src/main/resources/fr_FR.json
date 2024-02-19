@@ -104,7 +104,9 @@
       },
 
       "illusionist": {
-        "display": "Illusionniste"
+        "display": "Illusionniste",
+        "command": "activer",
+        "activate": "Pour activer votre pouvoir : §b/ww activer"
       },
 
       "wolf_dog": {
