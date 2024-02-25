@@ -109,6 +109,16 @@
         "activate": "Pour activer votre pouvoir : §b/ww activer"
       },
 
+      "poacher": {
+        "display": "Braconnier",
+        "configurations": {
+          "distance": "Champ d'action du Braconnier §b&number& §fblocs"
+        },
+        "timers": {
+          "progress": "Durée de la récupération de la fourrure §b&timer&"
+        }
+      },
+
       "wolf_dog": {
         "display": "Chien-Loup",
         "command": "transformer",
