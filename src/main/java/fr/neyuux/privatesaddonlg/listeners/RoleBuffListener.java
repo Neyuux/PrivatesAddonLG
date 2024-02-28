@@ -14,6 +14,7 @@ import fr.ph1lou.werewolfapi.events.roles.StealEvent;
 import fr.ph1lou.werewolfapi.events.roles.angel.AngelTargetEvent;
 import fr.ph1lou.werewolfapi.events.roles.charmer.CharmerGetEffectDeathEvent;
 import fr.ph1lou.werewolfapi.events.roles.falsifier_werewolf.NewDisplayRole;
+import fr.ph1lou.werewolfapi.events.roles.priestess.PriestessEvent;
 import fr.ph1lou.werewolfapi.game.IConfiguration;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.impl.PotionModifier;
@@ -295,6 +296,12 @@ public class RoleBuffListener implements Listener {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    @EventHandler
+    public void onPriestessPower(PriestessEvent ev) {
+        if (!ev.getCamp().equals(Camp.VILLAGER.getKey()))
+            ev.getPlayerWW().addPlayerMaxHealth(4.0D);
     }
 
 
