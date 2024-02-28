@@ -257,18 +257,18 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                 Player target = Bukkit.getPlayer(playerWW.getUUID());
 
                 if (target == null) {
-                    if (!beacon.isHasEffects())
-                        beacon.giveEffects(this);
+                    if (beacon.isHasEffects())
+                        beacon.removeEffects(this);
                     return;
                 }
 
                 double distanceSquared = player.getLocation().distanceSquared(target.getLocation());
                 double square = this.square("privatesaddon.roles.beaconer.configurations.distance_activated");
 
-                if ((distanceSquared >= square || !playerWW.getState().equals(StatePlayer.ALIVE)) && !beacon.isHasEffects())
+                if (distanceSquared >= square && !beacon.isHasEffects())
                     beacon.giveEffects(this);
 
-                if (distanceSquared < square && beacon.isHasEffects())
+                if ((distanceSquared < square || !playerWW.getState().equals(StatePlayer.ALIVE)) && beacon.isHasEffects())
                     beacon.removeEffects(this);
             }
         });

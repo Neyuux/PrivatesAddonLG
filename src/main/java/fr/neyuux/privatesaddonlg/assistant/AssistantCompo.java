@@ -44,7 +44,7 @@ public class AssistantCompo {
         informationsPoints.put("shaman", 1);
         informationsPoints.put("oracle", 5);
         informationsPoints.put("twin", 6);
-        informationsPoints.put("druid", 4);
+        informationsPoints.put("druid", 10);
         informationsPoints.put("fruit_merchant", 4);
         informationsPoints.put("wise_elder", 5);
         informationsPoints.put("occultist", 4);
@@ -53,7 +53,7 @@ public class AssistantCompo {
         informationsPoints.put("spy", 3);
         informationsPoints.put("interpreter", 4);
         informationsPoints.put("innkeeper", 4);
-        informationsPoints.put("croupier", 5);
+        informationsPoints.put("croupier", 6);
         informationsPoints.put("librarian", 2);
         informationsPoints.put("sister", 1);
         informationsPoints.put("little_girl", 3);
