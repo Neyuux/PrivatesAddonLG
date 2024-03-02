@@ -8,10 +8,13 @@ import fr.ph1lou.werewolfapi.enums.RoleAttribute;
 import fr.ph1lou.werewolfapi.events.UpdateNameTagEvent;
 import fr.ph1lou.werewolfapi.events.UpdatePlayerNameTagEvent;
 import fr.ph1lou.werewolfapi.events.game.permissions.UpdateModeratorNameTagEvent;
+import fr.ph1lou.werewolfapi.events.random_events.DiscordEvent;
+import fr.ph1lou.werewolfapi.events.roles.infect_father_of_the_wolves.InfectionEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.role.impl.RoleNeutral;
 import fr.ph1lou.werewolfapi.role.utils.DescriptionBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -86,5 +89,21 @@ public class Omniscient extends RoleNeutral {
 
         ev.setPrefix(String.valueOf(prefix));
         ev.setSuffix(String.valueOf(suffix));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onInfection(InfectionEvent ev) {
+        if (ev.getPlayerWW().equals(this.getPlayerWW())) {
+            ev.setCancelled(true);
+            ev.setInformInfectionCancelledMessage(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onDiscord(DiscordEvent ev) {
+        if (ev.getPlayerWWs().contains(this.getPlayerWW())) {
+            ev.setCancelled(true);
+            this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§fVous avez sélectionné pour la §e§lZizanie§f. Cependant, à cause de votre rôle, celle-ci ne s'est §cpas activée§f."));
+        }
     }
 }

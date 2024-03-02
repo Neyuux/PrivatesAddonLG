@@ -6,6 +6,7 @@ import fr.ph1lou.werewolfapi.enums.Category;
 import fr.ph1lou.werewolfapi.enums.RoleAttribute;
 import fr.ph1lou.werewolfapi.enums.Sound;
 import fr.ph1lou.werewolfapi.enums.StatePlayer;
+import fr.ph1lou.werewolfapi.events.UpdateNameTagEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.FinalDeathEvent;
 import fr.ph1lou.werewolfapi.events.roles.illusionist.IllusionistAddPlayerOnWerewolfListEvent;
 import fr.ph1lou.werewolfapi.events.roles.illusionist.IllusionistGetNamesEvent;
@@ -74,6 +75,7 @@ public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {
                         } else {
                             this.addAffectedPlayer(playerWW);
                             Bukkit.getPluginManager().callEvent(new NewWereWolfEvent(playerWW));
+                            Bukkit.getPluginManager().callEvent(new UpdateNameTagEvent(playerWW));
 
                             BukkitUtils.scheduleSyncDelayedTask(this.game, () -> {
                                 if (this.getPlayerWW().isState(StatePlayer.ALIVE)) {
@@ -120,7 +122,7 @@ public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {
 
     @EventHandler
     public void onWerewolfListRequest(AppearInWereWolfListEvent event) {
-        if (event.getPlayerWW().equals(this.playerWW))
+        if (event.getPlayerWW().getUUID().equals(this.playerWW.getUUID()))
             event.setAppear(true);
     }
 

@@ -6,10 +6,8 @@ import fr.minuskube.inv.InventoryManager;
 import fr.neyuux.privatesaddonlg.assistant.CommandAssistant;
 import fr.neyuux.privatesaddonlg.commands.CommandDLimits;
 import fr.neyuux.privatesaddonlg.commands.CommandPioche;
-import fr.neyuux.privatesaddonlg.commands.CommandSay;
 import fr.neyuux.privatesaddonlg.commands.DonCommand;
 import fr.neyuux.privatesaddonlg.commands.roles.ItemCommand;
-import fr.neyuux.privatesaddonlg.commands.roles.TranscenderCommand;
 import fr.neyuux.privatesaddonlg.listeners.ArmorListener;
 import fr.neyuux.privatesaddonlg.listeners.RoleBuffListener;
 import fr.neyuux.privatesaddonlg.listeners.WorldChangesListener;
@@ -23,7 +21,6 @@ import fr.ph1lou.werewolfapi.enums.StatePlayer;
 import fr.ph1lou.werewolfapi.enums.UniversalMaterial;
 import fr.ph1lou.werewolfapi.events.ActionBarEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
-import fr.ph1lou.werewolfapi.events.game.game_cycle.StopEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
 import fr.ph1lou.werewolfapi.events.game.permissions.UpdateModeratorNameTagEvent;
@@ -143,7 +140,6 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         pm.registerEvents(new ArmorListener(Collections.emptyList()), this);
         pm.registerEvents(new DonCommand(), this);
 
-        this.getCommand("say").setExecutor(new CommandSay());
         this.getCommand("pioche").setExecutor(commandPioche);
         this.getCommand("dlimits").setExecutor(new CommandDLimits());
         this.getCommand("don").setExecutor(new DonCommand());

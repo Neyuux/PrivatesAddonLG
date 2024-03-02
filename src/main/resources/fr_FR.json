@@ -123,14 +123,14 @@
         "display": "Omniscient",
         "command": "transcender",
         "items": "4 d'obsidienne et 4 bibliothéques",
-        "description": "Vous devez gagner seul, pour vous aider à accomplir cette tâche, vous possèdez une commande qui vous permet de connaître l'identité de tous les joueurs de la partie. Vous pouvez utiliser cette commande sur un joueur pour connaître des informations plus précises sur lui."
+        "description": "Vous devez gagner seul, pour vous aider à accomplir cette tâche, vous possèdez une commande qui vous permet de connaître l'identité de tous les joueurs de la partie. Vous pouvez utiliser cette commande sur un joueur pour connaître des informations plus précises sur lui. Vous ne pouvez pas vous faire infecter."
       },
 
       "innkeeper": {
         "display": "Aubergiste",
         "effect": "Speed quand toutes les chambres sont fermées",
         "available": "Votre pouvoir est de nouveau disponible",
-        "description": "Le jour, vous pouvez clic-droit sur un joueur pour l’héberger.\nLe jour suivant, vous pouvez à nouveau clic-droit sur le client pour savoir le nombre de joueurs croisés pendant la nuit et le nom de l’un d’eux.\nSi un client a fait un kill, vous le savez (vous obtenez pseudo + rôle du tueur) mais tous les clients sont expulsés et une chambre ferme.\nSi un client meurt, vous obtenez le rôle du tueur et la chambre ferme.\nQuand vous n'avez plus de chambre, vous obtenez Speed.",
+        "description": "Le jour, vous pouvez clic-droit en étant (sans épée) sur un joueur pour l’héberger.\nLe jour suivant, vous pouvez à nouveau clic-droit sur le client pour savoir le nombre de joueurs croisés pendant la nuit et le nom de l’un d’eux.\nSi un client a fait un kill, vous le savez (vous obtenez pseudo + rôle du tueur) mais tous les clients sont expulsés et une chambre ferme.\nSi un client meurt, vous obtenez le rôle du tueur et la chambre ferme.\nQuand vous n'avez plus de chambre, vous obtenez Speed.",
         "list": "§bJoueur(s) hébergé(s)§f : &list&\n §bJoueur(s) hébergé(s)§f précedemment : &list2&\n",
         "dead": "Un de vos clients est mort, son tueur était &role&",
         "kill": "Un de vos clients a tué quelqu'un, tous vos clients sont éjectés",

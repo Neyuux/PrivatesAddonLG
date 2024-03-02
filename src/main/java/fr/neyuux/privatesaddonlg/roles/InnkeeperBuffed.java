@@ -160,9 +160,6 @@ public class InnkeeperBuffed
 
     @EventHandler
     public void onRightClick(PlayerInteractAtEntityEvent event) {
-        if (event.getPlayer().getUniqueId().equals(this.getPlayerUUID()) && event.getRightClicked().getType() == EntityType.PLAYER) {
-            System.out.println("DebugTA " + this.getPlayerWW().getName() + " ab: " + this.isAbilityEnabled() + " st: " + this.getPlayerWW().getState() + " d: " + this.game.isDay(Day.DAY) + " n: "+ event.getRightClicked().getName());
-        }
         if (!this.isAbilityEnabled()) {
             return;
         }
@@ -172,6 +169,8 @@ public class InnkeeperBuffed
         if (this.game.isDay(Day.NIGHT)) {
             return;
         }
+        if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().name().contains("SWORD"))
+            return;
         IPlayerWW playerWW = this.game.getPlayerWW(event.getRightClicked().getUniqueId()).orElse(null);
         if (playerWW == null) {
             return;
