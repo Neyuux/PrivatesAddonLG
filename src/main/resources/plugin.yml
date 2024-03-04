@@ -6,13 +6,6 @@ description: "${project.description}"
 load: STARTUP
 depend : [WereWolfPlugin]
 commands:
-  say:
-    description: Commande pour annoncer
-    aliases:
-      - b
-      - bc
-      - broadcast
-    permission: say.use
   pioche:
     description: Pour avoir un meilleur minage
   dlimits:

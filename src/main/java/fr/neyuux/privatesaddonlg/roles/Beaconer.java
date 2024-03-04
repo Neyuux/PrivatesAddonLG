@@ -5,6 +5,7 @@ import fr.neyuux.privatesaddonlg.events.*;
 import fr.ph1lou.werewolfapi.annotations.IntValue;
 import fr.ph1lou.werewolfapi.annotations.Role;
 import fr.ph1lou.werewolfapi.annotations.Timer;
+import fr.ph1lou.werewolfapi.basekeys.ScenarioBase;
 import fr.ph1lou.werewolfapi.enums.*;
 import fr.ph1lou.werewolfapi.events.ActionBarEvent;
 import fr.ph1lou.werewolfapi.events.game.day_cycle.DayEvent;
@@ -379,6 +380,9 @@ public class Beaconer extends RoleImpl implements IAffectedPlayers, IPower {
                     }
 
                     player.sendMessage(sb.toString());
+
+                    if (Plugin.getINSTANCE().getGame().getConfig().isScenarioActive(ScenarioBase.CAT_EYES))
+                        player.sendMessage(Plugin.getPrefix() +  "§bRAPPEL : §fLe Scénario §b§lCat Eyes§f est §aactivé§f.");
 
                     break;
             }

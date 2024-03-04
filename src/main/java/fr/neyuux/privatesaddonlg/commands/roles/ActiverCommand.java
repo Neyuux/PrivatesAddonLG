@@ -12,7 +12,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-@RoleCommand(key="privatesaddon.roles.illusionist.command", roleKeys={"privatesaddon.roles.illusionist.display"}, argNumbers={0})
+@RoleCommand(key="privatesaddon.roles.illusionist.command", roleKeys={"privatesaddon.roles.illusionist.display"}, argNumbers={0}, requiredPower = true)
 public class ActiverCommand
         implements ICommandRole {
     @Override

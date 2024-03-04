@@ -9,6 +9,7 @@ import fr.ph1lou.werewolfapi.events.UpdateNameTagEvent;
 import fr.ph1lou.werewolfapi.events.UpdatePlayerNameTagEvent;
 import fr.ph1lou.werewolfapi.events.game.permissions.UpdateModeratorNameTagEvent;
 import fr.ph1lou.werewolfapi.events.random_events.DiscordEvent;
+import fr.ph1lou.werewolfapi.events.random_events.SwapEvent;
 import fr.ph1lou.werewolfapi.events.roles.infect_father_of_the_wolves.InfectionEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
@@ -104,6 +105,14 @@ public class Omniscient extends RoleNeutral {
         if (ev.getPlayerWWs().contains(this.getPlayerWW())) {
             ev.setCancelled(true);
             this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§fVous avez sélectionné pour la §e§lZizanie§f. Cependant, à cause de votre rôle, celle-ci ne s'est §cpas activée§f."));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onSwap(SwapEvent ev) {
+        if (ev.getPlayerWW1().getUUID().equals(this.getPlayerUUID()) || ev.getPlayerWW2().getUUID().equals(this.getPlayerUUID())) {
+            ev.setCancelled(true);
+            this.getPlayerWW().sendMessage(new TextComponent(Plugin.getPrefix() + "§fVous avez sélectionné pour le §e§lSwap§f. Cependant, à cause de votre rôle, celui-ci ne s'est §cpas activé§f."));
         }
     }
 }

@@ -23,6 +23,7 @@ import fr.ph1lou.werewolfapi.utils.BukkitUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,15 +78,15 @@ public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {
                             Bukkit.getPluginManager().callEvent(new NewWereWolfEvent(playerWW));
                             Bukkit.getPluginManager().callEvent(new UpdateNameTagEvent(playerWW));
 
+                            playerWW.sendMessageWithKey("werewolf.prefix.green", "werewolf.roles.illusionist.reveal");
+                            @Nullable Player player = Bukkit.getPlayer(playerWW.getUUID());
+                            if (player != null) {
+                                Sound.ANVIL_LAND.play(player, 7f, 1.3f);
+                                Plugin.sendTitle(player, 10, 30, 10, "§c§lVous avez été ajouté à la liste des LGs !", "§bL'§lIllusioniste§b a utilisé son pouvoir sur vous.");
+                            }
+
                             BukkitUtils.scheduleSyncDelayedTask(this.game, () -> {
                                 if (this.getPlayerWW().isState(StatePlayer.ALIVE)) {
-
-                                    playerWW.sendMessageWithKey("werewolf.prefix.green", "werewolf.roles.illusionist.reveal");
-                                    @Nullable Player player = Bukkit.getPlayer(playerWW.getUUID());
-                                    if (player != null) {
-                                        Sound.ANVIL_LAND.play(player, 7f, 1.3f);
-                                        Plugin.sendTitle(player, 10, 30, 10, "§c§lVous avez été ajouté à la liste des LGs !", "§bL'§lIllusioniste§b a utilisé son pouvoir sur vous.");
-                                    }
 
                                     List<IPlayerWW> players1WW = this.game.getPlayersWW()
                                             .stream()
@@ -120,9 +121,9 @@ public class Illusionist extends RoleImpl implements IPower, IAffectedPlayers {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onWerewolfListRequest(AppearInWereWolfListEvent event) {
-        if (event.getPlayerWW().getUUID().equals(this.playerWW.getUUID()))
+        if (this.playerWW != null && event.getTargetWW().getUUID().equals(this.playerWW.getUUID()))
             event.setAppear(true);
     }
 
