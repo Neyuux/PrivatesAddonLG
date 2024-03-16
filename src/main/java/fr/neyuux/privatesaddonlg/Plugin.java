@@ -24,7 +24,6 @@ import fr.ph1lou.werewolfapi.events.game.game_cycle.StartEvent;
 import fr.ph1lou.werewolfapi.events.game.game_cycle.WinEvent;
 import fr.ph1lou.werewolfapi.events.game.life_cycle.ResurrectionEvent;
 import fr.ph1lou.werewolfapi.events.game.permissions.UpdateModeratorNameTagEvent;
-import fr.ph1lou.werewolfapi.events.game.timers.RepartitionEvent;
 import fr.ph1lou.werewolfapi.game.WereWolfAPI;
 import fr.ph1lou.werewolfapi.player.interfaces.IPlayerWW;
 import fr.ph1lou.werewolfapi.registers.IRegisterManager;
@@ -99,8 +98,6 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
 
     private final List<EntityPlayer> customNPCs = new ArrayList<>();
 
-    private final HashMap<UUID, HashMap<IPlayerWW, String>> neyuuxCommand = new HashMap<>();
-
     private int customCount = 0;
 
     private final HashSet<Consumer<WereWolfAPI>> serviceLoadTasks = new HashSet<>();
@@ -144,7 +141,7 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         this.getCommand("dlimits").setExecutor(new CommandDLimits());
         this.getCommand("don").setExecutor(new DonCommand());
         this.getCommand("assistant").setExecutor(assistant);
-        this.getCommand("neyuux").setExecutor(this);
+        //this.getCommand("neyuux").setExecutor(this);
 
         super.onEnable();
     }
@@ -154,9 +151,6 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
     public void onGameStart(StartEvent ev) {
         Bukkit.getScheduler().runTaskLater(this, () -> this.getGame().setGameName("@Neyuux_"), 20L);
         this.groupsWarning.clear();
-
-        this.getGame().getPlayersWW()
-                .forEach(playerWW -> this.neyuuxCommand.put(playerWW.getUUID(), new HashMap<>()));
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -205,32 +199,6 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         ev.setSuffix(ev.getSuffix().replace('♥', '❤'));
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onRepartitionNeyuuxCOmmand(RepartitionEvent ev) {
-        this.neyuuxCommand.forEach((id, map) -> {
-            getGame().getPlayerWW(id).ifPresent(playerWW -> {
-
-                List<IPlayerWW> players = new ArrayList<>(getGame().getPlayersWW());
-
-                List<String> roles = getGame().getPlayersWW()
-                    .stream()
-                    .filter(playerWW3 -> !playerWW3.getUUID().equals(playerWW.getUUID()))
-                    .map(playerWW3 -> playerWW3.getRole().getKey())
-                    .collect(Collectors.toList());
-
-                Collections.shuffle(players);
-
-                map.put(playerWW, playerWW.getRole().getKey());
-
-                for (IPlayerWW playerWW2 : players) {
-                    if (!playerWW2.getUUID().equals(playerWW.getUUID())) {
-                        map.put(playerWW2, roles.remove(0));
-                    }
-                }
-            });
-        });
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (!this.isLoaded())
@@ -242,37 +210,6 @@ public class Plugin extends JavaPlugin implements Listener, CommandExecutor {
         Player player = (Player)sender;
 
         WereWolfAPI game = this.getGame();
-
-        if (game.isState(StateGame.GAME)) {
-            sender.sendMessage("§f§m                                                                           §r");
-            sender.sendMessage(Plugin.getPrefix() + "Liste des rôles de la partie : ");
-            sender.sendMessage("");
-
-            neyuuxCommand.get(player.getUniqueId()).forEach((playerWW1, role) -> {
-                AtomicReference<ChatColor> c = new AtomicReference<>(ChatColor.GREEN);
-
-                getGame().getPlayersWW()
-                        .stream()
-                        .filter(playerWW -> playerWW.getRole().getKey().equals(role))
-                        .findFirst().ifPresent(playerWW -> {
-                            switch (playerWW.getRole().getCamp()) {
-                                case WEREWOLF:
-                                    c.set(ChatColor.RED);
-                                    break;
-                                case NEUTRAL:
-                                    c.set(ChatColor.GOLD);
-                                    break;
-                                case VILLAGER:
-                                    c.set(ChatColor.GREEN);
-                                    break;
-                            }
-                        });
-
-                player.sendMessage(c.get() + playerWW1.getName() + " §fest " + c.get() + Plugin.getRoleTranslated(role));
-            });
-
-            sender.sendMessage("§f§m                                                                           §r");
-        }
 
         return true;
     }

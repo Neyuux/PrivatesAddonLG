@@ -15,8 +15,6 @@ commands:
     aliases:
       - d
       - wwdon
-  neyuux:
-    description: :)
   assistant:
     description: Assistant de configuration LG
     aliases:
